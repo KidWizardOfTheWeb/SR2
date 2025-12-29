@@ -1,0 +1,86 @@
+# Project-specific files
+SLUS_216.42
+*[Ss][Ll][Uu][Ss]*
+*216*42*
+SLUS_*.*
+*.elf
+disc/*
+
+# Objdiff
+objdiff.json
+report.json
+
+# Compiler
+prodg*
+tools/cc/
+usr/
+
+# Splat
+splat/
+assets/
+asm/
+undefined_funcs_auto.txt
+undefined_syms_auto.txt
+.splache
+.ninja_log
+*.ninja
+permuter_settings.toml
+
+# Documentation
+html/
+
+## MacOS
+.DS_Store
+
+## Linux
+*.swp
+
+## WSL
+*:Zone.Identifier
+
+## Binary/object products
+**/bin/
+**/obj/
+
+## Clang-tooling things
+**/compile_commands.json
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+*.elf
+
+# Linker scripts
+*.ld
+
+# Python
+env/
+__pycache__/
+*.pyc
+
+# Miscellaneous
+.vscode
+temp/
+*.diff

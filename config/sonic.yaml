@@ -3042,7 +3042,7 @@ segments:
       # - [0x3A3480, asmtu, Develop/Projects/SR2/pgm/src/Advertise/AdvertiseMgr] # vram: 0x004A3400
       # - [0x3A3480, asmtu, Develop/Projects/SR2/pgm/src/Advertise/Option/Option] # vram: 0x004A3400
       # - [0x3A3480, asmtu, Develop/Projects/SR2/pgm/src/SaveLoad/SaveData] # vram: 0x004A3400
-      - [0x3A3480, asmtu, Develop/Projects/SR2/pgm/src/2D/Advertise/SaveData2D] # vram: 0x004A3400
+      # - [0x3A3480, asmtu, Develop/Projects/SR2/pgm/src/2D/Advertise/SaveData2D] # vram: 0x004A3400
       - [0x3A3480, asmtu, Develop/Projects/SR2/pgm/src/2D/Advertise/Shop] # vram: 0x004A3400
       # - [0x3A34E0, asmtu, Develop/Projects/SR2/pgm/src/SaveLoad/SaveData] # vram: 0x004A3460
       # - [0x3A3A80, h, Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage11/St11LineObj] # vram: 0x004A3A00

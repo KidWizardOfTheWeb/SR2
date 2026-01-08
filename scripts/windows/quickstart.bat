@@ -59,7 +59,7 @@ echo Setting up MWCCPS2 compiler...
 
 REM Define the target directory path
 set PS2_ROOT=tools\compilers\PS2
-set COMPILER_DIR=%PS2_ROOT%\mwcps2-3.0.1b145-050209
+set COMPILER_DIR=%PS2_ROOT%\mwcps2-3.0.1b198-051011
 set GC_DLL_PATH=tools\compilers\GC\3.0a5
 
 if not exist "%COMPILER_DIR%" (
@@ -67,7 +67,7 @@ if not exist "%COMPILER_DIR%" (
     
     if not exist "%PS2_ROOT%" mkdir "%PS2_ROOT%"
     
-    curl -L "https://github.com/decompme/compilers/releases/download/compilers/mwcps2-3.0.1b145-050209.tar.gz" -o "mwccps2.tar.gz"
+    curl -L "https://github.com/decompme/compilers/releases/download/compilers/mwcps2-3.0.1b198-051011.tar.gz" -o "mwccps2.tar.gz"
     if errorlevel 1 (
         echo Error: Failed to download MWCCPS2 compiler
         exit /b 1

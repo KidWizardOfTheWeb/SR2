@@ -31,7 +31,7 @@ PRE_ELF_PATH = f"{OUTDIR}/{BASENAME}.elf"
 
 COMMON_INCLUDES = "-i include -i include/sdk/ee -i include/gcc"
 
-CC_DIR = f"{TOOLS_DIR}/compilers/PS2/mwcps2-3.0.1b145-050209"
+CC_DIR = f"{TOOLS_DIR}/compilers/PS2/mwcps2-3.0.1b198-051011"
 COMMON_COMPILE_FLAGS = f"-lang=c++ -O3"
 
 WINE = "wine"
@@ -84,7 +84,7 @@ compiler_type = "mwcc"
 [preserve_macros]
 
 [decompme.compilers]
-"tools/build/cc/mwcc/mwccps2" = "mwcps2-3.0.1b145"
+"tools/build/cc/mwcc/mwccps2" = "mwcps2-3.0.1b198"
 """)
 
 #MARK: Build

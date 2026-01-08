@@ -68,14 +68,14 @@ echo
 echo "Setting up MWCCPS2 compiler..."
 
 PS2_ROOT="tools/compilers/PS2"
-COMPILER_DIR="$PS2_ROOT/mwcps2-3.0.1b145-050209"
+COMPILER_DIR="$PS2_ROOT/mwcps2-3.0.1b198-051011"
 
 if [ ! -d "$COMPILER_DIR" ]; then
     echo "Downloading MWCCPS2 compiler..."
     
     mkdir -p "$PS2_ROOT"
     
-    wget -q --show-progress -O /tmp/mwccps2.tar.gz "https://github.com/decompme/compilers/releases/download/compilers/mwcps2-3.0.1b145-050209.tar.gz"
+    wget -q --show-progress -O /tmp/mwccps2.tar.gz "https://github.com/decompme/compilers/releases/download/compilers/mwcps2-3.0.1b198-051011.tar.gz"
     
     echo "Extracting MWCCPS2 compiler..."
     mkdir -p "$COMPILER_DIR"

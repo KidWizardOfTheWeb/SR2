@@ -249,8 +249,14 @@ public:
     unsigned char u8DataNum; // offset 0x20, size 0x1
 };
 
+// Most classes than end 0x4 before the listed size have a vtable. This solves that.
+class clsGearCtrlBase {
+public:
+    virtual void someVirtualFunction(); // vtable pointer at 0x0
+};
+
 // total size: 0x110
-class clsGearCtrl {
+class clsGearCtrl : public clsGearCtrlBase {
     // Members
 public:
     class clsGear * m_apcGear[4]; // offset 0x4, size 0x10

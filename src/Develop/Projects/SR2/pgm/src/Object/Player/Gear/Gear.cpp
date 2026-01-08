@@ -1,4 +1,5 @@
-#include "Develop/Projects/SR2/pgm/src/Object/Player/Gear/GearCtrl.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Player/Gear/Gear.hpp"
+
 // Range: 0x306950 -> 0x306B3C
 // this: r20
 void clsGear::draw(float (* psGearMtx)[4][4] /* r2 */, float f32Alpha /* r20 */, unsigned int u32AddDrawFlagI /* r19 */) {

@@ -1,4 +1,4 @@
-#include "Develop/Projects/SR2/pgm/src/Object/Player/Performance.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Player/Gear/GearCtrl.hpp"
 
 stcData* clsPrfm::getDataPtr() {
     if (this->m_pcGearCtrl->m_eCtrlMode != CTRL_MODE_WALK) {

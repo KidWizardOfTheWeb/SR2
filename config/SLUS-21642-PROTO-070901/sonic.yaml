@@ -40,10 +40,10 @@ segments:
       # - [0x0007A0, asmtu, unk_block_0007A0] # vram: 0x00100720
       # - [0x0008B0, asmtu, Develop/Projects/SR2/pgm/lib/OO/PS2/PS2Heap] # vram: 0x00100830
       - [0x0008C0, asmtu, usr/local/metrowerks/PS2_Support/gcc_wrapper] # vram: 0x00100840
-      - [0x0009E0, asmtu, usr/local/metrowerks/PS2_Support/runtime/asmtu_Support/mwUtils_PS2] # vram: 0x00100960
-      - [0x000A20, asmtu, usr/local/metrowerks/PS2_Support/asmtu_Support/arraycondes] # vram: 0x001009A0
-      - [0x000D30, asmtu, usr/local/metrowerks/PS2_Support/asmtu_Support/StaticInitializers] # vram: 0x00100CB0
-      - [0x000E40, asmtu, usr/local/metrowerks/PS2_Support/asmtu_Support/__ptmf] # vram: 0x00100DC0
+      - [0x0009E0, asmtu, usr/local/metrowerks/PS2_Support/runtime/CPP_Support/mwUtils_PS2] # vram: 0x00100960
+      - [0x000A20, asmtu, usr/local/metrowerks/PS2_Support/CPP_Support/arraycondes] # vram: 0x001009A0
+      - [0x000D30, asmtu, usr/local/metrowerks/PS2_Support/CPP_Support/StaticInitializers] # vram: 0x00100CB0
+      - [0x000E40, asmtu, usr/local/metrowerks/PS2_Support/CPP_Support/__ptmf] # vram: 0x00100DC0
       - [0x000EF0, asmtu, usr/local/metrowerks/PS2_Support/ExceptionHandler/TargetSpecific/ExceptionHandlerTS] # vram: 0x00100E70
       - [0x000EF8, asmtu, usr/local/sce/ee/lib/libgraph/graph001] # vram: 0x00100E78
       - [0x001098, asmtu, usr/local/sce/ee/lib/libgraph/graph002] # vram: 0x00101018

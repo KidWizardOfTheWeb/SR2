@@ -151,7 +151,7 @@ config.asm_dir = config.out_path() / "asm"
 # Tool versions
 config.binutils_tag = "2.45"
 config.compilers_tag = "20250812"
-config.mwccps2_tag = "3.0.1b145-050209"
+config.mwccps2_tag = "3.0.1b198-051011"
 config.objdiff_tag = "v3.5.1"
 config.wibo_tag = "1.0.0-beta.5"
 

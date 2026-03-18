@@ -836,7 +836,7 @@ def generate_objdiff_config(
 
     # decomp.me compiler name mapping for PS2
     PS2_COMPILER_MAP = {
-        "PS2/mwcps2-3.0.1b145-050209": "mwcps2-3.0.1b198-051011",
+        "PS2/mwcps2-3.0.1b198-051011": "mwcps2-3.0.1b198-051011",
     }
 
     for obj in objects.values():

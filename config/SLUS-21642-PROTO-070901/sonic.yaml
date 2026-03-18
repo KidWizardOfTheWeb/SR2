@@ -3,23 +3,23 @@ sha1: 82eae5107af0acf11c3aa6ca1cf77430f389970b
 
 options:
   basename: SLUS_216.42
-  target_path: disc/SLUS_216.42
-  base_path: ..
+  target_path: orig/SLUS-21642-PROTO-070901/SLUS_216.42
+  base_path: ../..
   platform: ps2
   compiler: MWCCPS2
 
-  asm_path: asm
+  asm_path: build/SLUS-21642-PROTO-070901/asm
   src_path: src
-  build_path: build
-  asset_path: assets
-  ld_script_path: SLUS_216.42.splat.ld
+  build_path: build/SLUS-21642-PROTO-070901/obj
+  asset_path: build/SLUS-21642-PROTO-070901/bin
+  ld_script_path: build/SLUS-21642-PROTO-070901/SLUS_216.42.splat.ld
 
   named_regs_for_c_funcs: True
 
   create_undefined_funcs_auto: False
   create_undefined_syms_auto: False
 
-  symbol_addrs_path: config/symbol_addrs.txt
+  symbol_addrs_path: config/SLUS-21642-PROTO-070901/symbol_addrs.txt
   section_order: [".text", ".data", ".rodata", ".sdata", ".sbss", ".bss"]
   gp_value: 0x6D9A70
 

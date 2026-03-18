@@ -42,6 +42,7 @@ class Object:
             "lib": None,
             "mw_version": None,
             "progress_category": None,
+            "scratch_preset_id": None,
             "source": name,
             "src_dir": None,
         }
@@ -52,6 +53,7 @@ class Object:
         self.asm_path: Optional[Path] = None
         self.src_obj_path: Optional[Path] = None
         self.asm_obj_path: Optional[Path] = None
+        self.ctx_path: Optional[Path] = None
 
     def resolve(self, config: "ProjectConfig", lib: Library) -> "Object":
         # Use object options, then library options
@@ -95,6 +97,7 @@ class Object:
         base_name = Path(self.name).with_suffix("")
         obj.src_obj_path = build_dir / "src" / f"{base_name}.o"
         obj.asm_obj_path = build_dir / "obj" / f"{base_name}.o"
+        obj.ctx_path = build_dir / "src" / f"{base_name}.ctx"
         return obj
 
 
@@ -139,6 +142,12 @@ class ProjectConfig:
         self.warn_missing_source: bool = False
         self.reconfig_deps: Optional[List[Path]] = None
         self.short_loop_workaround: bool = True
+
+        # decomp.me scratch settings
+        self.scratch_preset_id: Optional[int] = None
+        self.scratch_platform: str = "ps2"
+        # Include dirs passed to decompctx.py (e.g. ["include"])
+        self.ctx_include_dirs: List[str] = ["include"]
 
         # Progress output
         self.progress = True
@@ -536,6 +545,18 @@ def generate_build_ninja(
     )
     n.newline()
 
+    n.comment("Generate decomp.me context")
+    decompctx = config.tools_dir / "decompctx.py"
+    ctx_include_flags = " ".join(f"-I {d}" for d in config.ctx_include_dirs)
+    n.rule(
+        name="ctx",
+        command=f"$python {decompctx} $in -o $out -d $out.d {ctx_include_flags}",
+        description="CTX $in",
+        depfile="$out.d",
+        deps="gcc",
+    )
+    n.newline()
+
     ###
     # Source files
     ###
@@ -566,6 +587,14 @@ def generate_build_ninja(
             implicit=mwcc_implicit,
         )
         n.newline()
+
+        if obj.ctx_path is not None:
+            n.build(
+                outputs=obj.ctx_path,
+                rule="ctx",
+                inputs=src_path,
+            )
+            n.newline()
 
         if obj.options["add_to_all"]:
             source_inputs.append(obj.src_obj_path)
@@ -761,6 +790,15 @@ def generate_objdiff_config(
     config: ProjectConfig,
     objects: Dict[str, Object],
 ) -> None:
+    # Load existing objdiff.json
+    existing_units: Dict[str, Any] = {}
+    if Path("objdiff.json").is_file():
+        with open("objdiff.json", "r", encoding="utf-8") as r:
+            existing_config = json.load(r)
+            existing_units = {
+                unit["name"]: unit for unit in existing_config.get("units", [])
+            }
+
     if config.ninja_path:
         ninja = str(config.ninja_path.absolute())
     else:
@@ -768,50 +806,147 @@ def generate_objdiff_config(
 
     objdiff_config: Dict[str, Any] = {
         "$schema": "https://raw.githubusercontent.com/encounter/objdiff/main/config.schema.json",
+        "min_version": "2.0.0-beta.5",
         "custom_make": ninja,
         "build_target": False,
-        "build_base": True,
         "watch_patterns": [
-            "src/**/*.c",
-            "src/**/*.cpp",
-            "src/**/*.h",
-            "src/**/*.s",
-            "src/**/*.inc",
-            "include/**/*.h",
-            "config/**/*.txt",
-            "config/**/*.yaml",
+            "*.c",
+            "*.cc",
+            "*.cp",
+            "*.cpp",
+            "*.cxx",
+            "*.c++",
+            "*.h",
+            "*.hh",
+            "*.hp",
+            "*.hpp",
+            "*.hxx",
+            "*.h++",
+            "*.pch",
+            "*.pch++",
+            "*.inc",
+            "*.py",
+            "*.yml",
+            "*.txt",
+            "*.json",
         ],
         "units": [],
         "progress_categories": [],
     }
 
-    # Add units
-    for obj in objects.values():
-        if obj.src_obj_path is None:
-            continue
+    # decomp.me compiler name mapping for PS2
+    PS2_COMPILER_MAP = {
+        "PS2/mwcps2-3.0.1b145-050209": "mwcps2-3.0.1b198-051011",
+    }
 
+    for obj in objects.values():
         unit_config: Dict[str, Any] = {
             "name": obj.name,
-            "target_path": obj.asm_obj_path if obj.asm_path and obj.asm_path.exists() else None,
-            "base_path": obj.src_obj_path if obj.src_path and obj.src_path.exists() else None,
+            "target_path": obj.asm_obj_path,
+            "base_path": None,
+            "scratch": None,
             "metadata": {
-                "complete": obj.completed if obj.src_path and obj.src_path.exists() else None,
-                "source_path": obj.src_path if obj.src_path and obj.src_path.exists() else None,
-                "progress_categories": [obj.options["progress_category"]] if obj.options["progress_category"] else [],
+                "complete": None,
+                "reverse_fn_order": None,
+                "source_path": None,
+                "progress_categories": (
+                    [obj.options["progress_category"]]
+                    if obj.options["progress_category"]
+                    else []
+                ),
+                "auto_generated": False,
             },
+            "symbol_mappings": None,
         }
+
+        # Preserve existing symbol mappings
+        existing_unit = existing_units.get(obj.name)
+        if existing_unit is not None:
+            unit_config["symbol_mappings"] = existing_unit.get("symbol_mappings")
+
+        src_exists = obj.src_path is not None and obj.src_path.exists()
+        if src_exists:
+            unit_config["base_path"] = obj.src_obj_path
+            unit_config["metadata"]["source_path"] = obj.src_path
+
+        # Only generate scratch block for C/C++ source files
+        if obj.src_path is not None and file_is_c_cpp(obj.src_path):
+            def keep_flag(flag: str) -> bool:
+                return not any(
+                    flag.startswith(prefix)
+                    for prefix in ("-i ", "-i-", "-I ", "-I+", "-I-")
+                )
+
+            all_cflags = list(
+                filter(
+                    keep_flag,
+                    (obj.options["cflags"] or []) + (obj.options["extra_cflags"] or []),
+                )
+            )
+
+            # Check for reverse_fn_order (-inline deferred)
+            reverse_fn_order = False
+            for flag in all_cflags:
+                if not flag.startswith("-inline "):
+                    continue
+                for value in flag.split(" ")[1].split(","):
+                    if value == "deferred":
+                        reverse_fn_order = True
+                    elif value == "nodeferred":
+                        reverse_fn_order = False
+
+            compiler_version = PS2_COMPILER_MAP.get(obj.options["mw_version"])
+            if compiler_version is None:
+                print(
+                    f"Missing scratch compiler mapping for {obj.options['mw_version']}"
+                )
+            else:
+                cflags_str = make_flags_str(all_cflags)
+                preset_id = obj.options["scratch_preset_id"] or config.scratch_preset_id
+                unit_config["scratch"] = {
+                    "platform": config.scratch_platform,
+                    "compiler": compiler_version,
+                    "c_flags": cflags_str,
+                    "preset_id": preset_id,
+                }
+                if src_exists:
+                    unit_config["scratch"].update(
+                        {
+                            "ctx_path": obj.ctx_path,
+                            "build_ctx": True,
+                        }
+                    )
+
+            unit_config["metadata"].update(
+                {
+                    "complete": obj.completed if src_exists else None,
+                    "reverse_fn_order": reverse_fn_order,
+                }
+            )
+
         objdiff_config["units"].append(unit_config)
 
     # Add progress categories
     for category in config.progress_categories:
-        objdiff_config["progress_categories"].append({
-            "id": category.id,
-            "name": category.name,
-        })
+        objdiff_config["progress_categories"].append(
+            {
+                "id": category.id,
+                "name": category.name,
+            }
+        )
 
-    # Write objdiff.json
+    def cleandict(d: Any) -> Any:
+        if isinstance(d, dict):
+            return {k: cleandict(v) for k, v in d.items() if v is not None}
+        elif isinstance(d, list):
+            return [cleandict(v) for v in d]
+        return d
+
+    def unix_path(input: Any) -> str:
+        return str(input).replace(os.sep, "/") if input else ""
+
     with open("objdiff.json", "w", encoding="utf-8") as w:
-        json.dump(objdiff_config, w, indent=2, default=str)
+        json.dump(cleandict(objdiff_config), w, indent=2, default=unix_path)
 
 
 # Print progress information

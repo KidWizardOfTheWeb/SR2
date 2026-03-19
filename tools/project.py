@@ -727,7 +727,7 @@ def generate_build_ninja(
         n.build(
             outputs="progress",
             rule="progress",
-            implicit=[ok_path, configure_script, python_lib, report_path],
+            implicit=[report_path, configure_script, python_lib],
         )
 
         ###

@@ -1,568 +1,1353 @@
-"""
-Configures the project for building. Invokes splat to split the binary and
-creates build files for ninja.
-"""
-#! /usr/bin/env python3
+#!/usr/bin/env python3
+
+###
+# Generates build files for the project.
+# This file also includes the project configuration,
+# such as compiler flags and the object matching status.
+#
+# Usage:
+#   python3 configure.py
+#   ninja
+#
+# Append --help to see available options.
+###
+
 import argparse
 import os
 import shutil
 import sys
-import json
-import re
 from pathlib import Path
-from typing import Dict, List, Set, Union
+from typing import Any, Dict, List
 
-import ninja_syntax
-import splat
-import splat.scripts.split as split
-from splat.segtypes.linker_entry import LinkerEntry
-
-#MARK: Constants
-ROOT = Path(__file__).parent.resolve()
-TOOLS_DIR = ROOT / "tools"
-OUTDIR = "out"
-
-YAML_FILE = Path("config/sonic.yaml")
-BASENAME = "SLUS_216.42"
-LD_PATH = f"{BASENAME}.splat.ld"
-ELF_PATH = f"{OUTDIR}/{BASENAME}"
-MAP_PATH = f"{OUTDIR}/{BASENAME}.map"
-PRE_ELF_PATH = f"{OUTDIR}/{BASENAME}.elf"
-
-COMMON_INCLUDES = "-i include -i include/sdk/ee -i include/gcc"
-
-CC_DIR = f"{TOOLS_DIR}/compilers/PS2/mwcps2-3.0.1b198-051011"
-COMMON_COMPILE_FLAGS = f"-lang=c++ -O3"
-
-WINE = "wine"
-
-GAME_MWCC_CMD = f"{CC_DIR}/mwccps2 -c {COMMON_INCLUDES} {COMMON_COMPILE_FLAGS} $in"
-COMPILE_CMD = f"{GAME_MWCC_CMD}"
-if sys.platform == "linux" or sys.platform == "linux2":
-    COMPILE_CMD = f"{WINE} {GAME_MWCC_CMD}"
-
-CATEGORY_MAP = {
-    "P2": "Engine",
-    "splice": "Splice",
-    "ps2t": "Tooling",
-    "sce": "Libs",
-    "data": "Data",
-}
-
-def clean():
-    """
-    Clean all products of the build process.
-    """
-    files_to_clean = [
-        ".splache",
-        ".ninja_log",
-        "build.ninja",
-        "permuter_settings.toml",
-        "objdiff.json",
-        LD_PATH
-    ]
-    for filename in files_to_clean:
-        if os.path.exists(filename):
-            os.remove(filename)
-
-    shutil.rmtree("asm", ignore_errors=True)
-    shutil.rmtree("assets", ignore_errors=True)
-    shutil.rmtree("obj", ignore_errors=True)
-    shutil.rmtree("out", ignore_errors=True)
-    shutil.rmtree("build", ignore_errors=True)
-
-
-def write_permuter_settings():
-    """
-    Write the permuter settings file, comprising the compiler and assembler commands.
-    """
-    with open("permuter_settings.toml", "w", encoding="utf-8") as f:
-        f.write(f"""compiler_command = "{COMPILE_CMD} -D__GNUC__"
-assembler_command = "mips-linux-gnu-as -march=r5900 -mabi=eabi -Iinclude"
-compiler_type = "mwcc"
-
-[preserve_macros]
-
-[decompme.compilers]
-"tools/build/cc/mwcc/mwccps2" = "mwcps2-3.0.1b198"
-""")
-
-#MARK: Build
-def build_stuff(linker_entries: List[LinkerEntry], skip_checksum=False, objects_only=False, dual_objects=False):
-    """
-    Build the objects and the final ELF file.
-    If objects_only is True, only build objects and skip linking/checksum.
-    If dual_objects is True, build objects twice: once normally, once with -DSKIP_ASM.
-    """
-    built_objects: Set[Path] = set()
-    objdiff_units = []  # For objdiff.json
-
-    def build(
-        object_paths: Union[Path, List[Path]],
-        src_paths: List[Path],
-        task: str,
-        variables: Dict[str, str] = None,
-        implicit_outputs: List[str] = None,
-        out_dir: str = None,
-        extra_flags: str = "",
-        collect_objdiff: bool = False,
-        orig_entry=None,
-    ):
-        """
-        Helper function to build objects.
-        """
-        # Handle none parameters
-        if variables is None:
-            variables = {}
-
-        if implicit_outputs is None:
-            implicit_outputs = []
-
-        # Convert object_paths to list if it is not already
-        if not isinstance(object_paths, list):
-            object_paths = [object_paths]
-
-        # Determine output paths based on mode
-        if out_dir:
-            # --objects mode: use obj/target/ or obj/current/
-            new_object_paths = []
-            for obj in object_paths:
-                obj = Path(obj)
-                stem = obj.stem
-                if obj.suffix in [".s", ".c", ".cpp"]:
-                    stem = obj.stem
-                else:
-                    if obj.suffix == ".o" and obj.with_suffix("").suffix in [".s", ".c", ".cpp"]:
-                        stem = obj.with_suffix("").stem
-                target_dir = out_dir if out_dir else obj.parent
-                new_obj = Path(target_dir) / (stem + ".o")
-                new_object_paths.append(new_obj)
-            object_paths = new_object_paths
-        else:
-            # Regular build mode: determine path based on source location
-            new_object_paths = []
-            for idx, obj in enumerate(object_paths):
-                obj = Path(obj)
-                src = Path(src_paths[idx]) if idx < len(src_paths) else None
-                
-                if src:
-                    src_parts = src.parts
-                    # Check if source is from asm/ or src/
-                    if src_parts[0] == "asm":
-                        # Assembly file: build/obj/ + rest of path
-                        relative_path = Path(*src_parts[1:])
-                        new_obj = Path("build") / "obj" / relative_path.with_suffix(".o")
-                    elif src_parts[0] == "src":
-                        # C/C++ file: build/src/ + rest of path
-                        relative_path = Path(*src_parts[1:])
-                        new_obj = Path("build") / "src" / relative_path.with_suffix(".o")
-                    else:
-                        # Fallback: use original path structure
-                        new_obj = Path("build") / obj.with_suffix(".o")
-                else:
-                    # No source path, use original
-                    new_obj = Path("build") / obj.with_suffix(".o")
-                
-                new_object_paths.append(new_obj)
-            object_paths = new_object_paths
-
-        # Add object paths to built_objects
-        for idx, object_path in enumerate(object_paths):
-            if object_path.suffix == ".o":
-                built_objects.add(object_path)
-
-            # Add extra_flags to variables if present
-            build_vars = variables.copy()
-            if extra_flags:
-                build_vars["cflags"] = extra_flags
-            ninja.build(
-                outputs=[str(object_path)],
-                rule=task,
-                inputs=[str(s) for s in src_paths],
-                variables=build_vars,
-                implicit_outputs=implicit_outputs,
-            )
-
-            # Collect for objdiff.json if requested
-            if collect_objdiff and orig_entry is not None:
-                src = src_paths[0] if src_paths else None
-                if src:
-                    src = Path(src)
-                    # Always use the final "matched" name, i.e. as if it will be in src/ with no asm/ prefix
-                    try:
-                        # If the file is in asm/, replace asm/ with nothing (just drop asm/)
-                        if src.parts[0] == "asm":
-                            rel = Path(*src.parts[1:])
-                        elif src.parts[0] == "src":
-                            rel = Path(*src.parts[1:])
-                        else:
-                            rel = src
-                        # Remove extension for the name
-                        name = str(rel.with_suffix(""))
-                    except Exception:
-                        name = str(src.with_suffix(""))
-                else:
-                    name = object_path.stem
-                    # Ensure `rel` is defined so later code can compute src-based paths
-                    try:
-                        rel = Path(object_path)
-                    except Exception:
-                        rel = Path(str(object_path))
-
-                # Determine the target_path based on the mode
-                if out_dir and "target" in out_dir:
-                    # --objects mode: use obj/target/ path
-                    target_path = str(object_path)
-                else:
-                    # Regular mode: target is in build/obj/
-                    target_path = str(Path("build") / "obj" / rel.with_suffix(".o"))
-
-                # Determine if a .c or .cpp file exists in src/ for this unit (recursively)
-                src_base = rel.with_suffix("")
-                src_c_files = list(Path("src").rglob(src_base.name + ".c"))
-                src_cpp_files = list(Path("src").rglob(src_base.name + ".cpp"))
-                has_src = bool(src_c_files or src_cpp_files)
-
-                # Determine the category based on the name
-                categories = [name.split("/")[0]]
-                if "P2/splice/" in name:
-                    categories.append("splice")
-                elif "P2/ps2t" in name:
-                    categories.append("ps2t")
-
-                unit = {
-                    "name": name,
-                    "target_path": target_path,
-                    "metadata": {
-                        "progress_categories": categories,
-                    }
-                }
-
-                if has_src:
-                    if out_dir and "target" in out_dir:
-                        # --objects mode: replace 'target' with 'current'
-                        op = Path(object_path)
-                        parts = list(op.parts)
-                        for idx, part in enumerate(parts):
-                            if part == "target":
-                                parts[idx] = "current"
-                                break
-                        base_path = str(Path(*parts))
-                    else:
-                        # Regular mode: base is in build/src/
-                        base_path = str(Path("build") / "src" / rel.with_suffix(".o"))
-                    unit["base_path"] = base_path
-                objdiff_units.append(unit)
-
-    ninja = ninja_syntax.Writer(open(str(ROOT / "build.ninja"), "w", encoding="utf-8"), width=9999)
-
-    #MARK: Rules
-    cross = "mips-linux-gnu-"
-    binutils_prefix = TOOLS_DIR / "binutils"
-    
-    # Use custom binutils if available, otherwise use system binutils
-    if (binutils_prefix / f"{cross}as").exists() or (binutils_prefix / f"{cross}as.exe").exists():
-        cross_path = f"{binutils_prefix}/{cross}"
-    else:
-        cross_path = cross
-
-    ld_args = "-EL -T config/undefined_syms_auto.txt -T config/undefined_funcs_auto.txt -Map $mapfile -T $in -o $out"
-
-    ninja.rule(
-        "as",
-        description="as $in",
-        command=f"{cross_path}as -no-pad-sections -EL -march=5900 -mabi=eabi -Iinclude -o $out $in",
-    )
-
-    ninja.rule(
-        "cc",
-        description="cc $in",
-        command=f"{COMPILE_CMD} $cflags -o $out",
-    )
-
-    ninja.rule(
-        "ld",
-        description="link $out",
-        command=f"{cross_path}ld {ld_args}",
-    )
-
-    ninja.rule(
-        "sha1sum",
-        description="sha1sum $in",
-        command="sha1sum -c $in && touch $out",
-    )
-
-    ninja.rule(
-        "elf",
-        description="elf $out",
-        command=f"{cross_path}objcopy $in $out -O binary",
-    )
-
-    #MARK: Build
-    # Build all the objects
-    for entry in linker_entries:
-        seg = entry.segment
-
-        if seg.type[0] == ".":
-            continue
-
-        if entry.object_path is None:
-            continue
-
-        if isinstance(seg, splat.segtypes.common.asm.CommonSegAsm) or isinstance(
-            seg, splat.segtypes.common.data.CommonSegData
-        ):
-            if dual_objects:
-                build(entry.object_path, entry.src_paths, "as", out_dir="obj/target", collect_objdiff=True, orig_entry=entry)
-                build(entry.object_path, entry.src_paths, "as", out_dir="obj/current", extra_flags="-DSKIP_ASM")
-            else:
-                build(entry.object_path, entry.src_paths, "as", collect_objdiff=True, orig_entry=entry)
-        elif isinstance(seg, splat.segtypes.common.c.CommonSegC):
-            if dual_objects:
-                build(entry.object_path, entry.src_paths, "cc", out_dir="obj/target", collect_objdiff=True, orig_entry=entry)
-                build(entry.object_path, entry.src_paths, "cc", out_dir="obj/current", extra_flags="-DSKIP_ASM")
-            else:
-                build(entry.object_path, entry.src_paths, "cc", collect_objdiff=True, orig_entry=entry)
-        elif isinstance(seg, splat.segtypes.common.databin.CommonSegDatabin):
-            if dual_objects:
-                build(entry.object_path, entry.src_paths, "as", out_dir="obj/target", collect_objdiff=True, orig_entry=entry)
-                build(entry.object_path, entry.src_paths, "as", out_dir="obj/current", extra_flags="-DSKIP_ASM")
-            else:
-                build(entry.object_path, entry.src_paths, "as", collect_objdiff=True, orig_entry=entry)
-        elif isinstance(seg, splat.segtypes.common.rodatabin.CommonSegRodatabin):
-            if dual_objects:
-                build(entry.object_path, entry.src_paths, "as", out_dir="obj/target", collect_objdiff=True, orig_entry=entry)
-                build(entry.object_path, entry.src_paths, "as", out_dir="obj/current", extra_flags="-DSKIP_ASM")
-            else:
-                build(entry.object_path, entry.src_paths, "as", collect_objdiff=True, orig_entry=entry)
-        elif isinstance(seg, splat.segtypes.common.textbin.CommonSegTextbin):
-            if dual_objects:
-                build(entry.object_path, entry.src_paths, "as", out_dir="obj/target", collect_objdiff=True, orig_entry=entry)
-                build(entry.object_path, entry.src_paths, "as", out_dir="obj/current", extra_flags="-DSKIP_ASM")
-            else:
-                build(entry.object_path, entry.src_paths, "as", collect_objdiff=True, orig_entry=entry)
-        elif isinstance(seg, splat.segtypes.common.bin.CommonSegBin):
-            if dual_objects:
-                build(entry.object_path, entry.src_paths, "as", out_dir="obj/target", collect_objdiff=True, orig_entry=entry)
-                build(entry.object_path, entry.src_paths, "as", out_dir="obj/current", extra_flags="-DSKIP_ASM")
-            else:
-                build(entry.object_path, entry.src_paths, "as", collect_objdiff=True, orig_entry=entry)
-        else:
-            print(f"ERROR: Unsupported build segment type {seg.type}")
-            sys.exit(1)
-
-    # Scan src/ folder for manually created C/C++ files that splat doesn't know about
-    if Path("src").exists():
-        for src_file in Path("src").rglob("*.cpp"):
-            # Build this C++ file
-            build([src_file], [src_file], "cc", collect_objdiff=True, orig_entry=None)
-        
-        for src_file in Path("src").rglob("*.c"):
-            # Build this C file
-            build([src_file], [src_file], "cc", collect_objdiff=True, orig_entry=None)
-
-    if objects_only:
-        # Write objdiff.json if dual_objects (i.e. --objects)
-        if dual_objects:
-            objdiff = {
-                "$schema": "https://raw.githubusercontent.com/encounter/objdiff/main/config.schema.json",
-                "custom_make": "ninja",
-                "custom_args": [],
-                "build_target": False,
-                "build_base": True,
-                "watch_patterns": [
-                    "src/**/*.c",
-                    "src/**/*.cp",
-                    "src/**/*.cpp",
-                    "src/**/*.cxx",
-                    "src/**/*.h",
-                    "src/**/*.hp",
-                    "src/**/*.hpp",
-                    "src/**/*.hxx",
-                    "src/**/*.s",
-                    "src/**/*.S",
-                    "src/**/*.asm",
-                    "src/**/*.inc",
-                    "src/**/*.py",
-                    "src/**/*.yml",
-                    "src/**/*.txt",
-                    "src/**/*.json"
-                ],
-                "units": objdiff_units,
-                "progress_categories": [ {"id": id, "name": name} for id, name in CATEGORY_MAP.items() ],
-            }
-            with open("objdiff.json", "w", encoding="utf-8") as f:
-                json.dump(objdiff, f, indent=2)
-        return
-
-    # Write objdiff.json for regular build mode
-    if objdiff_units:
-        objdiff = {
-            "$schema": "https://raw.githubusercontent.com/encounter/objdiff/main/config.schema.json",
-            "custom_make": "ninja",
-            "custom_args": [],
-            "build_target": False,
-            "build_base": True,
-            "watch_patterns": [
-                "src/**/*.c",
-                "src/**/*.cp",
-                "src/**/*.cpp",
-                "src/**/*.cxx",
-                "src/**/*.h",
-                "src/**/*.hp",
-                "src/**/*.hpp",
-                "src/**/*.hxx",
-                "src/**/*.s",
-                "src/**/*.S",
-                "src/**/*.asm",
-                "src/**/*.inc",
-                "src/**/*.py",
-                "src/**/*.yml",
-                "src/**/*.txt",
-                "src/**/*.json"
-            ],
-            "units": objdiff_units,
-            "progress_categories": [ {"id": id, "name": name} for id, name in CATEGORY_MAP.items() ],
-        }
-        with open("objdiff.json", "w", encoding="utf-8") as f:
-            json.dump(objdiff, f, indent=2)
-
-    ninja.build(
-        PRE_ELF_PATH,
-        "ld",
-        LD_PATH,
-        implicit=[str(obj) for obj in built_objects],
-        variables={"mapfile": MAP_PATH},
-    )
-
-    ninja.build(
-        ELF_PATH,
-        "elf",
-        PRE_ELF_PATH,
-    )
-
-    if not skip_checksum:
-        ninja.build(
-            ELF_PATH + ".ok",
-            "sha1sum",
-            "config/checksum.sha1",
-            implicit=[ELF_PATH],
-        )
-    else:
-        print("Skipping checksum step")
-
-#MARK: Short loop fix
-# Pattern to workaround unintended nops around loops
-COMMENT_PART = r"\/\* (.+) ([0-9A-Z]{2})([0-9A-Z]{2})([0-9A-Z]{2})([0-9A-Z]{2}) \*\/"
-INSTRUCTION_PART = r"(\b(bne|bnel|beq|beql|bnez|bnezl|beqzl|bgez|bgezl|bgtz|bgtzl|blez|blezl|bltz|bltzl|b)\b.*)"
-OPCODE_PATTERN = re.compile(f"{COMMENT_PART}  {INSTRUCTION_PART}")
-
-PROBLEMATIC_FUNCS = set(
-    [
-        "UpdateJtActive__FP2JTP3JOYf", # P2/jt
-        "AddMatrix4Matrix4__FP7MATRIX4N20", # P2/mat
-        "FInvertMatrix__FiPfT1", # P2/mat
-        "PwarpFromOid__F3OIDT0", # P2/xform
-        "RenderMsGlobset__FP2MSP2CMP2RO", # P2/ms
-        "ProjectBlipgTransform__FP5BLIPGfi", # P2/blip
-        "DrawTvBands__FP2TVR4GIFS", # P2/tv
-        "LoadShadersFromBrx__FP18CBinaryInputStream", # P2/shd
-        "FillShaders__Fi", # P2/shd
-        "FUN_001aea70", # P2/screen
-        "ApplyDzg__FP3DZGiPiPPP2SOff", # P2/dzg
-        "BounceRipgRips__FP4RIPG", # P2/rip
-        "UpdateStepPhys__FP4STEP", # P2/step
-        "PredictAsegEffect__FP4ASEGffP3ALOT3iP6VECTORP7MATRIX3T6T6", # P2/aseg
-        "ExplodeExplsExplso__FP5EXPLSP6EXPLSO", # P2/emitter
-        "UpdateShadow__FP6SHADOWf" # P2/shadow
-    ]
+from tools.project import (
+    Object,
+    ProgressCategory,
+    ProjectConfig,
+    calculate_progress,
+    generate_build,
+    is_windows,
 )
 
-def replace_instructions_with_opcodes(asm_folder: Path) -> None:
-    """
-    Replace branch instructions with raw opcodes for functions that trigger the short loop bug.
-    """
-    nm_folder = ROOT / asm_folder / "nonmatchings"
+# Game versions
+DEFAULT_VERSION = 0
+VERSIONS = [
+    "SLUS-21642-PROTO-070901",  # 0 - Sep 1, 2007 prototype
+]
 
-    for p in nm_folder.rglob("*.s"):
-        if p.stem not in PROBLEMATIC_FUNCS:
-            continue
-
-        with p.open("r") as file:
-            content = file.read()
-
-        if re.search(OPCODE_PATTERN, content):
-            # Reference found
-            # Embed the opcode, we have to swap byte order for correct endianness
-            content = re.sub(
-                OPCODE_PATTERN,
-                r"/* \1 \2\3\4\5 */  .word      0x\5\4\3\2 /* \6 */",
-                content,
-            )
-
-            # Write the updated content back to the file
-            with p.open("w") as file:
-                file.write(content)
-
-#MARK: Main
-def main():
-    """
-    Main function, parses arguments and runs the configuration.
-    """
-    parser = argparse.ArgumentParser(description="Configure the project")
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "mode",
+    choices=["configure", "progress"],
+    default="configure",
+    help="script mode (default: configure)",
+    nargs="?",
+)
+parser.add_argument(
+    "-v",
+    "--version",
+    choices=VERSIONS,
+    type=str.upper,
+    default=VERSIONS[DEFAULT_VERSION],
+    help="version to build",
+)
+parser.add_argument(
+    "--build-dir",
+    metavar="DIR",
+    type=Path,
+    default=Path("build"),
+    help="base build directory (default: build)",
+)
+parser.add_argument(
+    "--binutils",
+    metavar="BINARY",
+    type=Path,
+    help="path to binutils (optional)",
+)
+parser.add_argument(
+    "--compilers",
+    metavar="DIR",
+    type=Path,
+    help="path to compilers (optional)",
+)
+parser.add_argument(
+    "--map",
+    action="store_true",
+    help="generate map file(s)",
+)
+parser.add_argument(
+    "--debug",
+    action="store_true",
+    help="build with debug info (non-matching)",
+)
+if not is_windows():
     parser.add_argument(
-        "-c",
-        "--clean",
-        help="Clean artifacts and build",
-        action="store_true",
+        "--wrapper",
+        metavar="BINARY",
+        type=Path,
+        help="path to wibo or wine (optional)",
     )
-    parser.add_argument(
-        "-C",
-        "--clean-only",
-        help="Only clean artifacts",
-        action="store_true",
-    )
-    parser.add_argument(
-        "-s",
-        "--skip-checksum",
-        help="Skip the checksum step",
-        action="store_true",
-    )
-    parser.add_argument(
-        "--objects",
-        help="Build objects to obj/target and obj/current (with -DSKIP_ASM), skip linking and checksum",
-        action="store_true",
-    )
-    parser.add_argument(
-        "-noloop",
-        "--no-short-loop-workaround",
-        help="Do not replace branch instructions with raw opcodes for functions that trigger the short loop bug",
-        action="store_true",
-    )
-    args = parser.parse_args()
+parser.add_argument(
+    "--objdiff",
+    metavar="BINARY | DIR",
+    type=Path,
+    help="path to objdiff-cli binary or source (optional)",
+)
+parser.add_argument(
+    "--ninja",
+    metavar="BINARY",
+    type=Path,
+    help="path to ninja binary (optional)",
+)
+parser.add_argument(
+    "--verbose",
+    action="store_true",
+    help="print verbose output",
+)
+parser.add_argument(
+    "--non-matching",
+    dest="non_matching",
+    action="store_true",
+    help="builds equivalent (but non-matching) or modded objects",
+)
+parser.add_argument(
+    "--no-progress",
+    dest="progress",
+    action="store_false",
+    help="disable progress calculation",
+)
+parser.add_argument(
+    "--no-short-loop-workaround",
+    dest="short_loop_workaround",
+    action="store_false",
+    help="disable short loop workaround for MWCCPS2",
+)
+parser.add_argument(
+    "-c",
+    "--clean",
+    action="store_true",
+    help="delete the version build directory and generated files before configuring",
+)
+parser.add_argument(
+    "-C",
+    "--clean-only",
+    dest="clean_only",
+    action="store_true",
+    help="delete the version build directory and generated files, then exit",
+)
+args = parser.parse_args()
 
-    do_clean = (args.clean or args.clean_only) or False
-    do_skip_checksum = args.skip_checksum or False
-    do_objects = args.objects or False
+config = ProjectConfig()
+config.version = str(args.version)
+version_num = VERSIONS.index(config.version)
 
-    if do_clean:
-        clean()
-        if args.clean_only:
-            return
 
-    split.main([YAML_FILE], modes="all", verbose=False)
+def do_clean(version: str, build_dir: Path) -> None:
+    """Delete the version build directory and generated root files."""
+    version_build_dir = build_dir / version
+    shutil.rmtree(version_build_dir, ignore_errors=True)
+    for filename in [".splache", ".ninja_deps", ".ninja_log", "build.ninja", "objdiff.json"]:
+        try:
+            os.remove(filename)
+        except FileNotFoundError:
+            pass
 
-    linker_entries = split.linker_writer.entries
 
-    if do_objects:
-        build_stuff(linker_entries, skip_checksum=True, objects_only=True, dual_objects=True)
-    else:
-        build_stuff(linker_entries, do_skip_checksum)
+if args.clean or args.clean_only:
+    do_clean(config.version, args.build_dir)
+    if args.clean_only:
+        sys.exit(0)
 
-    write_permuter_settings()
+# Strip clean flags from sys.argv so they don't get baked into ninja rules
+# (project.py reads sys.argv[1:] directly when writing the configure_args variable)
+for _flag in ["-c", "--clean", "-C", "--clean-only"]:
+    while _flag in sys.argv:
+        sys.argv.remove(_flag)
 
-    if not args.no_short_loop_workaround:
-        replace_instructions_with_opcodes(split.config["options"]["asm_path"])
+# Apply arguments
+config.build_dir = args.build_dir
+config.objdiff_path = args.objdiff
+config.binutils_path = args.binutils
+config.compilers_path = args.compilers
+config.generate_map = args.map
+config.non_matching = args.non_matching
+config.ninja_path = args.ninja
+config.progress = args.progress
+config.short_loop_workaround = args.short_loop_workaround
+if not is_windows():
+    config.wrapper = args.wrapper
 
-if __name__ == "__main__":
-    main()
+# # Don't build asm unless we're --non-matching
+# if not config.non_matching:
+#     config.asm_dir = None
+# else:
+#     # Set asm_dir to version-specific path
+#     config.asm_dir = config.out_path() / "asm"
+
+# Set asm_dir to version-specific path
+config.asm_dir = config.out_path() / "asm"
+
+# Tool versions
+config.binutils_tag = "2.45"
+config.compilers_tag = "20250812"
+config.mwccps2_tag = "3.0.1b198-051011"
+config.objdiff_tag = "v3.5.1"
+config.wibo_tag = "1.0.0-beta.5"
+
+# Project
+config.config_path = Path("config") / config.version / "sonic.yaml"
+config.check_sha_path = Path("config") / config.version / "checksum.sha1"
+config.symbol_addrs_path = Path("config") / config.version / "symbol_addrs.txt"
+config.ldflags = [
+    "-map",  # Generate map file
+]
+if args.map:
+    pass  # -map is already in ldflags
+
+# Use for any additional files that should cause a re-configure when modified
+config.reconfig_deps = []
+
+# Base flags for MWCCPS2 (C++ game code)
+cflags_base = [
+    "-lang=c++",
+    "-O3",
+    "-i include",
+    f"-DBUILD_VERSION={version_num}",
+]
+
+# Flags for C SDK libraries (no -lang=c++ override)
+cflags_c = [
+    "-lang=c",
+    "-O3",
+    "-i include",
+    f"-DBUILD_VERSION={version_num}",
+]
+
+# Debug flags
+if args.debug:
+    cflags_base.extend(["-sym on", "-DDEBUG=1"])
+    cflags_c.extend(["-sym on", "-DDEBUG=1"])
+else:
+    cflags_base.append("-DNDEBUG=1")
+    cflags_c.append("-DNDEBUG=1")
+
+config.asflags = [
+    "-no-pad-sections",
+    "-EL",
+    "-march=5900",
+    "-mabi=eabi",
+    "-Iinclude",
+]
+
+# Compiler version for MWCCPS2
+config.linker_version = f"PS2/mwcps2-{config.mwccps2_tag}"
+
+Matching = True                   # Object matches and should be linked
+NonMatching = False               # Object does not match and should not be linked
+Equivalent = config.non_matching  # Object should be linked when configured with --non-matching
+
+config.warn_missing_config = True
+config.warn_missing_source = False
+config.scratch_preset_id = 213
+
+
+def GameSrc(subdir: str, objects: List[Object]) -> Dict[str, Any]:
+    """Game source code under pgm/src/<subdir>/"""
+    return {
+        "lib": subdir,
+        "mw_version": config.linker_version,
+        "cflags": cflags_base,
+        "progress_category": "game",
+        "objects": objects,
+    }
+
+
+def OOLib(subdir: str, objects: List[Object]) -> Dict[str, Any]:
+    """OO framework library under pgm/lib/OO/<subdir>/"""
+    return {
+        "lib": f"OO_{subdir}",
+        "mw_version": config.linker_version,
+        "cflags": cflags_base,
+        "progress_category": "game",
+        "objects": objects,
+    }
+
+
+def MWSupport(objects: List[Object]) -> Dict[str, Any]:
+    """Metrowerks PS2 runtime support"""
+    return {
+        "lib": "PS2_Support",
+        "mw_version": config.linker_version,
+        "cflags": cflags_c,
+        "progress_category": "sdk",
+        "objects": objects,
+    }
+
+
+def SCELib(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
+    """Sony PS2 SDK library"""
+    return {
+        "lib": lib_name,
+        "mw_version": config.linker_version,
+        "cflags": cflags_c,
+        "progress_category": "sdk",
+        "objects": objects,
+    }
+
+
+def SegaLib(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
+    """Sega middleware library (nn / nvs / px)"""
+    return {
+        "lib": lib_name,
+        "mw_version": config.linker_version,
+        "cflags": cflags_c,
+        "progress_category": "sdk",
+        "objects": objects,
+    }
+
+
+def CRILib(objects: List[Object]) -> Dict[str, Any]:
+    """CRI middleware library"""
+    return {
+        "lib": "CRI",
+        "mw_version": config.linker_version,
+        "cflags": cflags_c,
+        "progress_category": "sdk",
+        "objects": objects,
+    }
+
+
+config.libs = [
+    SCELib("PS2_Runtime", [
+        Object(NonMatching, "usr/local/sce/ee/lib/crt0.s"),
+    ]),
+    MWSupport([
+        Object(NonMatching, "usr/local/metrowerks/PS2_Support/CPP_Support/__ptmf.c"),
+        Object(NonMatching, "usr/local/metrowerks/PS2_Support/CPP_Support/arraycondes.c"),
+        Object(NonMatching, "usr/local/metrowerks/PS2_Support/CPP_Support/StaticInitializers.c"),
+        Object(NonMatching, "usr/local/metrowerks/PS2_Support/ExceptionHandler/TargetSpecific/ExceptionHandlerTS.c"),
+        Object(NonMatching, "usr/local/metrowerks/PS2_Support/gcc_wrapper.c"),
+        Object(NonMatching, "usr/local/metrowerks/PS2_Support/runtime/CPP_Support/mwUtils_PS2.c"),
+    ]),
+    GameSrc("root", [
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Main.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Main2.cpp"),
+    ]),
+    GameSrc("2D", [
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Advertise/Shop.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/CtrlIcon/CtrlIcon.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/CtrlIcon/CtrlIconSurvivalBall.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/CtrlIcon/CtrlIconSurvivalBattle.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/CtrlIcon/CtrlIconSurvivalRelay.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/MsgWnd2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/BonusPoint2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/CountDown2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/EnergyFlow2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/GetItem2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/GoalAnnounce2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/GoaledRank2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/GoalLapTime2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/GoalText2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/Keyboard2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/Link2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/Mission/Mission2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/Mission/MissionBreakMsg2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/Mission/MissionMap2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/Mission/MissionMssage2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/Mission/MissionParts2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/Mission/MissionResult2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/Mission/MissionSet.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/Render2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/ResultRanking.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/Score2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/ScoreAtentionAttack2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/ScoreCom2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/ScoreHint2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/ScoreInfo2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/ScoreMap2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/ScoreMeter2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/ScoreParts2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/ScoreRecord2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/ScoreSet.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/ScoreTimer2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/StageName2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/StartCountDownText2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/StartText2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/Story/Story2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/SurvivalBall/BallHolder2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/SurvivalBall/GetPoint2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/SurvivalBall/SurvivalBallMap2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/SurvivalBall/SurvivalBallParts2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/SurvivalBattle/SurvivalBattleCom2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/SurvivalBattle/SurvivalBattleMap2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/SurvivalBattle/SurvivalBattleMsg2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/SurvivalBattle/SurvivalBattleParts2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/SurvivalMessage/SurvivalMessage2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/SurvivalMessage/SurvivalMessageGoalText2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/SurvivalMessage/SurvivalMessageSet.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/SurvivalRelay/SurvivalRelayAtentionAttack2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/SurvivalRelay/SurvivalRelayHint2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/SurvivalRelay/SurvivalRelayInfo2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/SurvivalRelay/SurvivalRelayMap2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/SurvivalRelay/SurvivalRelayMeter2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/SurvivalRelay/SurvivalRelayParts2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/SurvivalRelay/SurvivalRelayRecord2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/Temporary2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/ThroughLap2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/TrickResultRank2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/Tutorial/Tutorial2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/WinLose2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Score/WorldGPPausePoint2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Screen2D.cpp"),
+    ]),
+    GameSrc("Advertise", [
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Advertise/AdvertiseMgr.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Advertise/Extra/ExtraMenu.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Advertise/Option/Option.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Advertise/Select/FreeRaceSelect.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Advertise/Select/ModeSelect.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Advertise/Select/NormalRaceSelect.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Advertise/Select/PlayerEntry.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Advertise/Select/Story/StoryMapSelect.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Advertise/Select/Story/StorySelect.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Advertise/Select/TimeAttackSelect.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Advertise/Title/Title.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Advertise/Title/TitleMenu.cpp"),
+    ]),
+    GameSrc("Camera", [
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Camera/CamIvs.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Camera/DomeCamCtrl.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Camera/GCtrlCamCtrl.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Camera/MotionCamCtrl.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Camera/PathCtrlCamera.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Camera/SetCamColli.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Camera/SrCamCtrlMgr.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Camera/TargetCamCtrl.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Camera/VectorCamCtrl.cpp"),
+    ]),
+    GameSrc("Data", [
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Data/Pack.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Data/Path/PathCom.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Data/Path/PathCourse.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Data/Path/PathCourseSt15.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Data/Path/PathPoint.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Data/Path.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Data/PathData.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Data/Portal.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Data/RaceLight.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Data/Sound/CharaVoice.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Data/Sound/Cri.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Data/Sound/GravityBgm.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Data/Sound/PlaySe_2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Data/Sound/SetSe_2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Data/Sound/SetSe_3D.cpp"),
+    ]),
+    GameSrc("Debug", [
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Debug/Debug.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Debug/DebugDetail.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Debug/DebugTask.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Debug/PathRangeEditor.cpp"),
+    ]),
+    GameSrc("Effect", [
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/Attack/EggmanConfetti.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/Attack/ElectricDamage.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/Attack/NightsAtkEffect.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/BackRibbon/BackRibbon.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/BaseEffect.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/CurveAir/CurveAir.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/CurveAir/RoboCurv.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/Dash/Dash.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/FollowLine/DisElectric.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/FollowLine/FollowLine.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/FollowLine/VaporTrail.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/GearChenge/GearChenge.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/GearChenge/GearTypeChange.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/GravityFin/GravityFin.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/GravityWaveMotionBlurPlayer.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/IonMist/IonMist.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/LockOn/LockOnAppoint3D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/LockOn/LockOnFixed3D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/LockOn/LockOnTarget2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/MiniWave/MiniWave.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/MiniWave/MiniWaveGmkAutoRunObj.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/ObjectEffect.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/Particle/ParticleAbsorb.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/Particle/ParticleBase.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/Particle/ParticleData.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/Particle/ParticleLayer.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/Particle/ParticleRadiate.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/Particle/ParticleSet.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/Particle/ParticleSpiralAbsorb.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/Particle/ParticleSpiralRadiate.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/Particle/ParticleTexture.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/Post/BurnOut/BurnOutCore.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/Post/BurnOut/PS2_BurnOut.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/Post/Fade.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/Post/GravityWave/BaseGravityWave.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/Post/GravityWave/BossGravityWave.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/Post/GravityWave/PS2_GravityWave.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/Post/Nega.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/Post/PS2_Blur.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/Post/PS2_ColorDrops.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/Post/PS2_RainDrops.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/Post/Shimmer/BaseShimmer.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/Post/Shimmer/PS2_Shimmer.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/Stage/St15BossCrush2Effect.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/Stage/St15BossCrushEffect.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/Stage/St15DamageExplode.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/Stage/St15MeteoriteFallEffect.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/SunLenz.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/TrickX/FlashLine.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/TrickX/RingEffect.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Effect/Weather.cpp"),
+    ]),
+    GameSrc("Game", [
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Game/BaseRace.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Game/Game.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Game/MissionRace.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Game/Pause/BaseRacePause.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Game/Pause/Goal_AllRacePause.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Game/Pause/Goal_SurvivalRacePause.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Game/Pause/RacePauseMission.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Game/Pause/RacePauseTimeAttack.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Game/Pause/RacePauseTutorial.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Game/Pause/RacePauseWorldGP.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Game/RaceRetry.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Game/Story/StoryMgr.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Game/StoryRace.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Game/SurvivalBallRace.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Game/SurvivalBattleRace.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Game/SurvivalRelayRace.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Game/TimeAttack/TimeAtkMgr.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Game/TimeAttack.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Game/TutorialRace.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Game/WorldGp/WorldGpMgr.cpp"),
+    ]),
+    GameSrc("Havok", [
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Havok/Havok.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Havok/HavokBase.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Havok/HavokHeap.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Havok/WorldManager.cpp"),
+    ]),
+    GameSrc("Misc", [
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Misc/MathEtc.cpp"),
+    ]),
+    GameSrc("Object", [
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Clipper.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Collision/BaseThroughCollision.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Collision/Collecter/CollectorInfo.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Collision/Collecter/PhantomCollectorInfo.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Collision/Collecter/RigidBodyCollectorInfo.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Collision/CollisionFilter.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Collision/CollisionManager.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Collision/GroundCollision.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Collision/Through/GravityThroughCollision.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Collision/Through/LightThroughCollision.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Collision/Through/UnionThroughCollision.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Collision/ThroughCollision.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/BaseGimmick.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/BaseGravityLinkObject.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/AdjustGravityAction.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/AutoGctrlThrough.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/Catapult.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/DashPanel.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/DashRing.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/GoalLine.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/GravityRing.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/HideKicker.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/ItemBomb.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/ItemBox.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/MagBarrier.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/PathCar.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/PlayAroundSe.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/PlayLoopSe.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/PT_Door.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/PT_Door2.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/PT_Only.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/PutArrowObj.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/Putcar.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/PutFixedBurnObj.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/PutFixedMatObj.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/PutFixedMotMatObj.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/PutFixedMotObj.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/PutFixedObject.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/PutMatMotGObj.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/PutMotionObj.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/PutParallaxObj.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/RailWay.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/Ring.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/SpeedDown.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/Spring.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/StartGate.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/Turbulence.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/Type.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/WallGimmick.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/WallObj.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/BreakControl.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/ContactControl.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/DebriParts.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/DebriPartsBase.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/DebriPartsRigid.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/DebrisControl.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/Gravity/GravityActionControl.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/Gravity/GravitySt15FloorControl.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/Gravity/GravitySurvivalBallControl.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/Gravity/GrindLinkControl.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/Pendulum.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/PendulumControl.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/Se3DControl.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickAutoRunObj.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickObj.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickPath.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickRigidListener.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickUnaryAction.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/GravityGimmickManager/GravityGimmickManager.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/MapPartsObject.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Mission/MissionFixedLink.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Mission/MissionGLinkColossus.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Mission/MissionMark.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Mission/MissionPathRobo.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Mission/MissionPathTarget.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Mission/MissionTarget.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Mission/MissionTimeGate.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/PathGravityObj.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/PutGravityObj.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/PutGravityObj2.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/PutGravityObj3.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/RigidBodyGimmickObj.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage01/BulletinBoard.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage01/Chair.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage01/ChairB.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage01/GarbageBox.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage01/GCtrTrain/GCtrTrain.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage01/GCtrTrain/GCtrTrainManager.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage01/GLinkTrain/GLinkTrainManager.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage01/GLinkTrain/GLinkTrainObject.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage01/GLinkTrain/GLinkTrainTask.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage01/GLinkTrain/GLinkTrainThroughCollision.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage01/PathTrain/PathTrain.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage01/PathTrain/PathTrainManager.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage01/ProductionRobo/ProductionRobo.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage01/ProductionRobo/ProductionRoboManager.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage01/St01Cone.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage01/Taxi.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage02/St02Bee.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage02/St02Butterfly.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage02/St02GLinkKuki.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage02/St02Ivy.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage02/St02PathBee.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage02/St02Plant.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage02/St02Plant2.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage02/St02RunBee.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage02/St02Sida.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage03/St03Cogwheel.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage03/St03ExtraLamp.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage03/St03GLinkContainer.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage03/St03Macross.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage03/St03PathRobo.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage03/St03PowerBreak.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage03/St03Press.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage03/St03PutRobo.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage03/St03SecurityGate.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage04/St04AutoRunCanoe.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage04/St04Fountain.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage04/St04GLinkWaterSphere.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage04/St04PathCanoe.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage04/St04PutCanoe.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage04/St04SmallWaterSphere.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage04/St04StraightFountain.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage05/St05BreakRailing.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage05/St05Detention.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage05/St05Domino.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage05/St05Fire.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage05/St05RotFall/St05RotFallManager.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage05/St05RotFall/St05RotFallObject.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage05/St05RotFall/St05RotFallTask.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage05/St05RotFallGLink/St05RotFallGLinkManager.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage05/St05RotFallGLink/St05RotFallGLinkObject.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage05/St05RotFallGLink/St05RotFallGLinkTask.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage05/St05RotGround.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage05/St05Spain.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage06/St06BlockadeObj.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage06/St06Elevator.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage06/St06GLinkElevator.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage06/St06Laser.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage06/St06SurveillanceCamera.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage07/St07Gate.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage07/St07MapPartsFLoorBig.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage07/St07MapPartsFloorChange.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage07/St07MapPartsFloorGLink.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage07/St07MapPartsFloorGravity.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage07/St07MapPartsFloorKicker.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage07/St07MapPartsFLoorSmall.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage07/St07MapPartsFloorSwitch.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage07/St07MapPartsGimmickWallBig.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage07/St07MapPartsGimmickWallObject.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage07/St07MapPartsGimmickWallSmall.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage07/St07MapPartsGuardRailCurve.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage07/St07MapPartsGuardRailSmall.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage07/St07MapPartsJointBig.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage07/St07MapPartsJointCurve.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage07/St07MapPartsJointSharp.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage07/St07MapPartsJointSmall.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage07/St07PowerBreak.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage07/St07Solar.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage07/St07WallThroughCollision.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage08/St08FZoneEnemy/St08FZoneEnemy.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage08/St08Road.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage08/St08RoadCar.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage08/St08RoadCarBase.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage08/St08RoadCarControl.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage08/St08RoadGlinkBus.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage08/St08RoadSignal.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage08/St08RoadTrailer/St08RoadContainer.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage08/St08RoadTrailer/St08RoadTrailer.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage08/St08UfoCatcher.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage10/St10FallSnowBall.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage10/St10GLinkSnowman.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage10/St10Lift.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage10/St10SnowBall.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage11/GlinkCylinder/St11GlinkCylinder.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage11/GlinkCylinder/St11GlinkCylinderManager.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage11/St11Crane.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage11/St11EnergyCylinder.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage11/St11Fade.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage11/St11Fan.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage11/St11FogExplosion.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage11/St11FogNearManager.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage11/St11FSecurityGate.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage11/St11LineObj.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage11/st11SecurityRobo.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage11/st11SecurityRoboManager.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage12/St12GLinkBridge.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage12/St12MotionObj.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage12/St12PathCanoeMotion.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage12/St12PutCanoeMotion.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage13/St13Bridge.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage13/St13Bunki.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage13/St13Catapult.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage13/St13Colossus.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage13/St13Gate.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage13/St13GLinkColossus.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage13/St13Hikari.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage13/St13Pillar.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage13/St13PT_Obj.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage13/St13PT_Wall.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage13/St13SignBoard.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage13/St13SignBoard_B.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage14/St14GLinkBigFan.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage14/St14GPFan.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage14/St14Laser.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage14/St14ObjCrane.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage14/St14SteelFrame.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage15/St15BlackHole.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage15/St15BreakFloor.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage15/St15CoreBase.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage15/St15EnergyBullet.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage15/St15FloatingMeteorite.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage15/St15FloatingMeteoriteTirgger.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage15/St15FusionMachine.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage15/St15GLinkFloorBoard.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage15/St15MeteoriteL.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage15/St15MeteoriteS.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage15/St15SafeTrampoline.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage16/St16AutoRunHeli.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage16/St16BreakSignBoard.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage16/St16GLinkSignBoard.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage16/St16Helicopter/St16Helicopter.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/SurvivalBall/SurvivalBall.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/SurvivalBall/SurvivalBallData.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/SurvivalBall/SurvivalBallEffect.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/SurvivalBall/SurvivalPointRing.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/SurvivalBall/SurvivalPole.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/SurvivalBall/SurvivalPutObj.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/SurvivalBall/SurvivalStart.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/SurvivalBattle/BaseSvlBtlObject.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/SurvivalBattle/Bomb/SvlBtlBombObject.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/SurvivalBattle/Bomb/SvlBtlBombTask.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/SurvivalBattle/Missile/SvlBtlMissileObject.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/SurvivalBattle/Missile/SvlBtlMissileTask.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/SurvivalBattle/SvlBtlBarrier.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/SurvivalBattle/SvlBtlBlock.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/SurvivalBattle/SvlBtlExplosion.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/SurvivalBattle/SvlBtlMapPartsFloorGravity.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/SurvivalBattle/SvlBtlPaul.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/SurvivalRelay/SurvivalWalkRunLine.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/SurvivalRelay/SurvivalWalkRunObj.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/LerpParam.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionAttackDamage.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionAutoWallRun.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionBoost.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionCommon.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionDamage00.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionDamage01.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionDemo.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionFalseStart.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionGearAttack00.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionGearBrake.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionGearDirRegulateRun.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionGearFlight.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionGearFly.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionGearGCtrlFlight.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionGearGCtrlSlide.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionGearGCtrlTrick.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionGearGDive.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionGearGDiveAuto.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionGearInertia.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionGearJump.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionGearPath.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionGearPower.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionGearRail.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionGearRun.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionGearTranslationMovePath.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionGearTrick.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionReStart.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionWalkBack.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionWalkBrake.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionWalkFlight.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionWalkRun.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionWalkSpring.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionWalkWait.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionWheelDrift.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Character/CharaAmy.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Character/CharaBilly.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Character/CharaBlaze.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Character/CharaCream.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Character/Character.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Character/CharaEggman.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Character/CharaJet.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Character/CharaKnuckles.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Character/CharaNights.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Character/CharaNodeBase.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Character/CharaRoboBase.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Character/CharaRouge.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Character/CharaSamba.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Character/CharaScrGp.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Character/CharaScrHd.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Character/CharaShadow.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Character/CharaSilver.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Character/CharaSonic.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Character/CharaStorm.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Character/CharaSuperSonic.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Character/CharaTails.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Character/CharaWave.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Character/PS2_ShadowVolume.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/CommonMotion.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/ControlMatrix.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Data/CharaData.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Data/GameData.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Data/GearData.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Gear/Gear.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Gear/GearBaseParts.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Gear/GearBasePrototype.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Gear/GearBurnLight.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Gear/GearChildren.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Gear/GearCtrl.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Gear/GearPtnAirride.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Gear/GearPtnBike.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Gear/GearPtnBoard.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Gear/GearPtnEffectPart.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Gear/GearPtnEmpty.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Gear/GearPtnGrind.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Gear/GearPtnModelPart.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Gear/GearPtnSkate.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Gear/GearPtnSurfing.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Gear/GearPtnWheel.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Ghost.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Gravity.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/GravityAction/BaseGravityAction.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/GravityAction/GravityActionManager.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/GravityAction/GravityControl.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/GravityAction/GravityDive.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/GravityAction/GravityDivePathRange.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Key/ComAI.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Key/ComKey.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Key/ComKeyAction.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Key/ComSurvivalBallKey.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Key/ComSurvivalBattleKey.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Key/NullKey.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Key/PlayerKey.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Key/ReplayKey.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Key/UserKey.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Lap.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/LapSt15.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/LimitTime.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Motion.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Performance.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Player.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/PlayerCastPointCollector.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/PlayerDebug.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/PlayerGhost.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/PlayerMotion.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/PlayerPhysic.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/PlayerStartPointCollector.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Postural.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Reaction/reactionBadRoad.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Reaction/reactionChangeGravity.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Reaction/reactionChangeSpeed.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Reaction/reactionCommon.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Reaction/reactionDead.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Reaction/reactionPathMove.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Reaction/reactionSlowDown.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Reaction/reactionStream.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Reaction.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/RoboMotion.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/SlipStream.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Surface.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/SurvivalRelayPlayer.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Trick/BaseTrickAction.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Trick/FlipTrickAction.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Trick/FreeTrickAction.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Trick/PartsTrickAction.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Trick/PipeTrickAction.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Trick/SpinTrickAction.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Trick/TrickManager.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Trick/TrickParam.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Trick/TurbTrickAction.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Trick/VerticalTrickAction.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Player/Trick/WallTrickAction.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/RigidBody.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/SlerpQuat.cpp"),
+    ]),
+    GameSrc("SaveLoad", [
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/SaveLoad/SaveData.cpp"),
+    ]),
+    GameSrc("Script", [
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Script/Script.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Script/Script2D.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Script/ScriptBlur.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Script/ScriptCamera.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Script/ScriptEffect.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Script/ScriptFade.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Script/ScriptFrameTex.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Script/ScriptFrameTexCamera.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Script/ScriptFrameTexDraw.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Script/ScriptFunction.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Script/ScriptGravityWave.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Script/ScriptHeap.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Script/ScriptLight.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Script/ScriptMemory.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Script/ScriptModel.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Script/ScriptModelManager.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Script/ScriptMotion.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Script/ScriptParticle.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Script/ScriptShadow.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Script/ScriptSound.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Script/ScriptUnsolved.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Script/ScriptWaitString.cpp"),
+    ]),
+    GameSrc("Stage", [
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Stage/BaseSky.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Stage/BaseStage.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Stage/DivStage.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Stage/MapBurnLight.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Stage/Sky09.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Stage/Stage00.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Stage/Stage03.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Stage/Stage07.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Stage/Stage09.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Stage/Stage11.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Stage/Stage15.cpp"),
+    ]),
+    GameSrc("System", [
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/System/BaseWakeup.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/System/IO/SR2_Base_MemoryCard.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/System/IO/SR2_MemoryCardFile.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/System/IO/SR2_PS2_MemoryCard.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/System/Movie.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/System/NewDelete.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/System/PressStart.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/System/PS2_Wakeup.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/System/SrCamCtrl.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/System/SrFontReadTask.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/System/SrFontSystem.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/System/SrPadSetting.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/System/SrSystem.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/System/ZNone.cpp"),
+    ]),
+    GameSrc("Task", [
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Task/TaskManager.cpp"),
+    ]),
+    OOLib("CRI", [
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/CRI/CriMovie.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/CRI/OOCri.cpp"),
+    ]),
+    OOLib("PS2", [
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/PS2/IO/PS2MemoryCard.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/PS2/PS2CamCtrl.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/PS2/PS2Heap.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/PS2/PS2Iop.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/PS2/PS2Misc.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/PS2/PS2Peripheral.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/PS2/PS2Semaphore.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/PS2/PS2System.cpp"),
+    ]),
+    OOLib("PS2_CRI", [
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/PS2_CRI/PS2Cri.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/PS2_CRI/PS2CriFileMgr.cpp"),
+    ]),
+    OOLib("PS2_nn", [
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/PS2_nn/Flash/PS2NnFlash.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/PS2_nn/PS2NnCamera.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/PS2_nn/PS2NnCameraMgr.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/PS2_nn/PS2NnCreateTexture.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/PS2_nn/PS2NnCriMovie.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/PS2_nn/PS2NnDraw2d.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/PS2_nn/PS2NnFontSystem.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/PS2_nn/PS2NnGraphics.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/PS2_nn/PS2NnLight.cpp"),
+    ]),
+    OOLib("core", [
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/core/Compression/OOCompInfo.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/core/Compression/OOCompression.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/core/Compression/OOLZSS.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/core/Flash/OOFlash.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/core/Flash/OOFlashMgr.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/core/Flash/OOFlashParse.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/core/IO/OOMemoryCard.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/core/OOCameraDebug.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/core/OOClock.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/core/OOCrcCtrl.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/core/OODebugMenu.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/core/OODraw2d.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/core/OOFileMgr.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/core/OOFontSystem.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/core/OOHeapFragment.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/core/OOLight.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/core/OOPeripheral.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/core/OOProfile.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/core/OORandom.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/core/OOSystem.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/core/OOTask.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/core/OOTaskManager.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/core/OOThread.cpp"),
+    ]),
+    OOLib("nn", [
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/nn/NnDraw3d.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/nn/NNUtil_PS2.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/lib/OO/nn/NNUtil_Union.cpp"),
+    ]),
+    SCELib("libcdvd", [
+        Object(NonMatching, "usr/local/sce/ee/lib/libcdvd/cdvd000.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libcdvd/cdvd005.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libcdvd/cdvd010.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libcdvd/cdvd015.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libcdvd/cdvd018.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libcdvd/cdvd036.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libcdvd/cdvd039.c"),
+    ]),
+    SCELib("libdma", [
+        Object(NonMatching, "usr/local/sce/ee/lib/libdma/libdma.c"),
+    ]),
+    SCELib("libgraph", [
+        Object(NonMatching, "usr/local/sce/ee/lib/libgraph/graph001.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libgraph/graph002.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libgraph/graph003.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libgraph/graph004.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libgraph/graph005.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libgraph/graph006.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libgraph/graph007.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libgraph/graph008.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libgraph/graph011.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libgraph/graph012.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libgraph/graph019.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libgraph/graph020.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libgraph/graph022.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libgraph/graph027.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libgraph/graph028.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libgraph/graph029.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libgraph/graph030.c"),
+    ]),
+    SCELib("libipu", [
+        Object(NonMatching, "usr/local/sce/ee/lib/libipu/ipuinit.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libipu/libipu.c"),
+    ]),
+    SCELib("libkernl", [
+        Object(NonMatching, "usr/local/sce/ee/lib/libkernl/alarm.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libkernl/cache.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libkernl/deci2.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libkernl/diei.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libkernl/eeloadfile.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libkernl/exit.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libkernl/filestub.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libkernl/glue.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libkernl/initsys.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libkernl/intr.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libkernl/iopheap.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libkernl/iopnotify.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libkernl/iopreset.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libkernl/klib.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libkernl/kprintf2.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libkernl/libosd.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libkernl/sifcmd.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libkernl/sifrpc.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libkernl/thread.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libkernl/timer.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libkernl/timeralarm.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libkernl/tlbfunc.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libkernl/tty.c"),
+    ]),
+    SCELib("libmc", [
+        Object(NonMatching, "usr/local/sce/ee/lib/libmc/libmc.c"),
+    ]),
+    SCELib("libmpeg", [
+        Object(NonMatching, "usr/local/sce/ee/lib/libmpeg/alalc.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libmpeg/csc.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libmpeg/defhandler.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libmpeg/error.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libmpeg/ext.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libmpeg/mpc.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libmpeg/mpeg.c"),
+        Object(NonMatching, "usr/local/sce/ee/lib/libmpeg/output.c"),
+    ]),
+    SCELib("libmrpc", [
+        Object(NonMatching, "usr/local/sce/ee/lib/libmrpc/msifrpc.c"),
+    ]),
+    SCELib("libmtap", [
+        Object(NonMatching, "usr/local/sce/ee/lib/libmtap/libmtap.c"),
+    ]),
+    SCELib("libnet", [
+        Object(NonMatching, "usr/local/sce/ee/lib/libnet/libnet.c"),
+    ]),
+    SCELib("libpad", [
+        Object(NonMatching, "usr/local/sce/ee/lib/libpad/libpad.c"),
+    ]),
+    SCELib("libscf", [
+        Object(NonMatching, "usr/local/sce/ee/lib/libscf/libscf.c"),
+    ]),
+    SCELib("libsdr", [
+        Object(NonMatching, "usr/local/sce/ee/lib/libsdr/sdr_main.c"),
+    ]),
+    SCELib("libc", [
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/__errno.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/abort.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/abs.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/atoi.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/callocr.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/closer.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/div.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/dtoa.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/exit.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/fflush.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/findfp.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/fprintf.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/fread.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/freer.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/fstatr.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/fvwrite.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/fwalk.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/locale.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/lseekr.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/makebuf.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/malign.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/malign_r.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/malloc.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/mallocr.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/mbtowc_r.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/memchr.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/memcmp.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/memcpy.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/memmove.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/memset.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/mktime.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/mlock.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/mprec.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/printf.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/qsort.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/rand.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/readr.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/reallocr.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/refill.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/sbrkr.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/signal.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/signalr.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/sprintf.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/sscanf.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/sscanfr.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/stdio.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/strcasecmp.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/strcat.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/strcmp.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/strcpy.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/strlen.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/strncat.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/strncmp.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/strncpy.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/strstr.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/strtod.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/strtol.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/strtoul.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/ungetc.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/vfprintf.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/vfscanf.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/vfscanfr.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/vsprintfr.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/writer.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libc/wsetup.c"),
+    ]),
+    SCELib("libgcc", [
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libgcc/_divdi3.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libgcc/_fixdfdi.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libgcc/_fixunsdfdi.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libgcc/_fixunssfdi.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libgcc/_floatdidf.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libgcc/_floatdisf.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libgcc/_moddi3.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libgcc/_muldi3.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libgcc/_udivdi3.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libgcc/_umoddi3.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libgcc/dp-bit.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libgcc/fp-bit.c"),
+    ]),
+    SCELib("libm", [
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/e_atan2.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/e_log.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/e_rem_pio2.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/ef_acos.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/ef_asin.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/ef_atan2.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/ef_log.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/ef_log10.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/ef_pow.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/ef_rem_pio2.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/ef_sqrt.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/k_cos.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/k_rem_pio2.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/k_sin.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/kf_cos.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/kf_rem_pio2.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/kf_sin.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/kf_tan.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/s_atan.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/s_copysign.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/s_fabs.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/s_floor.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/s_isinf.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/s_isnan.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/s_modf.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/s_scalbn.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/s_sin.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/sf_atan.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/sf_copysign.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/sf_cos.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/sf_fabs.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/sf_floor.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/sf_scalbn.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/sf_sin.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/sf_tan.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/w_atan2.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/w_log.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/wf_acos.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/wf_asin.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/wf_atan2.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/wf_log.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/wf_log10.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/wf_pow.c"),
+        Object(NonMatching, "usr/local/sce/ee/gcc/ee/lib/libm/wf_sqrt.c"),
+    ]),
+    SegaLib("nn", [
+        Object(NonMatching, "usr/local/sega/nn/src/Camera/nncamera.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Camera/nncameramotion.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/DrawObj/nncopyobject.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/DrawObj/nndrawcommonvertices.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/DrawObj/nndrawdivcolor.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/DrawObj/nndrawmultiobjectext.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/DrawObj/nndrawmultiobjectinitialposeext.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/DrawObj/nndrawmultiobjectinitialposeltd.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/DrawObj/nndrawmultiobjectltd.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/DrawObj/nndrawobjectext.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/DrawObj/nndrawobjectinitialposeext.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/DrawObj/nndrawobjectinitialposeltd.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/DrawObj/nndrawobjectltd.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/DrawObj/nndrawverticesext.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/DrawObj/nndrawverticesltd.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/DrawObj/nntexmtxps2.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/DrawPrim/nndrawpoint.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/DrawPrim/nndrawprim.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/DrawPrim/nndrawprimline.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/DrawPrim/nndrawprimvbps2.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Fog/nnfog.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Light/nnlight.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Light/nnlightmotion.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Light/nnlightps2.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Material/nnmaterial.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Material/nnmaterialcontrol.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Material/nnmaterialcoreext.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Material/nnmaterialcoreltd.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Material/nnmaterialmotion.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Material/nnmaterialprim.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Material/nnmatext.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Math/Collision/nncheckcollisionsc.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Math/Collision/nncheckcollisionss.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Math/Interpolate/nninterpolateformotion.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Math/Math/nnfraction.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Math/Math/nnsincos.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Math/Math/nnsqrt.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Matrix/nnmakematrix.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Matrix/nnmatrix.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Matrix/nnmatrixstack.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Matrix/nnquaternion.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Matrix/nnvector.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Morph/nnmorph.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Morph/nnmorphmotion.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Morph/nnmorphpxplus.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Node/nncalcmatrixlist.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Node/nncalcmatrixpalette.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Node/nncalcmatrixpalettemotion.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Node/nncalcmatrixpalettemultiplymatrix.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Node/nncalcnodehidemotion.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Node/nncalcnodematrix.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Node/nncalcnodestatuslistinitialpose.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Node/nncalcsiik.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Node/nncalctrsmotion.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Node/nndrawcircumsphere.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Node/nndrawsiikbone.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Node/nnnodestatuslist.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Print/nnprint.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/System/nnclip.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/System/nnclipsetup.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/System/nnmemory.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/System/nnsystem.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/System/nnsyszalpha.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Texture/nntexbuff.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Texture/nntexswap.c"),
+        Object(NonMatching, "usr/local/sega/nn/src/Texture/nntexture.c"),
+    ]),
+    SegaLib("nvs", [
+        Object(NonMatching, "usr/local/sega/nvs/src/nvs.c"),
+        Object(NonMatching, "usr/local/sega/nvs/src/nvsclut.c"),
+        Object(NonMatching, "usr/local/sega/nvs/src/nvslinear.c"),
+        Object(NonMatching, "usr/local/sega/nvs/src/nvstip.c"),
+        Object(NonMatching, "usr/local/sega/nvs/src/nvtexmalloc.c"),
+    ]),
+    SegaLib("px", [
+        Object(NonMatching, "usr/local/sega/px/src/px.c"),
+        Object(NonMatching, "usr/local/sega/px/src/pxcontext.c"),
+        Object(NonMatching, "usr/local/sega/px/src/pxgeom.c"),
+        Object(NonMatching, "usr/local/sega/px/src/pxpushbuffer.c"),
+        Object(NonMatching, "usr/local/sega/px/src/pxputshader.c"),
+        Object(NonMatching, "usr/local/sega/px/src/pxtex.c"),
+        Object(NonMatching, "usr/local/sega/px/src/pxtex2.c"),
+        Object(NonMatching, "usr/local/sega/px/src/pxvertexbuffer.c"),
+    ]),
+    # CRILib([
+    #     Object(NonMatching, "usr/local/cri/mwlib/ee/lib/cri_libs.c"),
+    # ]),
+    # TODO: cri_libs.s has duplicate symbol names across sub-libraries (SKG_*, conv_cmp, etc.)
+    # which GNU as can't assemble. Needs the sonic.yaml segment split into individual sub-libs.
+]
+
+# Optional extra categories for progress tracking
+config.progress_categories = [
+    ProgressCategory("game", "Game Code"),
+    ProgressCategory("sdk", "SDK Code"),
+]
+config.progress_each_module = args.verbose
+
+if args.mode == "configure":
+    # Write build.ninja and objdiff.json
+    generate_build(config)
+elif args.mode == "progress":
+    # Print progress information
+    calculate_progress(config)
+else:
+    sys.exit("Unknown mode: " + args.mode)

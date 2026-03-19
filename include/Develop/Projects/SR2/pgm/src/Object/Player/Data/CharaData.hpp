@@ -9,143 +9,7 @@ public:
     float z; // offset 0x8, size 0x4
     float w; // offset 0xC, size 0x4
 };
-// total size: 0x10
-class Fuid {
-    // Members
-public:
-    unsigned int m_0; // offset 0x0, size 0x4
-    unsigned int m_1; // offset 0x4, size 0x4
-    unsigned int m_2; // offset 0x8, size 0x4
-    unsigned int m_3; // offset 0xC, size 0x4
-};
-// total size: 0x8
-class stcMotionFlgs {
-    // Members
-public:
-    unsigned int u32Flg[2]; // offset 0x0, size 0x8
-};
-// total size: 0x2C
-class stcBasePrfm {
-    // Members
-public:
-    float f32Speed[3]; // offset 0x0, size 0xC
-    float f32Accele[3]; // offset 0xC, size 0xC
-    float f32RotateSpeed; // offset 0x18, size 0x4
-    float f32RotateAccele; // offset 0x1C, size 0x4
-    float f32Grip; // offset 0x20, size 0x4
-    float f32Durability; // offset 0x24, size 0x4
-    unsigned int u32Ability; // offset 0x28, size 0x4
-};
-// total size: 0x24
-class stcData {
-    // Members
-public:
-    char ac8Name_Debug[16]; // offset 0x0, size 0x10
-    float f32Height; // offset 0x10, size 0x4
-    float f32Weight; // offset 0x14, size 0x4
-    unsigned char u8Style; // offset 0x18, size 0x1
-    unsigned char u8SkillType; // offset 0x19, size 0x1
-    unsigned char u8BaseType; // offset 0x1A, size 0x1
-    unsigned char u8Reserve[1]; // offset 0x1B, size 0x1
-    float f32AttackLFrame; // offset 0x1C, size 0x4
-    float f32AttackRFrame; // offset 0x20, size 0x4
-};
-enum enmRet {
-    VISIBLE_CLIP = 0,
-    VISIBLE = 1,
-    OUT_VISIBLE = 2,
-    OUT_PORTAL = 3,
-    OUT_FAR = 4,
-};
-enum enmModelType {
-    MODEL_TYPE_DEF = 0,
-    MODEL_TYPE_SKATE_START = 1,
-    MODEL_TYPE_ADS = 1,
-    MODEL_TYPE_CVS = 2,
-    MODEL_TYPE_RLL = 3,
-    MODEL_TYPE_SNB = 4,
-    MODEL_TYPE_WTD = 5,
-    MODEL_TYPE_MAX = 6,
-    MODEL_TYPE_SKATE_END = 5,
-};
-// total size: 0x28
-class stcBinInfo {
-    // Members
-public:
-    enum enm ePackId; // offset 0x0, size 0x4
-    unsigned char * opu8Bin[6]; // offset 0x4, size 0x18
-    unsigned char * opu8BinTopAddr; // offset 0x1C, size 0x4
-    unsigned int * opu32OffsetNo; // offset 0x20, size 0x4
-    signed int s32RestBinNum; // offset 0x24, size 0x4
-};
-// total size: 0xC
-class NNS_VECTOR {
-    // Members
-public:
-    float x; // offset 0x0, size 0x4
-    float y; // offset 0x4, size 0x4
-    float z; // offset 0x8, size 0x4
-};
-float of32BaseHeight; // size: 0x4, address: 0x6651C0
-class stcBasePrfm oasBasePrfm[5]; // size: 0xDC, address: 0x6651D0
-class stcBasePrfm osWalkPrfm[4]; // size: 0xB0, address: 0x6652B0
-class stcData oasData[19]; // size: 0x2AC, address: 0x665360
-static unsigned char chk__oasData_SizeCheck_[1]; // size: 0x1, address: 0x0
-char * oasCharaCode3[19]; // size: 0x4C, address: 0x620CA0
-static unsigned char chk__oasCharaCode3_SizeCheck_[1]; // size: 0x1, address: 0x0
-unsigned int oasImageColor[19]; // size: 0x4C, address: 0x6656B0
-static unsigned char chk__oasImageColor_SizeCheck_[1]; // size: 0x1, address: 0x0
-unsigned int oasImageColorRgb[19]; // size: 0x4C, address: 0x665700
-static unsigned char chk__oasImageColorRgb_SizeCheck_[1]; // size: 0x1, address: 0x0
-void (* afloadAdditionalFuncs[19])(class stcBinInfo &); // size: 0x4C, address: 0x620CF0
-static unsigned char chk__afloadAdditionalFuncs_SizeCheck_[1]; // size: 0x1, address: 0x0
-class stcMotionFlgs asMotionFlgsDef[8]; // size: 0x40, address: 0x665750
-class stcMotionFlgs asMotionFlgsEgg[8]; // size: 0x40, address: 0x665790
-class stcMotionFlgs asMotionFlgsOther[8]; // size: 0x40, address: 0x6657D0
-class stcMotionFlgs asMotionFlgsWave[8]; // size: 0x40, address: 0x665810
-class stcMotionFlgs asMotionFlgsBily[8]; // size: 0x40, address: 0x665850
-static float FLYACTION_DESCENT_PITCH_GRAVITY; // size: 0x4, address: 0x0
-static float FLYACTION_FALL_PITCH_GRAVITY; // size: 0x4, address: 0x0
-static float FLYACTION_DEFAULT_PITCH_GRAVITY; // size: 0x4, address: 0x0
-static float FLYACTION_MIN_PITCH; // size: 0x4, address: 0x0
-static float FLYACTION_MAX_PITCH; // size: 0x4, address: 0x0
-static float FLYACTION_LEFT_RIGHT_ROT; // size: 0x4, address: 0x0
-static float FLYACTION_UP_DOWN_ROT; // size: 0x4, address: 0x0
-static float toaf32GpUsedRate[5]; // size: 0x14, address: 0x0
-static float toaf32ItemBox[3]; // size: 0xC, address: 0x0
-static float toaf32BonusGLink[3]; // size: 0xC, address: 0x0
-static float toaf32BonusPower[6]; // size: 0x18, address: 0x0
-static float toaf32BonusFly[3]; // size: 0xC, address: 0x0
-static float toaf32BonusSpeed[3]; // size: 0xC, address: 0x0
-static float toaf32BonusTrick[7]; // size: 0x1C, address: 0x0
-enum enmRet aoeRet[3]; // size: 0xC, address: 0x655000
-static unsigned char ChkComUseData[1]; // size: 0x1, address: 0x0
-static unsigned char ChkCourseUseData[1]; // size: 0x1, address: 0x0
-static unsigned char chk__enum__enmMotion_nakawatari_SizeOver[1]; // size: 0x1, address: 0x0
-static unsigned char chk__enum__notSkateModelType_nakawatari_NotEqual[1]; // size: 0x1, address: 0x0
-static unsigned char chk__enum__enmMotionType_nakawatari_SizeOver[1]; // size: 0x1, address: 0x0
-static unsigned char chk__enum__enmLevel_nakawatari_SizeOver[1]; // size: 0x1, address: 0x0
-static float tosUnitMatrix[4][4]; // size: 0x40, address: 0x0
-static class NNS_VECTOR tosUnitScaleVec; // size: 0xC, address: 0x0
-static class NNS_VECTOR tosZVec; // size: 0xC, address: 0x0
-static class NNS_VECTOR tosYVec; // size: 0xC, address: 0x0
-static class NNS_VECTOR tosXVec; // size: 0xC, address: 0x0
-static class NNS_VECTOR tosZeroVec; // size: 0xC, address: 0x0
-static class NNS_VECTORFAST tosUnitScaleVecFast; // size: 0x10, address: 0x0
-static class NNS_VECTORFAST tosZVecFast; // size: 0x10, address: 0x0
-static class NNS_VECTORFAST tosYVecFast; // size: 0x10, address: 0x0
-static class NNS_VECTORFAST tosXVecFast; // size: 0x10, address: 0x0
-static class NNS_VECTORFAST tosZeroVecFast; // size: 0x10, address: 0x0
-unsigned int oau32DebugColor[16]; // size: 0x40, address: 0x655010
-char * oapc8Str[2]; // size: 0x8, address: 0x5F2198
-char * oapc8Str[2]; // size: 0x8, address: 0x0
-char * oapc8Str[2]; // size: 0x8, address: 0x0
-char * oapc8Str[2]; // size: 0x8, address: 0x5F21B0
-unsigned char oau8Mask[2]; // size: 0x2, address: 0x0
-unsigned short oau16Mask[2]; // size: 0x4, address: 0x0
-unsigned int oau32Mask[2]; // size: 0x8, address: 0x655050
-unsigned int oau32Col[2]; // size: 0x8, address: 0x655058
-class Fuid fuid; // size: 0x10, address: 0x0
+
 enum enm {
     NONE = -1,
     CHARA_0 = 0,
@@ -595,5 +459,140 @@ enum enm {
     DUMMY_DATA = 65501,
 };
 
-
-
+// total size: 0x10
+class Fuid {
+    // Members
+public:
+    unsigned int m_0; // offset 0x0, size 0x4
+    unsigned int m_1; // offset 0x4, size 0x4
+    unsigned int m_2; // offset 0x8, size 0x4
+    unsigned int m_3; // offset 0xC, size 0x4
+};
+// total size: 0x8
+class stcMotionFlgs {
+    // Members
+public:
+    unsigned int u32Flg[2]; // offset 0x0, size 0x8
+};
+// total size: 0x2C
+class stcBasePrfm {
+    // Members
+public:
+    float f32Speed[3]; // offset 0x0, size 0xC
+    float f32Accele[3]; // offset 0xC, size 0xC
+    float f32RotateSpeed; // offset 0x18, size 0x4
+    float f32RotateAccele; // offset 0x1C, size 0x4
+    float f32Grip; // offset 0x20, size 0x4
+    float f32Durability; // offset 0x24, size 0x4
+    unsigned int u32Ability; // offset 0x28, size 0x4
+};
+// total size: 0x24
+class stcData {
+    // Members
+public:
+    char ac8Name_Debug[16]; // offset 0x0, size 0x10
+    float f32Height; // offset 0x10, size 0x4
+    float f32Weight; // offset 0x14, size 0x4
+    unsigned char u8Style; // offset 0x18, size 0x1
+    unsigned char u8SkillType; // offset 0x19, size 0x1
+    unsigned char u8BaseType; // offset 0x1A, size 0x1
+    unsigned char u8Reserve[1]; // offset 0x1B, size 0x1
+    float f32AttackLFrame; // offset 0x1C, size 0x4
+    float f32AttackRFrame; // offset 0x20, size 0x4
+};
+enum enmRet {
+    VISIBLE_CLIP = 0,
+    VISIBLE = 1,
+    OUT_VISIBLE = 2,
+    OUT_PORTAL = 3,
+    OUT_FAR = 4,
+};
+enum enmModelType {
+    MODEL_TYPE_DEF = 0,
+    MODEL_TYPE_SKATE_START = 1,
+    MODEL_TYPE_ADS = 1,
+    MODEL_TYPE_CVS = 2,
+    MODEL_TYPE_RLL = 3,
+    MODEL_TYPE_SNB = 4,
+    MODEL_TYPE_WTD = 5,
+    MODEL_TYPE_MAX = 6,
+    MODEL_TYPE_SKATE_END = 5,
+};
+// total size: 0x28
+class stcBinInfo {
+    // Members
+public:
+    enum enm ePackId; // offset 0x0, size 0x4
+    unsigned char * opu8Bin[6]; // offset 0x4, size 0x18
+    unsigned char * opu8BinTopAddr; // offset 0x1C, size 0x4
+    unsigned int * opu32OffsetNo; // offset 0x20, size 0x4
+    signed int s32RestBinNum; // offset 0x24, size 0x4
+};
+// total size: 0xC
+class NNS_VECTOR {
+    // Members
+public:
+    float x; // offset 0x0, size 0x4
+    float y; // offset 0x4, size 0x4
+    float z; // offset 0x8, size 0x4
+};
+float of32BaseHeight; // size: 0x4, address: 0x6651C0
+class stcBasePrfm oasBasePrfm[5]; // size: 0xDC, address: 0x6651D0
+class stcBasePrfm osWalkPrfm[4]; // size: 0xB0, address: 0x6652B0
+class stcData oasData[19]; // size: 0x2AC, address: 0x665360
+static unsigned char chk__oasData_SizeCheck_[1]; // size: 0x1, address: 0x0
+char * oasCharaCode3[19]; // size: 0x4C, address: 0x620CA0
+static unsigned char chk__oasCharaCode3_SizeCheck_[1]; // size: 0x1, address: 0x0
+unsigned int oasImageColor[19]; // size: 0x4C, address: 0x6656B0
+static unsigned char chk__oasImageColor_SizeCheck_[1]; // size: 0x1, address: 0x0
+unsigned int oasImageColorRgb[19]; // size: 0x4C, address: 0x665700
+static unsigned char chk__oasImageColorRgb_SizeCheck_[1]; // size: 0x1, address: 0x0
+void (* afloadAdditionalFuncs[19])(class stcBinInfo &); // size: 0x4C, address: 0x620CF0
+static unsigned char chk__afloadAdditionalFuncs_SizeCheck_[1]; // size: 0x1, address: 0x0
+class stcMotionFlgs asMotionFlgsDef[8]; // size: 0x40, address: 0x665750
+class stcMotionFlgs asMotionFlgsEgg[8]; // size: 0x40, address: 0x665790
+class stcMotionFlgs asMotionFlgsOther[8]; // size: 0x40, address: 0x6657D0
+class stcMotionFlgs asMotionFlgsWave[8]; // size: 0x40, address: 0x665810
+class stcMotionFlgs asMotionFlgsBily[8]; // size: 0x40, address: 0x665850
+static float FLYACTION_DESCENT_PITCH_GRAVITY; // size: 0x4, address: 0x0
+static float FLYACTION_FALL_PITCH_GRAVITY; // size: 0x4, address: 0x0
+static float FLYACTION_DEFAULT_PITCH_GRAVITY; // size: 0x4, address: 0x0
+static float FLYACTION_MIN_PITCH; // size: 0x4, address: 0x0
+static float FLYACTION_MAX_PITCH; // size: 0x4, address: 0x0
+static float FLYACTION_LEFT_RIGHT_ROT; // size: 0x4, address: 0x0
+static float FLYACTION_UP_DOWN_ROT; // size: 0x4, address: 0x0
+static float toaf32GpUsedRate[5]; // size: 0x14, address: 0x0
+static float toaf32ItemBox[3]; // size: 0xC, address: 0x0
+static float toaf32BonusGLink[3]; // size: 0xC, address: 0x0
+static float toaf32BonusPower[6]; // size: 0x18, address: 0x0
+static float toaf32BonusFly[3]; // size: 0xC, address: 0x0
+static float toaf32BonusSpeed[3]; // size: 0xC, address: 0x0
+static float toaf32BonusTrick[7]; // size: 0x1C, address: 0x0
+enum enmRet aoeRet[3]; // size: 0xC, address: 0x655000
+static unsigned char ChkComUseData[1]; // size: 0x1, address: 0x0
+static unsigned char ChkCourseUseData[1]; // size: 0x1, address: 0x0
+static unsigned char chk__enum__enmMotion_nakawatari_SizeOver[1]; // size: 0x1, address: 0x0
+static unsigned char chk__enum__notSkateModelType_nakawatari_NotEqual[1]; // size: 0x1, address: 0x0
+static unsigned char chk__enum__enmMotionType_nakawatari_SizeOver[1]; // size: 0x1, address: 0x0
+static unsigned char chk__enum__enmLevel_nakawatari_SizeOver[1]; // size: 0x1, address: 0x0
+static float tosUnitMatrix[4][4]; // size: 0x40, address: 0x0
+static class NNS_VECTOR tosUnitScaleVec; // size: 0xC, address: 0x0
+static class NNS_VECTOR tosZVec; // size: 0xC, address: 0x0
+static class NNS_VECTOR tosYVec; // size: 0xC, address: 0x0
+static class NNS_VECTOR tosXVec; // size: 0xC, address: 0x0
+static class NNS_VECTOR tosZeroVec; // size: 0xC, address: 0x0
+static class NNS_VECTORFAST tosUnitScaleVecFast; // size: 0x10, address: 0x0
+static class NNS_VECTORFAST tosZVecFast; // size: 0x10, address: 0x0
+static class NNS_VECTORFAST tosYVecFast; // size: 0x10, address: 0x0
+static class NNS_VECTORFAST tosXVecFast; // size: 0x10, address: 0x0
+static class NNS_VECTORFAST tosZeroVecFast; // size: 0x10, address: 0x0
+unsigned int oau32DebugColor[16]; // size: 0x40, address: 0x655010
+char * oapc8Str[2]; // size: 0x8, address: 0x5F2198
+// char * oapc8Str[2]; // size: 0x8, address: 0x0
+// char * oapc8Str[2]; // size: 0x8, address: 0x0
+// char * oapc8Str[2]; // size: 0x8, address: 0x5F21B0
+unsigned char oau8Mask[2]; // size: 0x2, address: 0x0
+unsigned short oau16Mask[2]; // size: 0x4, address: 0x0
+unsigned int oau32Mask[2]; // size: 0x8, address: 0x655050
+unsigned int oau32Col[2]; // size: 0x8, address: 0x655058
+class Fuid fuid; // size: 0x10, address: 0x0

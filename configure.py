@@ -13,6 +13,8 @@
 ###
 
 import argparse
+import os
+import shutil
 import sys
 from pathlib import Path
 from typing import Any, Dict, List
@@ -119,11 +121,47 @@ parser.add_argument(
     action="store_false",
     help="disable short loop workaround for MWCCPS2",
 )
+parser.add_argument(
+    "-c",
+    "--clean",
+    action="store_true",
+    help="delete the version build directory and generated files before configuring",
+)
+parser.add_argument(
+    "-C",
+    "--clean-only",
+    dest="clean_only",
+    action="store_true",
+    help="delete the version build directory and generated files, then exit",
+)
 args = parser.parse_args()
 
 config = ProjectConfig()
 config.version = str(args.version)
 version_num = VERSIONS.index(config.version)
+
+
+def do_clean(version: str, build_dir: Path) -> None:
+    """Delete the version build directory and generated root files."""
+    version_build_dir = build_dir / version
+    shutil.rmtree(version_build_dir, ignore_errors=True)
+    for filename in [".splache", ".ninja_deps", ".ninja_log", "build.ninja", "objdiff.json"]:
+        try:
+            os.remove(filename)
+        except FileNotFoundError:
+            pass
+
+
+if args.clean or args.clean_only:
+    do_clean(config.version, args.build_dir)
+    if args.clean_only:
+        sys.exit(0)
+
+# Strip clean flags from sys.argv so they don't get baked into ninja rules
+# (project.py reads sys.argv[1:] directly when writing the configure_args variable)
+for _flag in ["-c", "--clean", "-C", "--clean-only"]:
+    while _flag in sys.argv:
+        sys.argv.remove(_flag)
 
 # Apply arguments
 config.build_dir = args.build_dir
@@ -283,12 +321,12 @@ config.libs = [
         Object(NonMatching, "usr/local/sce/ee/lib/crt0.s"),
     ]),
     MWSupport([
-        Object(NonMatching, "usr/local/metrowerks/PS2_Support/asmtu_Support/__ptmf.c"),
-        Object(NonMatching, "usr/local/metrowerks/PS2_Support/asmtu_Support/arraycondes.c"),
-        Object(NonMatching, "usr/local/metrowerks/PS2_Support/asmtu_Support/StaticInitializers.c"),
+        Object(NonMatching, "usr/local/metrowerks/PS2_Support/CPP_Support/__ptmf.c"),
+        Object(NonMatching, "usr/local/metrowerks/PS2_Support/CPP_Support/arraycondes.c"),
+        Object(NonMatching, "usr/local/metrowerks/PS2_Support/CPP_Support/StaticInitializers.c"),
         Object(NonMatching, "usr/local/metrowerks/PS2_Support/ExceptionHandler/TargetSpecific/ExceptionHandlerTS.c"),
         Object(NonMatching, "usr/local/metrowerks/PS2_Support/gcc_wrapper.c"),
-        Object(NonMatching, "usr/local/metrowerks/PS2_Support/runtime/asmtu_Support/mwUtils_PS2.c"),
+        Object(NonMatching, "usr/local/metrowerks/PS2_Support/runtime/CPP_Support/mwUtils_PS2.c"),
     ]),
     GameSrc("root", [
         Object(NonMatching, "Develop/Projects/SR2/pgm/src/Main.cpp"),
@@ -1291,9 +1329,11 @@ config.libs = [
         Object(NonMatching, "usr/local/sega/px/src/pxtex2.c"),
         Object(NonMatching, "usr/local/sega/px/src/pxvertexbuffer.c"),
     ]),
-    CRILib([
-        Object(NonMatching, "usr/local/cri/mwlib/ee/lib/cri_libs.c"),
-    ]),
+    # CRILib([
+    #     Object(NonMatching, "usr/local/cri/mwlib/ee/lib/cri_libs.c"),
+    # ]),
+    # TODO: cri_libs.s has duplicate symbol names across sub-libraries (SKG_*, conv_cmp, etc.)
+    # which GNU as can't assemble. Needs the sonic.yaml segment split into individual sub-libs.
 ]
 
 # Optional extra categories for progress tracking

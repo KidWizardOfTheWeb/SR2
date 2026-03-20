@@ -26,6 +26,9 @@ def in_wsl() -> bool:
 
 
 def import_d_file(in_file: str) -> str:
+    if not os.path.exists(in_file):
+        return ""
+
     out_text = ""
 
     with open(in_file) as file:
@@ -75,6 +78,9 @@ def main() -> None:
     args = parser.parse_args()
 
     output = import_d_file(args.d_file)
+
+    if not output:
+        return
 
     with open(args.d_file_out, "w", encoding="UTF-8") as f:
         f.write(output)

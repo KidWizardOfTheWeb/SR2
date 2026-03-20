@@ -47,6 +47,10 @@ jobs:
         key: ${{ runner.os }}-${{ matrix.version }}-${{ github.sha }}
         restore-keys: ${{ runner.os }}-${{ matrix.version }}-
 
+    # Install Python dependencies
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+
     # Build the project
     - name: Build
       run: |

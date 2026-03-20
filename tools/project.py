@@ -516,7 +516,7 @@ def generate_build_ninja(
     # Transform dependency files on non-Windows
     if os.name != "nt":
         transform_dep = config.tools_dir / "transform_dep.py"
-        mwcc_cmd += f" && $python {transform_dep} $out.d $out.d"
+        mwcc_cmd += f" -MMD && $python {transform_dep} $out.d $out.d"
         mwcc_implicit.append(transform_dep)
 
     n.comment("Link ELF file")

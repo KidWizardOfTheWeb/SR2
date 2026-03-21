@@ -1,6 +1,6 @@
-# Sonic Riders: Zero Gravity
+Sonic Riders: Zero Gravity  
 [![Build Status]][actions] [![Code Progress]][progress] [![Data Progress]][progress]
-
+=============
 [Build Status]: https://github.com/KidWizardOfTheWeb/SR2/actions/workflows/build.yml/badge.svg
 [actions]: https://github.com/KidWizardOfTheWeb/SR2/actions/workflows/build.yml
 [Code Progress]: https://decomp.dev/KidWizardOfTheWeb/SR2.svg?mode=shield&measure=code&label=Code

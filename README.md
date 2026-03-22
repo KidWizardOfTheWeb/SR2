@@ -1,11 +1,13 @@
 Sonic Riders: Zero Gravity  
-[![Build Status]][actions] [![Code Progress]][progress] [![Data Progress]][progress]
+[![Build Status]][actions] [![Code Progress]][progress] [![Data Progress]][progress] [![Discord Badge]][discord]
 =============
 [Build Status]: https://github.com/KidWizardOfTheWeb/SR2/actions/workflows/build.yml/badge.svg
 [actions]: https://github.com/KidWizardOfTheWeb/SR2/actions/workflows/build.yml
 [Code Progress]: https://decomp.dev/KidWizardOfTheWeb/SR2.svg?mode=shield&measure=code&label=Code
 [Data Progress]: https://decomp.dev/KidWizardOfTheWeb/SR2.svg?mode=shield&measure=data&label=Data
 [progress]: https://decomp.dev/KidWizardOfTheWeb/SR2
+[Discord Badge]: https://img.shields.io/badge/Discord-%237289DA?logo=discord&logoColor=%23FFFFFF
+[discord]: https://discord.gg/ntaraNahDa
 
 A work-in-progress decompilation of [*Sonic Riders: Zero Gravity*](https://en.wikipedia.org/wiki/Sonic_Riders:_Zero_Gravity) for the PlayStation 2.
 

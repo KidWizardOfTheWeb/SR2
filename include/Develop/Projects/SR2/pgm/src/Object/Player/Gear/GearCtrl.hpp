@@ -1,9 +1,13 @@
-#include "Develop/Projects/SR2/pgm/src/Object/Player/Gear/Gear.hpp"
-#include "Develop/Projects/SR2/pgm/src/Object/Player/Performance.hpp"
-class clsGear; // forward decl
-class clsPrfm; // forward decl
 #ifndef GEARCTRL_HPP
 #define GEARCTRL_HPP
+
+#include "Develop/Projects/SR2/pgm/lib/OO/core/Singleton.hpp"
+#include "Develop/Projects/SR2/pgm/lib/OO/PS2/PS2System.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Player/Gear/Gear.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Player/Performance.hpp"
+
+class clsGear; // forward decl
+class clsPrfm; // forward decl
 
 enum enmGearType {
     GEAR_TYPE_BOARD = 0,
@@ -290,7 +294,7 @@ public:
 
     // Class funcs
     void behavior();
-    void setUnuseGearLevel(enum enmLevel eLevel /* r2 */);
+    void setUnuseGearLevel(nspGear::enmLevel eLevel /* r2 */);
     void changeInitGearModel(enum enmInitBoard eBoard /* r2 */);
     unsigned char getEquipsGearFlags();
     //enum enmMotionType getEquipsGearBaseMotionType();

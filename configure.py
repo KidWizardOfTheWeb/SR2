@@ -190,7 +190,7 @@ config.asm_dir = config.out_path() / "asm"
 config.binutils_tag = "2.45"
 config.compilers_tag = "20250812"
 config.mwccps2_tag = "3.0.1b198-051011"
-config.objdiff_tag = "v3.5.1"
+config.objdiff_tag = "v3.7.1"
 config.wibo_tag = "1.0.0-beta.5"
 
 # Project
@@ -209,7 +209,8 @@ config.reconfig_deps = []
 # Base flags for MWCCPS2 (C++ game code)
 cflags_base = [
     "-lang=c++",
-    "-O3",
+    "-O3,p",
+    "-sdatathreshold 0",
     "-i include",
     f"-DBUILD_VERSION={version_num}",
 ]

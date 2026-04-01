@@ -4,6 +4,7 @@
 
 class clsGearCtrl; // forward decl
 
+namespace nspGear {
 enum enmLevel {
     LV_ERROR = -1,
     LV_BASE = 0,
@@ -14,6 +15,8 @@ enum enmLevel {
     MAX_LV_TABLE_NUM = 4,
     MAX_MODELS = 9,
 };
+} // namespace nspGear
+using namespace nspGear;
 
 // For now, we assume this to be the correctly associated enum
 enum enmRet {

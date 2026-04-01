@@ -217,7 +217,7 @@ cflags_base = [
 # Flags for C SDK libraries (no -lang=c++ override)
 cflags_c = [
     "-lang=c",
-    "-O3",
+    "-O3,p",
     "-i include",
     f"-DBUILD_VERSION={version_num}",
 ]

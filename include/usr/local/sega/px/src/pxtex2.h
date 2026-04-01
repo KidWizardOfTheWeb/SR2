@@ -1,3 +1,6 @@
+#ifndef PXTEX2_H
+#define PXTEX2_H
+
 extern unsigned int pxgPath3TransAddr; // size: 0x4, address: 0x6D1F38
 extern unsigned int pxgPath3TransInvokeCount; // size: 0x4, address: 0x6D1F3C
 
@@ -13,3 +16,7 @@ enum PXE_ERR {
     PXE_ERR_NOTENOUGHBUFFER = -54,
     PXE_ERR_INCORRECTDBINDEX = -55,
 };
+
+enum PXE_ERR PXStartPath3Trans(void * tagAddr);
+
+#endif

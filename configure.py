@@ -219,7 +219,6 @@ cflags_base = [
 cflags_c = [
     "-lang=c",
     "-O3,p",
-    "-sdatathreshold 0",
     "-i include",
     f"-DBUILD_VERSION={version_num}",
 ]

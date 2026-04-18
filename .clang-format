@@ -1,0 +1,34 @@
+---
+Language: Cpp
+Standard: Cpp03
+BasedOnStyle: LLVM
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 100
+DerivePointerAlignment: false
+PointerAlignment: Left
+ReferenceAlignment: Left
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterControlStatement: MultiLine
+  AfterFunction: true
+  AfterClass: false
+  AfterEnum: false
+  AfterNamespace: false
+  AfterStruct: false
+  BeforeElse: false
+  BeforeCatch: false
+AccessModifierOffset: -4
+NamespaceIndentation: None
+FixNamespaceComments: true
+SortIncludes: false
+AllowShortFunctionsOnASingleLine: InlineOnly
+AllowShortIfStatementsOnASingleLine: Never
+AlwaysBreakTemplateDeclarations: true
+BinPackArguments: false
+BinPackParameters: false
+InsertNewlineAtEOF: true
+WhitespaceSensitiveMacros:
+  - 'ASSERT'
+  - 'CHECK'

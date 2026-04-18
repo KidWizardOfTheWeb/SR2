@@ -145,7 +145,7 @@ def do_clean(version: str, build_dir: Path) -> None:
     """Delete the version build directory and generated root files."""
     version_build_dir = build_dir / version
     shutil.rmtree(version_build_dir, ignore_errors=True)
-    for filename in [".splache", ".ninja_deps", ".ninja_log", "build.ninja", "objdiff.json"]:
+    for filename in [".splache", ".ninja_deps", ".ninja_log", "build.ninja", "objdiff.json", "compile_commands.json"]:
         try:
             os.remove(filename)
         except FileNotFoundError:
@@ -189,6 +189,7 @@ config.asm_dir = config.out_path() / "asm"
 # Tool versions
 config.binutils_tag = "2.45"
 config.compilers_tag = "20250812"
+config.dtk_tag = "v1.8.3"
 config.mwccps2_tag = "3.0.1b198-051011"
 config.objdiff_tag = "v3.7.1"
 config.wibo_tag = "1.0.0-beta.5"

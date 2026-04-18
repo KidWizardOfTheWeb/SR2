@@ -40,6 +40,22 @@ def binutils_url(tag: str) -> str:
         return f"https://github.com/dbalatoni13/mips-binutils/releases/download/{tag}/linux-x86_64.zip"
 
 
+def dtk_url(tag: str) -> str:
+    uname = platform.uname()
+    suffix = ""
+    system = uname.system.lower()
+    if system == "darwin":
+        system = "macos"
+    elif system == "windows":
+        suffix = ".exe"
+    arch = uname.machine.lower()
+    if arch == "amd64":
+        arch = "x86_64"
+
+    repo = "https://github.com/encounter/decomp-toolkit"
+    return f"{repo}/releases/download/{tag}/dtk-{system}-{arch}{suffix}"
+
+
 def compilers_url(tag: str) -> str:
     return f"https://files.decomp.dev/compilers_{tag}.zip"
 
@@ -78,6 +94,7 @@ def wibo_url(tag: str) -> str:
 TOOLS: Dict[str, Callable[[str], str]] = {
     "binutils": binutils_url,
     "compilers": compilers_url,
+    "dtk": dtk_url,
     "mwccps2": mwccps2_url,
     "objdiff-cli": objdiff_cli_url,
     "wibo": wibo_url,

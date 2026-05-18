@@ -4,7 +4,6 @@
 unsigned int pxgPath3TransAddr; // size: 0x4, address: 0x6D1F38
 unsigned int pxgPath3TransInvokeCount; // size: 0x4, address: 0x6D1F3C
 
-
 enum PXE_ERR PXStartPath3Trans(void * tagAddr) {
     while (DGET_D2_CHCR() & 0x100);
     DPUT_D_STAT(4);

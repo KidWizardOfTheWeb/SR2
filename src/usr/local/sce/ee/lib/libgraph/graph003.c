@@ -2,6 +2,7 @@
 
 extern void syscall(int);
 
-void _GetGsDxDyOffset(void) {
+void _GetGsDxDyOffset(void)
+{
     syscall(0x80);
 }

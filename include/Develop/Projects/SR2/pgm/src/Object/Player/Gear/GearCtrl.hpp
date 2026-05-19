@@ -1,14 +1,35 @@
 #ifndef GEARCTRL_HPP
 #define GEARCTRL_HPP
 
-#include "Develop/Projects/SR2/pgm/lib/OO/core/Singleton.hpp"
-#include "Develop/Projects/SR2/pgm/lib/OO/PS2/PS2System.hpp"
-#include "Develop/Projects/SR2/pgm/src/Object/Player/Gear/Gear.hpp"
+#include "types.h"
+#include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Player/Gear/GearChildren.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Player/Gear/GearPtnEmpty.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Player/Gear/GearPtnGrind.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Player/Gear/GearPtnSkate.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Player/Performance.hpp"
 
-class clsGear; // forward decl
-class clsPrfm; // forward decl
+class clsGear;
+class clsInitialBoard;
+class clsGearBaseParts;
+class clsGearBasePrototype;
+class clsPlayerTask;
+class clsTask;
+struct stcCtrlData;
 
+namespace nspCom {
+enum enmComGearChangeType {
+    COM_GEAR_CHANGE_TYPE_GRIND = 0,
+    COM_GEAR_CHANGE_TYPE_FLY = 1,
+    COM_GEAR_CHANGE_TYPE_POWER = 2,
+    COM_GEAR_CHANGE_TYPE_AGP = 3,
+    COM_GEAR_CHANGE_TYPE_MAX_SPEED = 4,
+    COM_GEAR_CHANGE_TYPE_1ST_SPEED = 5,
+    GEAR_PARAM_TYPE_MAX = 6,
+};
+} // namespace nspCom
+
+namespace nspGear {
 enum enmGearType {
     GEAR_TYPE_BOARD = 0,
     GEAR_TYPE_BIKE = 1,
@@ -22,32 +43,6 @@ enum enmGearType {
     GEAR_TYPE_MODEL_PART = 8,
 };
 
-// Move to some motion file
-enum enmMotionType {
-    MOTION_WALK = 0,
-    MOTION_BOARD = 1,
-    MOTION_BIKE = 2,
-    MOTION_SKATE = 3,
-    MOTION_AIRRIDE = 4,
-    MOTION_WHEEL = 5,
-    MOTION_SURFING = 6,
-    MOTION_DUMMY_SKATE_WALK = 7,
-    MAX_MOTION = 8,
-    MOTION_EMPTY = -1,
-};
-
-enum enmInitBoard {
-    INIT_BOARD_CASE = 0,
-    INIT_BOARD_GEAR = 1,
-};
-
-enum enmCtrlMode {
-    CTRL_MODE_WALK = 0,
-    CTRL_MODE_RIDE = 1,
-    CTRL_MODE_CHANGE = 2,
-    CTRL_MODE_ADD_PARTS = 3,
-    CTRL_MODE_GDIVE = 4,
-};
 enum enmGearCtrl {
     CTRL_UNKNOWN = -1,
     CTRL_DEF_START = 0,
@@ -117,188 +112,117 @@ enum enmGearCtrl {
     CTRL_WINDCATCHER = 62,
     CTRL_MAX = 63,
 };
-enum enmActionMode {
-    ACTION_MODE_NON = 0,
-    ACTION_MODE_GETTING_ON = 1,
-    ACTION_MODE_GETTING_OFF = 2,
-};
-// total size: 0x50
-class clsGearBaseParts : public clsGear {};
-// total size: 0x70
-// class clsInitialBoard : public clsGearPtnBoard {};
+} // namespace nspGear
 
-enum enmGearPrfm {
-    PRFM_EMPTY = 0,
-    PRFM_D_SONIC = 1,
-    PRFM_D_TAILS = 2,
-    PRFM_D_KNUCKLES = 3,
-    PRFM_D_AMY = 4,
-    PRFM_D_JET = 5,
-    PRFM_D_STORM = 6,
-    PRFM_D_WAVE = 7,
-    PRFM_D_EGGMAN = 8,
-    PRFM_D_CREAM = 9,
-    PRFM_D_ROUGE = 10,
-    PRFM_D_SHADOW = 11,
-    PRFM_D_BRAZE = 12,
-    PRFM_D_SILVER = 13,
-    PRFM_D_NIGHTS = 14,
-    PRFM_D_AMIGO = 15,
-    PRFM_D_BILLY = 16,
-    PRFM_D_ZAKOROBO = 17,
-    PRFM_D_LEADERROBO = 18,
-    PRFM_D_SHOOTINGSTAR = 19,
-    PRFM_D_FASTER = 20,
-    PRFM_D_FASTEST = 21,
-    PRFM_D_TURBOSTAR = 22,
-    PRFM_D_LIGHTBOARD = 23,
-    PRFM_D_COVERS = 24,
-    PRFM_D_COVERF = 25,
-    PRFM_D_COVERP = 26,
-    PRFM_D_ADV_S = 27,
-    PRFM_D_ADV_F = 28,
-    PRFM_D_ADV_P = 29,
-    PRFM_D_WINDSTAR = 30,
-    PRFM_D_ROADSTAR = 31,
-    PRFM_D_AIRSHIP = 32,
-    PRFM_D_WHEELCUSTOM = 33,
-    PRFM_D_OMNITENPOS = 34,
-    PRFM_D_HIPERDIVE = 35,
-    PRFM_D_GCBOOSTER = 36,
-    PRFM_D_GCMASTER = 37,
-    PRFM_D_REGEND = 38,
-    PRFM_D_SHINOBI = 39,
-    PRFM_D_KUNOICHI = 40,
-    PRFM_D_RAILLINKER = 41,
-    PRFM_D_GPGETTER = 42,
-    PRFM_D_SKILUPPER = 43,
-    PRFM_D_GSHOT = 44,
-    PRFM_D_MASTEROFFROAD = 45,
-    PRFM_D_RISERVETANK = 46,
-    PRFM_D_GPTANK = 47,
-    PRFM_D_CHAOSEMELARD = 48,
-    PRFM_D_THECRAZY = 49,
-    PRFM_D_ANGELDEVIL = 50,
-    PRFM_D_SLOTTOL = 51,
-    PRFM_D_MONEYCRISIS = 52,
-    PRFM_D_BEGINNER = 53,
-    PRFM_D_BIGBAN = 54,
-    PRFM_D_GAMBLER = 55,
-    PRFM_D_BINGOSTAR = 56,
-    PRFM_D_WANTED = 57,
-    PRFM_D_HANGON = 58,
-    PRFM_D_MAGICBLOOM = 59,
-    PRFM_D_MAG = 60,
-    PRFM_D_UNTACHABLE = 61,
-    PRFM_D_RAINBOW = 62,
-    PRFM_D_WINDCATHER = 63,
-    PRFM_P_ZEROPARAM = 64,
-    PRFM_P_GRIND = 65,
-    PRFM_P_AIRRIDE = 66,
-    PRFM_P_BIKE = 67,
-    PRFM_P_WHEEL = 68,
-    PRFM_P_YOTCH = 69,
-    PRFM_P_MAXSPEED_PLUS1 = 70,
-    PRFM_P_MAXSPEED_PLUS2 = 71,
-    PRFM_P_MAXSPEED_PLUS3 = 72,
-    PRFM_P_MAXSPEED_PLUS4 = 73,
-    PRFM_P_MAXSPEED_PLUS5 = 74,
-    PRFM_1ST_SPEED_01 = 75,
-    PRFM_1ST_SPEED_02 = 76,
-    PRFM_1ST_SPEED_03 = 77,
-    PRFM_P_ENDU_PLUS30 = 78,
-    PRFM_P_ENDU_PLUS50 = 79,
-    PRFM_P_ENDU_PLUS100 = 80,
-    PRFM_AGP_01 = 81,
-    PRFM_AGP_02 = 82,
-    PRFM_GC_SPEED_01 = 83,
-    PRFM_GC_SPEED_02 = 84,
-    PRFM_GC_SPEED_03 = 85,
-    PRFM_P_TRICK_PLUS1 = 86,
-    PRFM_P_AGPRATE_PLUS05 = 87,
-    PRFM_P_RINGCAP_PLUS25 = 88,
-    PRFM_P_RINGCAP_PLUS50 = 89,
-    PRFM_P_RINGCAP_PLUS100 = 90,
-    PRFM_P_RINGCAP_PLUS150 = 91,
-    PRFM_P_ITEMRANK_PLUS1 = 92,
-    PRFM_P_ATTIME_PLUS120 = 93,
-    PRFM_P_ALL_PARAMUP = 94,
-    PRFM_P_GP_INFINIT = 95,
-    PRFM_MAX = 96,
-};
-
-// total size: 0x50
-class stcCtrlData {
-    // Members
-public:
-    char ac8Name[16]; // offset 0x0, size 0x10
-    char ac8BinName[8]; // offset 0x10, size 0x8
-    unsigned int u32UsableBit; // offset 0x18, size 0x4
-    float f32Weight; // offset 0x1C, size 0x4
-    //enum enmSelectType eSelectType; // offset 0x20, size 0x4
-    //enum enmRingTableType eRingTableType; // offset 0x24, size 0x4
-    unsigned short u16GearPrice; // offset 0x28, size 0x2
-    enum enmGear aeGear[4]; // offset 0x2C, size 0x10
-    enum enmGearPrfm aePrfmNo[4]; // offset 0x3C, size 0x10
-    unsigned char aIsLockedBit[4]; // offset 0x4C, size 0x4
+enum enmDraw2DGearMode {
+    GEAR_DRAW_2D_MODE_OPEN = 0,
+    GEAR_DRAW_2D_MODE_CLOSE = 1,
+    GEAR_DRAW_2D_MODE_LOCKED = 2,
 };
 
 class _Draw2DData {
-    // total size: 0x24
 public:
-    //enum enmDraw2DGearMode aeGearMode[3]; // offset 0x0, size 0xC
-    //enum enmDraw2DType aeDrawType[3]; // offset 0xC, size 0xC
-    //enum enmLevel eNextChangeGearLv; // offset 0x18, size 0x4
-    //enum enmLevel ePrevChangeGearLv; // offset 0x1C, size 0x4
-    unsigned char u8DataNum; // offset 0x20, size 0x1
-};
-
-// Most classes than end 0x4 before the listed size have a vtable. This solves that.
-class clsGearCtrlBase {
-public:
-    virtual void someVirtualFunction(); // vtable pointer at 0x0
+    enmDraw2DGearMode aeGearMode[3];     // offset 0x0, size 0xC
+    enmDraw2DType aeDrawType[3];         // offset 0xC, size 0xC
+    nspGear::enmLevel eNextChangeGearLv; // offset 0x18, size 0x4
+    nspGear::enmLevel ePrevChangeGearLv; // offset 0x1C, size 0x4
+    u8 u8DataNum;                        // offset 0x20, size 0x1
 };
 
 // total size: 0x110
-class clsGearCtrl : public clsGearCtrlBase {
-    // Members
+class clsGearCtrl {
 public:
-    class clsGear * m_apcGear[4]; // offset 0x4, size 0x10
-    class clsInitialBoard * m_pcInitBoardGear; // offset 0x14, size 0x4
-    unsigned char m_abIsAlreadyUsed[4]; // offset 0x18, size 0x4
-    unsigned char m_abIsLocked[4]; // offset 0x1C, size 0x4
-    float m_af32CloseWaitFrame[4]; // offset 0x20, size 0x10
-    class clsGear * m_apcEquipsGears[5]; // offset 0x30, size 0x14
-    class clsGear * m_pcOldChangeGear; // offset 0x44, size 0x4
-    class clsGearBaseParts * m_pcOldParts; // offset 0x48, size 0x4
-    class clsGearBaseParts * m_pcNewParsGear; // offset 0x4C, size 0x4
-    class stcCtrlData * m_posData; // offset 0x50, size 0x4
-    enum enmGearCtrl m_eCtrlNo; // offset 0x54, size 0x4
-    unsigned int m_u32InitEquipsGears; // offset 0x58, size 0x4
-    class stcAddPrfm m_sAddPrfmData; // offset 0x5C, size 0x6C
-    class clsPlayerTask * m_pcPlayer; // offset 0xC8, size 0x4
-    enum enmCtrlMode m_eCtrlMode; // offset 0xCC, size 0x4
-    enum enmActionMode m_eActionMode; // offset 0xD0, size 0x4
-    float m_f32DrawAlpha; // offset 0xD4, size 0x4
-    unsigned char m_u8MaxGearNum; // offset 0xD8, size 0x1
-    signed char m_s8RunChannel_ICS; // offset 0xD9, size 0x1
-    signed char m_s8MonumentFlyChannel_ICS; // offset 0xDA, size 0x1
-    unsigned char m_bIsPlayMonumentFly; // offset 0xDB, size 0x1
-    unsigned char m_bSeWalkFlag; // offset 0xDC, size 0x1
-    unsigned char m_bIsDrawActiveGear; // offset 0xDD, size 0x1
-    unsigned char m_bIsDrawBurnLight; // offset 0xDE, size 0x1
-    unsigned int m_u32EffectType; // offset 0xE0, size 0x4
-    float m_f32EffectFrameEx; // offset 0xE4, size 0x4
-    class _Draw2DData m_sDraw2DData; // offset 0xE8, size 0x24
-    class clsModelType_OB_TX * m_pcInitBoardGearModel; // offset 0x10C, size 0x4
+    enum enmCtrlMode {
+        CTRL_MODE_WALK = 0,
+        CTRL_MODE_RIDE = 1,
+        CTRL_MODE_CHANGE = 2,
+        CTRL_MODE_ADD_PARTS = 3,
+        CTRL_MODE_GDIVE = 4,
+    };
 
-    // Class funcs
+    enum enmActionMode {
+        ACTION_MODE_NON = 0,
+        ACTION_MODE_GETTING_ON = 1,
+        ACTION_MODE_GETTING_OFF = 2,
+    };
+
+    enum enmInitBoard {
+        INIT_BOARD_CASE = 0,
+        INIT_BOARD_GEAR = 1,
+    };
+
+    clsGearCtrl(clsPlayerTask* pcPlayer, nspGear::enmGearCtrl eCtrlNo, u32 u32EquipsGears);
+
+    virtual ~clsGearCtrl();
+
+    void setUnuseGearLevel(nspGear::enmLevel eLevel);
+    void changeInitGearModel(enmInitBoard eBoard);
+    u8 getEquipsGearFlags() const;
+    enmMotionType getEquipsGearBaseMotionType();
+    enmGearType getEquipsGearType();
+    void behavior_NodeMtx();
     void behavior();
-    void setUnuseGearLevel(nspGear::enmLevel eLevel /* r2 */);
-    void changeInitGearModel(enum enmInitBoard eBoard /* r2 */);
-    unsigned char getEquipsGearFlags();
-    //enum enmMotionType getEquipsGearBaseMotionType();
-    enum enmGearType getEquipsGearType();
+    void registGearRideEffect(bool bIsRide);
+    void registGearChangeEffect(nspGear::enmLevel eLevel, nspGear::enmGearType eOldType);
+    nspGear::enmLevel searchGearFromGearParamType(nspCom::enmComGearChangeType eType);
+    void stopMonumentFlySe();
+    void playMonumentFlySe();
+    void controlMotion();
+    void draw(const f32 (*psGearMtx)[4][4], u32 u32AddDrawFlagI);
+    void updateAction();
+    void updateDraw2DData();
+    void updateLockFlag();
+    void cancelGDive();
+    u8 requestGearRide_HideActiveGear(u8 u8IsRide, f32 f32LinkFrame, s32 eSuccessActionType);
+    u8 requestGearRide_AttackAction(u8 u8IsRide, f32 f32LinkFrame, s32 eSuccessActionType);
+    u8 requestGearRide(u8 u8IsRide, f32 f32LinkFrame, s32 eSuccessActionType);
+    u8
+    rideGear(u8 u8IsRide, f32 f32LinkFrame, s32 eSuccessActionType, nspMotion::enmMotion eMotion);
+    void requestGearChangeForGhost(u8 u8ChangeNo);
+    u8 requestGearChange();
+    nspGear::enmLevel calcChageGearLevel();
+    void equipsGear(u8 u8GearLevel);
+    enmCtrlMode _equipsGear(u8 u8GearLevel);
+    clsGearBasePrototype* getEquipsPrototypeGear();
+    void updatePrfm();
+    void copyGearLv(clsGearCtrl* pcPlayerGearCtrl);
+    void init();
+    void setGearModels();
+    void createGear();
+
+    u8 isRide() const { return m_eCtrlMode == CTRL_MODE_RIDE; }
+    stcCtrlData* getCtrlData() const { return m_posData; }
+    stcAddPrfm* getAddPrfmData() const { return const_cast<stcAddPrfm*>(&m_sAddPrfmData); }
+    nspGear::enmGearCtrl getGearCtrlNo() const { return m_eCtrlNo; }
+
+    clsGear* m_apcGear[4];                      // offset 0x4, size 0x10
+    clsInitialBoard* m_pcInitBoardGear;         // offset 0x14, size 0x4
+    u8 m_abIsAlreadyUsed[4];                    // offset 0x18, size 0x4
+    u8 m_abIsLocked[4];                         // offset 0x1C, size 0x4
+    f32 m_af32CloseWaitFrame[4];                // offset 0x20, size 0x10
+    clsGear* m_apcEquipsGears[5];               // offset 0x30, size 0x14
+    clsGear* m_pcOldChangeGear;                 // offset 0x44, size 0x4
+    clsGearBaseParts* m_pcOldParts;             // offset 0x48, size 0x4
+    clsGearBaseParts* m_pcNewParsGear;          // offset 0x4C, size 0x4
+    stcCtrlData* m_posData;                     // offset 0x50, size 0x4
+    nspGear::enmGearCtrl m_eCtrlNo;             // offset 0x54, size 0x4
+    u32 m_u32InitEquipsGears;                   // offset 0x58, size 0x4
+    stcAddPrfm m_sAddPrfmData;                  // offset 0x5C, size 0x6C
+    clsPlayerTask* m_pcPlayer;                  // offset 0xC8, size 0x4
+    enmCtrlMode m_eCtrlMode;                    // offset 0xCC, size 0x4
+    enmActionMode m_eActionMode;                // offset 0xD0, size 0x4
+    f32 m_f32DrawAlpha;                         // offset 0xD4, size 0x4
+    u8 m_u8MaxGearNum;                          // offset 0xD8, size 0x1
+    s8 m_s8RunChannel_ICS;                      // offset 0xD9, size 0x1
+    s8 m_s8MonumentFlyChannel_ICS;              // offset 0xDA, size 0x1
+    u8 m_bIsPlayMonumentFly;                    // offset 0xDB, size 0x1
+    u8 m_bSeWalkFlag;                           // offset 0xDC, size 0x1
+    u8 m_bIsDrawActiveGear;                     // offset 0xDD, size 0x1
+    u8 m_bIsDrawBurnLight;                      // offset 0xDE, size 0x1
+    u32 m_u32EffectType;                        // offset 0xE0, size 0x4
+    f32 m_f32EffectFrameEx;                     // offset 0xE4, size 0x4
+    _Draw2DData m_sDraw2DData;                  // offset 0xE8, size 0x24
+    clsModelType_OB_TX* m_pcInitBoardGearModel; // offset 0x10C, size 0x4
 };
 
 #endif // GEARCTRL_HPP

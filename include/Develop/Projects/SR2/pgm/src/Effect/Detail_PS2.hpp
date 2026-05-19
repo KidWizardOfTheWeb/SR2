@@ -1,0 +1,19 @@
+#ifndef DETAIL_PS2_HPP
+#define DETAIL_PS2_HPP
+
+#include "types.h"
+
+enum NNE_POINTLIGHT_TYPE_PS2 {
+    NNE_POINTLIGHT_TYPE_PS2_PROPORTIONAL = 0,
+    NNE_POINTLIGHT_TYPE_PS2_CONSTANT = 1,
+    NNE_POINTLIGHT_TYPE_PS2_LINEAR = 2,
+    NNE_POINTLIGHT_TYPE_PS2_QUADRATIC = 3,
+    NNE_POINTLIGHT_TYPE_PS2_MAX = 4,
+};
+
+// total size: 0x4
+struct stcDetail_PS2 {
+    NNE_POINTLIGHT_TYPE_PS2 sPointType; // offset 0x0, size 0x4
+};
+
+#endif // DETAIL_PS2_HPP

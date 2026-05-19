@@ -1,0 +1,4 @@
+#ifndef OOGRAPHICS_HPP
+#define OOGRAPHICS_HPP
+
+#endif // OOGRAPHICS_HPP

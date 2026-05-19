@@ -4330,7 +4330,7 @@ segments:
       - [0x46B560, asmtu, Develop/Projects/SR2/pgm/src/System/IO/SR2_MemoryCardFile] # vram: 0x0056B4E0
       # - [0x46B7F0, h, Develop/Projects/SR2/pgm/src/System/IO/SR2_MemoryCardFile] # vram: 0x0056B770
       # - [0x46B9C0, h, Develop/Projects/SR2/pgm/src/2D/Advertise/SaveData2D] # vram: 0x0056B940
-      # - [0x46BA30, asmtu, Develop/Projects/SR2/pgm/src/2D/Advertise/SaveData2D] # vram: 0x0056B9B0
+      - [0x46BA30, asmtu, Develop/Projects/SR2/pgm/src/2D/Advertise/SaveData2D] # vram: 0x0056B9B0
       # - [0x470410, h, Develop/Projects/SR2/pgm/src/2D/Score/Keyboard2D] # vram: 0x00570390
       # - [0x4704D0, asmtu, Develop/Projects/SR2/pgm/src/2D/Advertise/Shop] # vram: 0x00570450
       # - [0x475C60, h, Develop/Projects/SR2/pgm/src/Advertise/Extra/ExtraMenu] # vram: 0x00575BE0
@@ -4431,7 +4431,7 @@ segments:
       - [0x5D1B00, sdata, sdata]
       - { vram: 0x6d1b00, type: sbss, name: sbss }
       - { vram: 0x6d1f80, type: bss, name: bss }
-    
+
   - [0x5D1B80, databin, shstrtab]
   - [0x5D1BD5, databin, strtab]
   - [0x80CEBE, databin, symtab]

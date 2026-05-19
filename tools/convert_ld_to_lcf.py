@@ -43,7 +43,7 @@ def get_linker_file_lines(splat_linker_file_lines):
         if "(.sbss);" in line:
             sbss_o_lines.append(line)
             continue
-    
+
     return text_o_lines, data_o_lines, sdata_o_lines, bss_o_lines, sbss_o_lines, rodata_o_lines
 
 

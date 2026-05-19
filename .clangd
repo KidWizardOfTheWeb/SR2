@@ -1,0 +1,10 @@
+---
+If:
+  PathMatch: include/usr/local/sce/ee/lib/eestruct\.h
+Diagnostics:
+  Suppress:
+    - err_bitfield_width_exceeds_type_width
+---
+Diagnostics:
+  Suppress:
+    - type_unsupported

@@ -1,7 +1,13 @@
-#ifndef _EESTRUCT_H_
-#define _EESTRUCT_H_
+#ifndef EESTRUCT_H
+#define EESTRUCT_H
 
+#ifndef NULL
+#ifdef __cplusplus
+#define NULL 0
+#else
 #define NULL ((void*)0)
+#endif
+#endif // EESTRUCT_H
 
 #define SCE_GIF_SET_TAG(nloop, eop, pre, prim, flg, nreg)                                          \
     ((unsigned long)(nloop) | ((unsigned long)(eop) << 15) | ((unsigned long)(pre) << 46) |        \
@@ -226,26 +232,6 @@ struct sceGsFogcol {
     unsigned long pad24 : 40; // offset 0x0, size 0x4
 };
 
-struct sceGsMiptbp1 {
-    unsigned long TBP1 : 14; // offset 0x0, size 0x4
-    unsigned long TBW1 : 6;  // offset 0x0, size 0x4
-    unsigned long TBP2 : 14; // offset 0x0, size 0x4
-    unsigned long TBW2 : 6;  // offset 0x0, size 0x4
-    unsigned long TBP3 : 14; // offset 0x0, size 0x4
-    unsigned long TBW3 : 6;  // offset 0x0, size 0x4
-    unsigned long pad60 : 4; // offset 0x0, size 0x4
-};
-
-struct sceGsMiptbp2 {
-    unsigned long TBP4 : 14; // offset 0x0, size 0x4
-    unsigned long TBW4 : 6;  // offset 0x0, size 0x4
-    unsigned long TBP5 : 14; // offset 0x0, size 0x4
-    unsigned long TBW5 : 6;  // offset 0x0, size 0x4
-    unsigned long TBP6 : 14; // offset 0x0, size 0x4
-    unsigned long TBW6 : 6;  // offset 0x0, size 0x4
-    unsigned long pad60 : 4; // offset 0x0, size 0x4
-};
-
 struct sceGsPrmodecont {
     unsigned long AC : 1;     // offset 0x0, size 0x4
     unsigned long pad01 : 63; // offset 0x0, size 0x4
@@ -274,35 +260,6 @@ struct sceGsTest {
     unsigned long ZTE : 1;    // offset 0x0, size 0x4
     unsigned long ZTST : 2;   // offset 0x0, size 0x4
     unsigned long pad19 : 45; // offset 0x0, size 0x4
-};
-
-struct sceGsTex1 {
-    unsigned long LCM : 1;    // offset 0x0, size 0x4
-    unsigned long pad01 : 1;  // offset 0x0, size 0x4
-    unsigned long MXL : 3;    // offset 0x0, size 0x4
-    unsigned long MMAG : 1;   // offset 0x0, size 0x4
-    unsigned long MMIN : 3;   // offset 0x0, size 0x4
-    unsigned long MTBA : 1;   // offset 0x0, size 0x4
-    unsigned long pad10 : 9;  // offset 0x0, size 0x4
-    unsigned long L : 2;      // offset 0x0, size 0x4
-    unsigned long pad21 : 11; // offset 0x0, size 0x4
-    unsigned long K : 12;     // offset 0x0, size 0x4
-    unsigned long pad44 : 20; // offset 0x0, size 0x4
-};
-
-struct sceGsTex0 {
-    unsigned long TBP0 : 14; // offset 0x0, size 0x4
-    unsigned long TBW : 6;   // offset 0x0, size 0x4
-    unsigned long PSM : 6;   // offset 0x0, size 0x4
-    unsigned long TW : 4;    // offset 0x0, size 0x4
-    unsigned long TH : 4;    // offset 0x0, size 0x4
-    unsigned long TCC : 1;   // offset 0x0, size 0x4
-    unsigned long TFX : 2;   // offset 0x0, size 0x4
-    unsigned long CBP : 14;  // offset 0x0, size 0x4
-    unsigned long CPSM : 4;  // offset 0x0, size 0x4
-    unsigned long CSM : 1;   // offset 0x0, size 0x4
-    unsigned long CSA : 5;   // offset 0x0, size 0x4
-    unsigned long CLD : 3;   // offset 0x0, size 0x4
 };
 
 struct sceGsTex2 {
@@ -338,6 +295,208 @@ struct sceGsRgbaq {
     unsigned int B : 8; // offset 0x0, size 0x4
     unsigned int A : 8; // offset 0x0, size 0x4
     float Q;            // offset 0x4, size 0x4
+};
+// total size: 0x10
+struct sceGifTag {
+    unsigned long NLOOP : 15; // offset 0x0, size 0x4
+    unsigned long EOP : 1;    // offset 0x0, size 0x4
+    unsigned long pad16 : 16; // offset 0x0, size 0x4
+    unsigned long id : 14;    // offset 0x0, size 0x4
+    unsigned long PRE : 1;    // offset 0x0, size 0x4
+    unsigned long PRIM : 11;  // offset 0x0, size 0x4
+    unsigned long FLG : 2;    // offset 0x0, size 0x4
+    unsigned long NREG : 4;   // offset 0x0, size 0x4
+    unsigned long REGS0 : 4;  // offset 0x8, size 0x4
+    unsigned long REGS1 : 4;  // offset 0x8, size 0x4
+    unsigned long REGS2 : 4;  // offset 0x8, size 0x4
+    unsigned long REGS3 : 4;  // offset 0x8, size 0x4
+    unsigned long REGS4 : 4;  // offset 0x8, size 0x4
+    unsigned long REGS5 : 4;  // offset 0x8, size 0x4
+    unsigned long REGS6 : 4;  // offset 0x8, size 0x4
+    unsigned long REGS7 : 4;  // offset 0x8, size 0x4
+    unsigned long REGS8 : 4;  // offset 0x8, size 0x4
+    unsigned long REGS9 : 4;  // offset 0x8, size 0x4
+    unsigned long REGS10 : 4; // offset 0x8, size 0x4
+    unsigned long REGS11 : 4; // offset 0x8, size 0x4
+    unsigned long REGS12 : 4; // offset 0x8, size 0x4
+    unsigned long REGS13 : 4; // offset 0x8, size 0x4
+    unsigned long REGS14 : 4; // offset 0x8, size 0x4
+    unsigned long REGS15 : 4; // offset 0x8, size 0x4
+};
+
+// total size: 0x8
+struct sceGsPrim {
+    unsigned long PRIM : 3;   // offset 0x0, size 0x4
+    unsigned long IIP : 1;    // offset 0x0, size 0x4
+    unsigned long TME : 1;    // offset 0x0, size 0x4
+    unsigned long FGE : 1;    // offset 0x0, size 0x4
+    unsigned long ABE : 1;    // offset 0x0, size 0x4
+    unsigned long AA1 : 1;    // offset 0x0, size 0x4
+    unsigned long FST : 1;    // offset 0x0, size 0x4
+    unsigned long CTXT : 1;   // offset 0x0, size 0x4
+    unsigned long FIX : 1;    // offset 0x0, size 0x4
+    unsigned long pad11 : 53; // offset 0x0, size 0x4
+};
+
+// total size: 0x8
+struct sceGsBitbltbuf {
+    unsigned long SBP : 14;  // offset 0x0, size 0x4
+    unsigned long pad14 : 2; // offset 0x0, size 0x4
+    unsigned long SBW : 6;   // offset 0x0, size 0x4
+    unsigned long pad22 : 2; // offset 0x0, size 0x4
+    unsigned long SPSM : 6;  // offset 0x0, size 0x4
+    unsigned long pad30 : 2; // offset 0x0, size 0x4
+    unsigned long DBP : 14;  // offset 0x0, size 0x4
+    unsigned long pad46 : 2; // offset 0x0, size 0x4
+    unsigned long DBW : 6;   // offset 0x0, size 0x4
+    unsigned long pad54 : 2; // offset 0x0, size 0x4
+    unsigned long DPSM : 6;  // offset 0x0, size 0x4
+    unsigned long pad62 : 2; // offset 0x0, size 0x4
+};
+
+// total size: 0x8
+struct sceGsXyz {
+    unsigned long X : 16; // offset 0x0, size 0x4
+    unsigned long Y : 16; // offset 0x0, size 0x4
+    unsigned long Z : 32; // offset 0x0, size 0x4
+};
+
+// total size: 0x60
+struct sceGsClear {
+    struct sceGsTest testa;  // offset 0x0, size 0x8
+    signed long testaaddr;   // offset 0x8, size 0x4
+    struct sceGsPrim prim;   // offset 0x10, size 0x8
+    signed long primaddr;    // offset 0x18, size 0x4
+    struct sceGsRgbaq rgbaq; // offset 0x20, size 0x8
+    signed long rgbaqaddr;   // offset 0x28, size 0x4
+    struct sceGsXyz xyz2a;   // offset 0x30, size 0x8
+    signed long xyz2aaddr;   // offset 0x38, size 0x4
+    struct sceGsXyz xyz2b;   // offset 0x40, size 0x8
+    signed long xyz2baddr;   // offset 0x48, size 0x4
+    struct sceGsTest testb;  // offset 0x50, size 0x8
+    signed long testbaddr;   // offset 0x58, size 0x4
+};
+
+// total size: 0x8
+struct tGS_BGCOLOR {
+    unsigned int R : 8;  // offset 0x0, size 0x4
+    unsigned int G : 8;  // offset 0x0, size 0x4
+    unsigned int B : 8;  // offset 0x0, size 0x4
+    unsigned int p0 : 8; // offset 0x0, size 0x4
+    unsigned int p1;     // offset 0x4, size 0x4
+};
+
+// total size: 0x8
+struct tGS_DISPFB2 {
+    unsigned int FBP : 9;  // offset 0x0, size 0x4
+    unsigned int FBW : 6;  // offset 0x0, size 0x4
+    unsigned int PSM : 5;  // offset 0x0, size 0x4
+    unsigned int p0 : 12;  // offset 0x0, size 0x4
+    unsigned int DBX : 11; // offset 0x4, size 0x4
+    unsigned int DBY : 11; // offset 0x4, size 0x4
+    unsigned int p1 : 10;  // offset 0x4, size 0x4
+};
+
+// total size: 0x8
+struct tGS_DISPLAY2 {
+    unsigned int DX : 12;  // offset 0x0, size 0x4
+    unsigned int DY : 11;  // offset 0x0, size 0x4
+    unsigned int MAGH : 4; // offset 0x0, size 0x4
+    unsigned int MAGV : 2; // offset 0x0, size 0x4
+    unsigned int p0 : 3;   // offset 0x0, size 0x4
+    unsigned int DW : 12;  // offset 0x4, size 0x4
+    unsigned int DH : 11;  // offset 0x4, size 0x4
+    unsigned int p1 : 9;   // offset 0x4, size 0x4
+};
+
+// total size: 0x8
+struct tGS_PMODE {
+    unsigned int EN1 : 1;   // offset 0x0, size 0x4
+    unsigned int EN2 : 1;   // offset 0x0, size 0x4
+    unsigned int CRTMD : 3; // offset 0x0, size 0x4
+    unsigned int MMOD : 1;  // offset 0x0, size 0x4
+    unsigned int AMOD : 1;  // offset 0x0, size 0x4
+    unsigned int SLBG : 1;  // offset 0x0, size 0x4
+    unsigned int ALP : 8;   // offset 0x0, size 0x4
+    unsigned int p0 : 16;   // offset 0x0, size 0x4
+    unsigned int p1;        // offset 0x4, size 0x4
+};
+
+// total size: 0x8
+struct tGS_SMODE2 {
+    unsigned int INT : 1;  // offset 0x0, size 0x4
+    unsigned int FFMD : 1; // offset 0x0, size 0x4
+    unsigned int DPMS : 2; // offset 0x0, size 0x4
+    unsigned int p0 : 28;  // offset 0x0, size 0x4
+    unsigned int p1;       // offset 0x4, size 0x4
+};
+
+// total size: 0x28
+struct sceGsDispEnv {
+    struct tGS_PMODE pmode;      // offset 0x0, size 0x8
+    struct tGS_SMODE2 smode2;    // offset 0x8, size 0x8
+    struct tGS_DISPFB2 dispfb;   // offset 0x10, size 0x8
+    struct tGS_DISPLAY2 display; // offset 0x18, size 0x8
+    struct tGS_BGCOLOR bgcolor;  // offset 0x20, size 0x8
+};
+
+// total size: 0x8
+struct sceGsColclamp {
+    unsigned long CLAMP : 1;  // offset 0x0, size 0x4
+    unsigned long pad01 : 63; // offset 0x0, size 0x4
+};
+
+// total size: 0x80
+struct sceGsDrawEnv1 {
+    struct sceGsFrame frame1;          // offset 0x0, size 0x8
+    unsigned long frame1addr;          // offset 0x8, size 0x4
+    struct sceGsZbuf zbuf1;            // offset 0x10, size 0x8
+    signed long zbuf1addr;             // offset 0x18, size 0x4
+    struct sceGsXyoffset xyoffset1;    // offset 0x20, size 0x8
+    signed long xyoffset1addr;         // offset 0x28, size 0x4
+    struct sceGsScissor scissor1;      // offset 0x30, size 0x8
+    signed long scissor1addr;          // offset 0x38, size 0x4
+    struct sceGsPrmodecont prmodecont; // offset 0x40, size 0x8
+    signed long prmodecontaddr;        // offset 0x48, size 0x4
+    struct sceGsColclamp colclamp;     // offset 0x50, size 0x8
+    signed long colclampaddr;          // offset 0x58, size 0x4
+    struct sceGsDthe dthe;             // offset 0x60, size 0x8
+    signed long dtheaddr;              // offset 0x68, size 0x4
+    struct sceGsTest test1;            // offset 0x70, size 0x8
+    signed long test1addr;             // offset 0x78, size 0x4
+};
+
+// total size: 0x80
+struct sceGsDrawEnv2 {
+    struct sceGsFrame frame2;          // offset 0x0, size 0x8
+    unsigned long frame2addr;          // offset 0x8, size 0x4
+    struct sceGsZbuf zbuf2;            // offset 0x10, size 0x8
+    signed long zbuf2addr;             // offset 0x18, size 0x4
+    struct sceGsXyoffset xyoffset2;    // offset 0x20, size 0x8
+    signed long xyoffset2addr;         // offset 0x28, size 0x4
+    struct sceGsScissor scissor2;      // offset 0x30, size 0x8
+    signed long scissor2addr;          // offset 0x38, size 0x4
+    struct sceGsPrmodecont prmodecont; // offset 0x40, size 0x8
+    signed long prmodecontaddr;        // offset 0x48, size 0x4
+    struct sceGsColclamp colclamp;     // offset 0x50, size 0x8
+    signed long colclampaddr;          // offset 0x58, size 0x4
+    struct sceGsDthe dthe;             // offset 0x60, size 0x8
+    signed long dtheaddr;              // offset 0x68, size 0x4
+    struct sceGsTest test2;            // offset 0x70, size 0x8
+    signed long test2addr;             // offset 0x78, size 0x4
+};
+
+// total size: 0x330
+struct sceGsDBuffDc {
+    struct sceGsDispEnv disp[2]; // offset 0x0, size 0x50
+    struct sceGifTag giftag0;    // offset 0x50, size 0x10
+    struct sceGsDrawEnv1 draw01; // offset 0x60, size 0x80
+    struct sceGsDrawEnv2 draw02; // offset 0xE0, size 0x80
+    struct sceGsClear clear0;    // offset 0x160, size 0x60
+    struct sceGifTag giftag1;    // offset 0x1C0, size 0x10
+    struct sceGsDrawEnv1 draw11; // offset 0x1D0, size 0x80
+    struct sceGsDrawEnv2 draw12; // offset 0x250, size 0x80
+    struct sceGsClear clear1;    // offset 0x2D0, size 0x60
 };
 
 #endif /* _EESTRUCT_H_ */

@@ -335,6 +335,7 @@ config.libs = [
         Object(NonMatching, "Develop/Projects/SR2/pgm/src/Main2.cpp"),
     ]),
     GameSrc("2D", [
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Advertise/SaveData2D.cpp"),
         Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/Advertise/Shop.cpp"),
         Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/CtrlIcon/CtrlIcon.cpp"),
         Object(NonMatching, "Develop/Projects/SR2/pgm/src/2D/CtrlIcon/CtrlIconSurvivalBall.cpp"),

@@ -1,685 +1,503 @@
-/*
-    Compile unit: C:\Develop\Projects\SR2\pgm\src\Object\Player\Gear\GearChildren.hpp
-    Producer: MW MIPS C Compiler
-    Language: C++
-    Code range: 0x00311890 -> 0x00311928
-*/
-// Range: 0x311890 -> 0x311928
-// this: r17
-clsInitialBoard::~clsInitialBoard() {
-    /* anonymous block */ {
-        // Range: 0x311890 -> 0x311928
-    }
-}
-
-
-// Range: 0x311BC0 -> 0x311C58
-// this: r17
-clsGearEmDef::~clsGearEmDef() {
-    /* anonymous block */ {
-        // Range: 0x311BC0 -> 0x311C58
-    }
-}
-
-
-// Range: 0x311CC0 -> 0x311D68
-// this: r17
-clsGearGdDef::~clsGearGdDef() {
-    /* anonymous block */ {
-        // Range: 0x311CC0 -> 0x311D68
-    }
-}
-
-
-// Range: 0x311DE0 -> 0x311E78
-// this: r17
-clsGearSkDef::~clsGearSkDef() {
-    /* anonymous block */ {
-        // Range: 0x311DE0 -> 0x311E78
-    }
-}
-
-
-// Range: 0x311ED0 -> 0x311F68
-// this: r17
-clsGearSpGpGetRate::~clsGearSpGpGetRate() {
-    /* anonymous block */ {
-        // Range: 0x311ED0 -> 0x311F68
-    }
-}
-
-
-// Range: 0x311F70 -> 0x311F78
-void draw() {
-    /* anonymous block */ {
-        // Range: 0x311F70 -> 0x311F78
-    }
-}
-
-
-// Range: 0x311F80 -> 0x311F88
-enum enmDraw2DType getDraw2DType() {
-    /* anonymous block */ {
-        // Range: 0x311F80 -> 0x311F88
-    }
-}
-
-
-// Range: 0x311FB0 -> 0x312048
-// this: r17
-clsGearSpSoundChange::~clsGearSpSoundChange() {
-    /* anonymous block */ {
-        // Range: 0x311FB0 -> 0x312048
-    }
-}
-
-
-// Range: 0x312050 -> 0x312058
-void draw() {
-    /* anonymous block */ {
-        // Range: 0x312050 -> 0x312058
-    }
-}
-
-
-// Range: 0x312060 -> 0x312068
-enum enmDraw2DType getDraw2DType() {
-    /* anonymous block */ {
-        // Range: 0x312060 -> 0x312068
-    }
-}
-
-
-// Range: 0x312070 -> 0x312108
-// this: r17
-clsGearSpItemRankUp::~clsGearSpItemRankUp() {
-    /* anonymous block */ {
-        // Range: 0x312070 -> 0x312108
-    }
-}
-
-
-// Range: 0x312110 -> 0x312118
-void draw() {
-    /* anonymous block */ {
-        // Range: 0x312110 -> 0x312118
-    }
-}
-
-
-// Range: 0x312120 -> 0x312128
-enum enmDraw2DType getDraw2DType() {
-    /* anonymous block */ {
-        // Range: 0x312120 -> 0x312128
-    }
-}
-
-
-// Range: 0x312130 -> 0x3121C8
-// this: r17
-clsGearSpRingCapacity::~clsGearSpRingCapacity() {
-    /* anonymous block */ {
-        // Range: 0x312130 -> 0x3121C8
-    }
-}
-
-
-// Range: 0x3121D0 -> 0x3121D8
-void draw() {
-    /* anonymous block */ {
-        // Range: 0x3121D0 -> 0x3121D8
-    }
-}
-
-
-// Range: 0x3121E0 -> 0x3121E8
-enum enmDraw2DType getDraw2DType() {
-    /* anonymous block */ {
-        // Range: 0x3121E0 -> 0x3121E8
-    }
-}
-
-
-// Range: 0x3121F0 -> 0x312288
-// this: r17
-clsGearSpAutoWall::~clsGearSpAutoWall() {
-    /* anonymous block */ {
-        // Range: 0x3121F0 -> 0x312288
-    }
-}
-
-
-// Range: 0x312290 -> 0x312298
-void draw() {
-    /* anonymous block */ {
-        // Range: 0x312290 -> 0x312298
-    }
-}
-
-
-// Range: 0x3122A0 -> 0x3122A8
-enum enmDraw2DType getDraw2DType() {
-    /* anonymous block */ {
-        // Range: 0x3122A0 -> 0x3122A8
-    }
-}
-
-
-// Range: 0x3122B0 -> 0x312348
-// this: r17
-clsGearSpGhost::~clsGearSpGhost() {
-    /* anonymous block */ {
-        // Range: 0x3122B0 -> 0x312348
-    }
-}
-
-
-// Range: 0x312350 -> 0x312358
-void draw() {
-    /* anonymous block */ {
-        // Range: 0x312350 -> 0x312358
-    }
-}
-
-
-// Range: 0x312360 -> 0x312368
-enum enmDraw2DType getDraw2DType() {
-    /* anonymous block */ {
-        // Range: 0x312360 -> 0x312368
-    }
-}
-
-
-// Range: 0x312370 -> 0x312408
-// this: r17
-clsGearSpAddTrick::~clsGearSpAddTrick() {
-    /* anonymous block */ {
-        // Range: 0x312370 -> 0x312408
-    }
-}
-
-
-// Range: 0x312410 -> 0x312418
-void draw() {
-    /* anonymous block */ {
-        // Range: 0x312410 -> 0x312418
-    }
-}
-
-
-// Range: 0x312420 -> 0x312428
-enum enmDraw2DType getDraw2DType() {
-    /* anonymous block */ {
-        // Range: 0x312420 -> 0x312428
-    }
-}
-
-
-// Range: 0x312430 -> 0x3124C8
-// this: r17
-clsGearSpGcSpeed::~clsGearSpGcSpeed() {
-    /* anonymous block */ {
-        // Range: 0x312430 -> 0x3124C8
-    }
-}
-
-
-// Range: 0x3124D0 -> 0x3124D8
-void draw() {
-    /* anonymous block */ {
-        // Range: 0x3124D0 -> 0x3124D8
-    }
-}
-
-
-// Range: 0x3124E0 -> 0x3124E8
-enum enmDraw2DType getDraw2DType() {
-    /* anonymous block */ {
-        // Range: 0x3124E0 -> 0x3124E8
-    }
-}
-
-
-// Range: 0x3124F0 -> 0x3125AC
-// this: r17
-clsGearSp1stSpeed::~clsGearSp1stSpeed() {
-    /* anonymous block */ {
-        // Range: 0x3124F0 -> 0x3125AC
-    }
-}
-
-
-// Range: 0x3125B0 -> 0x3126A0
-// this: r16
-void clsGearSp1stSpeed::clearChangeActionParam() {
-    /* anonymous block */ {
-        // Range: 0x3125B0 -> 0x3126A0
-    }
-}
-
-
-// Range: 0x3126A0 -> 0x312848
-// this: r18
-void clsGearSp1stSpeed::draw() {
-    /* anonymous block */ {
-        // Range: 0x3126A0 -> 0x312848
-        unsigned char bEnabled; // r17
-        float f32Speed; // r20
-        class stcData * opsBaseData; // r2
-        float f32FastSpeed; // r1
-    }
-}
-
-
-// Range: 0x312850 -> 0x312858
-enum enmDraw2DType getDraw2DType() {
-    /* anonymous block */ {
-        // Range: 0x312850 -> 0x312858
-    }
-}
-
-
-// Range: 0x312860 -> 0x3128F8
-// this: r17
-clsGearSpMaxSpeed::~clsGearSpMaxSpeed() {
-    /* anonymous block */ {
-        // Range: 0x312860 -> 0x3128F8
-    }
-}
-
-
-// Range: 0x312900 -> 0x312988
-// this: r2
-void clsGearSpMaxSpeed::eventGearChange() {
-    /* anonymous block */ {
-        // Range: 0x312900 -> 0x312988
-    }
-}
-
-
-// Range: 0x312990 -> 0x312A74
-// this: r16
-void clsGearSpMaxSpeed::draw() {
-    /* anonymous block */ {
-        // Range: 0x312990 -> 0x312A74
-    }
-}
-
-
-// Range: 0x312A80 -> 0x312A88
-enum enmDraw2DType getDraw2DType() {
-    /* anonymous block */ {
-        // Range: 0x312A80 -> 0x312A88
-    }
-}
-
-
-// Range: 0x312A90 -> 0x312B28
-// this: r17
-clsGearSpAgp::~clsGearSpAgp() {
-    /* anonymous block */ {
-        // Range: 0x312A90 -> 0x312B28
-    }
-}
-
-
-// Range: 0x312B30 -> 0x312B38
-void draw() {
-    /* anonymous block */ {
-        // Range: 0x312B30 -> 0x312B38
-    }
-}
-
-
-// Range: 0x312B40 -> 0x312B48
-enum enmDraw2DType getDraw2DType() {
-    /* anonymous block */ {
-        // Range: 0x312B40 -> 0x312B48
-    }
-}
-
-
-// Range: 0x312B50 -> 0x312BE8
-// this: r17
-clsGearSpAttackTimeUp::~clsGearSpAttackTimeUp() {
-    /* anonymous block */ {
-        // Range: 0x312B50 -> 0x312BE8
-    }
-}
-
-
-// Range: 0x312BF0 -> 0x312BF8
-enum enmDraw2DType getDraw2DType() {
-    /* anonymous block */ {
-        // Range: 0x312BF0 -> 0x312BF8
-    }
-}
-
-
-// Range: 0x312C20 -> 0x312CB8
-// this: r17
-clsGearSpAllParamUp::~clsGearSpAllParamUp() {
-    /* anonymous block */ {
-        // Range: 0x312C20 -> 0x312CB8
-    }
-}
-
-
-// Range: 0x312CC0 -> 0x312CC8
-enum enmDraw2DType getDraw2DType() {
-    /* anonymous block */ {
-        // Range: 0x312CC0 -> 0x312CC8
-    }
-}
-
-
-// Range: 0x312CD0 -> 0x312D68
-// this: r17
-clsGearSpDurability::~clsGearSpDurability() {
-    /* anonymous block */ {
-        // Range: 0x312CD0 -> 0x312D68
-    }
-}
-
-
-// Range: 0x312D70 -> 0x312D78
-enum enmDraw2DType getDraw2DType() {
-    /* anonymous block */ {
-        // Range: 0x312D70 -> 0x312D78
-    }
-}
-
-
-// Range: 0x312D80 -> 0x312E18
-// this: r17
-clsGearWhDef::~clsGearWhDef() {
-    /* anonymous block */ {
-        // Range: 0x312D80 -> 0x312E18
-    }
-}
-
-
-// Range: 0x312E60 -> 0x312EF8
-// this: r17
-clsGearSfDef::~clsGearSfDef() {
-    /* anonymous block */ {
-        // Range: 0x312E60 -> 0x312EF8
-    }
-}
-
-
-// Range: 0x312F40 -> 0x312FD8
-// this: r17
-clsGearArDef::~clsGearArDef() {
-    /* anonymous block */ {
-        // Range: 0x312F40 -> 0x312FD8
-    }
-}
-
-
-// Range: 0x313030 -> 0x3130C8
-// this: r17
-clsGearSuperHangOn::~clsGearSuperHangOn() {
-    /* anonymous block */ {
-        // Range: 0x313030 -> 0x3130C8
-    }
-}
-
-
-// Range: 0x3130D0 -> 0x3130D8
-enum enmDraw2DType getDraw2DType() {
-    /* anonymous block */ {
-        // Range: 0x3130D0 -> 0x3130D8
-    }
-}
-
-
-// Range: 0x313120 -> 0x3131B8
-// this: r17
-clsGearBkDef::~clsGearBkDef() {
-    /* anonymous block */ {
-        // Range: 0x313120 -> 0x3131B8
-    }
-}
-
-
-// Range: 0x3131D0 -> 0x313268
-// this: r17
-clsGearSpDef::~clsGearSpDef() {
-    /* anonymous block */ {
-        // Range: 0x3131D0 -> 0x313268
-    }
-}
-
-
-// Range: 0x313270 -> 0x313308
-// this: r17
-clsGearBdDef::~clsGearBdDef() {
-    /* anonymous block */ {
-        // Range: 0x313270 -> 0x313308
-    }
-}
-
-
-// Range: 0x34F020 -> 0x34F0B8
-// this: r17
-clsGearSpGpInfinity::~clsGearSpGpInfinity() {
-    /* anonymous block */ {
-        // Range: 0x34F020 -> 0x34F0B8
-    }
-}
-
-
-// Range: 0x34F0C0 -> 0x34F0C8
-enum enmDraw2DType getDraw2DType() {
-    /* anonymous block */ {
-        // Range: 0x34F0C0 -> 0x34F0C8
-    }
-}
-
-
-// Range: 0x3508A0 -> 0x350938
-// this: r17
-clsGearSpThrottle::~clsGearSpThrottle() {
-    /* anonymous block */ {
-        // Range: 0x3508A0 -> 0x350938
-    }
-}
-
-
-// Range: 0x350940 -> 0x350948
-void draw() {
-    /* anonymous block */ {
-        // Range: 0x350940 -> 0x350948
-    }
-}
-
-
-// Range: 0x350950 -> 0x350958
-// this: r2
-enum enmDraw2DType clsGearSpThrottle::getDraw2DType() {
-    /* anonymous block */ {
-        // Range: 0x350950 -> 0x350958
-    }
-}
-
-
-// Range: 0x350960 -> 0x3509F8
-// this: r17
-clsGearSpSpeedTrap::~clsGearSpSpeedTrap() {
-    /* anonymous block */ {
-        // Range: 0x350960 -> 0x3509F8
-    }
-}
-
-
-// Range: 0x350A00 -> 0x350A08
-void draw() {
-    /* anonymous block */ {
-        // Range: 0x350A00 -> 0x350A08
-    }
-}
-
-
-// Range: 0x350A10 -> 0x350A18
-enum enmDraw2DType getDraw2DType() {
-    /* anonymous block */ {
-        // Range: 0x350A10 -> 0x350A18
-    }
-}
-
-
-// Range: 0x350A20 -> 0x350AB8
-// this: r17
-clsGearSpCtrlTrap::~clsGearSpCtrlTrap() {
-    /* anonymous block */ {
-        // Range: 0x350A20 -> 0x350AB8
-    }
-}
-
-
-// Range: 0x350AC0 -> 0x350AC8
-void draw() {
-    /* anonymous block */ {
-        // Range: 0x350AC0 -> 0x350AC8
-    }
-}
-
-
-// Range: 0x350AD0 -> 0x350AD8
-enum enmDraw2DType getDraw2DType() {
-    /* anonymous block */ {
-        // Range: 0x350AD0 -> 0x350AD8
-    }
-}
-
-
-// Range: 0x350AE0 -> 0x350B78
-// this: r17
-clsGearSpViewTrap::~clsGearSpViewTrap() {
-    /* anonymous block */ {
-        // Range: 0x350AE0 -> 0x350B78
-    }
-}
-
-
-// Range: 0x350B80 -> 0x350B88
-void draw() {
-    /* anonymous block */ {
-        // Range: 0x350B80 -> 0x350B88
-    }
-}
-
-
-// Range: 0x350B90 -> 0x350B98
-enum enmDraw2DType getDraw2DType() {
-    /* anonymous block */ {
-        // Range: 0x350B90 -> 0x350B98
-    }
-}
-
-
-// Range: 0x350BA0 -> 0x350C38
-// this: r17
-clsGearSpMagBarrier::~clsGearSpMagBarrier() {
-    /* anonymous block */ {
-        // Range: 0x350BA0 -> 0x350C38
-    }
-}
-
-
-// Range: 0x350C40 -> 0x350C48
-void draw() {
-    /* anonymous block */ {
-        // Range: 0x350C40 -> 0x350C48
-    }
-}
-
-
-// Range: 0x350C50 -> 0x350C58
-enum enmDraw2DType getDraw2DType() {
-    /* anonymous block */ {
-        // Range: 0x350C50 -> 0x350C58
-    }
-}
-
-
-// Range: 0x350C60 -> 0x350CF8
-// this: r17
-clsGearSpTank::~clsGearSpTank() {
-    /* anonymous block */ {
-        // Range: 0x350C60 -> 0x350CF8
-    }
-}
-
-
-// Range: 0x350D00 -> 0x350D08
-void draw() {
-    /* anonymous block */ {
-        // Range: 0x350D00 -> 0x350D08
-    }
-}
-
-
-// Range: 0x350D10 -> 0x350D18
-enum enmDraw2DType getDraw2DType() {
-    /* anonymous block */ {
-        // Range: 0x350D10 -> 0x350D18
-    }
-}
-
-
-// Range: 0x350D20 -> 0x350DB8
-// this: r17
-clsGearAngelOrDevilChange::~clsGearAngelOrDevilChange() {
-    /* anonymous block */ {
-        // Range: 0x350D20 -> 0x350DB8
-    }
-}
-
-
-// Range: 0x350DC0 -> 0x350DC8
-// this: r2
-enum enmDraw2DType clsGearAngelOrDevilChange::getDraw2DType() {
-    /* anonymous block */ {
-        // Range: 0x350DC0 -> 0x350DC8
-    }
-}
-
-
-// Range: 0x350DD0 -> 0x350E68
-// this: r17
-clsGearAngelOrDevil::~clsGearAngelOrDevil() {
-    /* anonymous block */ {
-        // Range: 0x350DD0 -> 0x350E68
-    }
-}
-
-
-// Range: 0x350E70 -> 0x350F08
-// this: r17
-clsGearReserveTank::~clsGearReserveTank() {
-    /* anonymous block */ {
-        // Range: 0x350E70 -> 0x350F08
-    }
-}
-
-
-// Range: 0x350F10 -> 0x350FA8
-// this: r17
-clsGearThrottle::~clsGearThrottle() {
-    /* anonymous block */ {
-        // Range: 0x350F10 -> 0x350FA8
-    }
-}
-
-
-// Range: 0x350FB0 -> 0x351048
-// this: r17
-clsGearMag::~clsGearMag() {
-    /* anonymous block */ {
-        // Range: 0x350FB0 -> 0x351048
-    }
-}
-
-
+#ifndef GEARCHILDREN_HPP
+#define GEARCHILDREN_HPP
+
+#include "Develop/Projects/SR2/pgm/src/Object/Player/Gear/GearPtnEffectPart.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Player/Gear/GearPtnAirride.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Player/Gear/GearPtnBike.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Player/Gear/GearPtnBoard.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Player/Gear/GearPtnEmpty.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Player/Gear/GearPtnGrind.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Player/Gear/GearPtnModelPart.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Player/Gear/GearPtnSkate.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Player/Gear/GearPtnSurfing.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Player/Gear/GearPtnWheel.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
+#include "usr/local/sega/nn/src/Matrix/nnvector.h"
+
+class clsTask;
+
+// TODO: scaffold all gear child classes (depend on clsGear → clsGearBasePrototype)
+
+namespace nspGear {
+enum enmLevel {
+    LV_ERROR = -1,
+    LV_BASE = 0,
+    LV_01 = 1,
+    LV_02 = 2,
+    LV_03 = 3,
+    MAX_LV_NUM = 4,
+    MAX_LV_TABLE_NUM = 4,
+    MAX_MODELS = 9,
+};
+}
+
+// total size: 0x70
+class clsGearBdDef : public clsGearPtnBoard {
+public:
+    clsGearBdDef(clsGearCtrl* pcGearCtrl,
+                 const stcGearData& rsGearData,
+                 const stcAddPrfm& rsGearPrfm)
+        : clsGearPtnBoard(pcGearCtrl, rsGearData, rsGearPrfm)
+    {
+    }
+    virtual ~clsGearBdDef() {}
+};
+
+// total size: 0x70
+class clsGearSpDef : public clsGearPtnBoard {
+public:
+    clsGearSpDef(clsGearCtrl* pcGearCtrl,
+                 const stcGearData& rsGearData,
+                 const stcAddPrfm& rsGearPrfm)
+        : clsGearPtnBoard(pcGearCtrl, rsGearData, rsGearPrfm)
+    {
+    }
+    virtual ~clsGearSpDef() {}
+};
+
+// total size: 0x60
+class clsGearBkDef : public clsGearPtnBike {
+public:
+    clsGearBkDef(clsGearCtrl* pcGearCtrl,
+                 const stcGearData& rsGearData,
+                 const stcAddPrfm& rsGearPrfm)
+        : clsGearPtnBike(pcGearCtrl, rsGearData, rsGearPrfm)
+    {
+    }
+    virtual ~clsGearBkDef() {}
+};
+
+// total size: 0x60
+class clsGearSuperHangOn : public clsGearPtnBike {
+public:
+    clsGearSuperHangOn(clsGearCtrl* pcGearCtrl,
+                       const stcGearData& rsGearData,
+                       const stcAddPrfm& rsGearPrfm)
+        : clsGearPtnBike(pcGearCtrl, rsGearData, rsGearPrfm)
+    {
+    }
+    virtual ~clsGearSuperHangOn() {}
+    virtual enmDraw2DType getDraw2DType() const { return TYPE_2D_SP_SOUND_CHANGE; }
+};
+
+// total size: 0x60
+class clsGearArDef : public clsGearPtnAirride {
+public:
+    clsGearArDef(clsGearCtrl* pcGearCtrl,
+                 const stcGearData& rsGearData,
+                 const stcAddPrfm& rsGearPrfm)
+        : clsGearPtnAirride(pcGearCtrl, rsGearData, rsGearPrfm)
+    {
+    }
+    virtual ~clsGearArDef() {}
+};
+
+// total size: 0xA0
+class clsGearSfDef : public clsGearPtnSurfing {
+public:
+    clsGearSfDef(clsGearCtrl* pcGearCtrl,
+                 const stcGearData& rsGearData,
+                 const stcAddPrfm& rsGearPrfm)
+        : clsGearPtnSurfing(pcGearCtrl, rsGearData, rsGearPrfm)
+    {
+    }
+    virtual ~clsGearSfDef() {}
+};
+
+// total size: 0x70
+class clsGearWhDef : public clsGearPtnWheel {
+public:
+    clsGearWhDef(clsGearCtrl* pcGearCtrl,
+                 const stcGearData& rsGearData,
+                 const stcAddPrfm& rsGearPrfm)
+        : clsGearPtnWheel(pcGearCtrl, rsGearData, rsGearPrfm)
+    {
+    }
+    virtual ~clsGearWhDef() {}
+};
+
+// total size: 0x80
+class clsGearGdDef : public clsGearPtnGrind {
+public:
+    clsGearGdDef(clsGearCtrl* pcGearCtrl,
+                 const stcGearData& rsGearData,
+                 const stcAddPrfm& rsGearPrfm)
+        : clsGearPtnGrind(pcGearCtrl, rsGearData, rsGearPrfm)
+    {
+    }
+    virtual ~clsGearGdDef() {}
+};
+
+// total size: 0x70
+class clsGearSkDef : public clsGearPtnSkate {
+public:
+    clsGearSkDef(clsGearCtrl* pcGearCtrl,
+                 const stcGearData& rsGearData,
+                 const stcAddPrfm& rsGearPrfm)
+        : clsGearPtnSkate(pcGearCtrl, rsGearData, rsGearPrfm)
+    {
+    }
+    virtual ~clsGearSkDef() {}
+};
+
+class clsGearEmDef : public clsGearPtnEmpty {
+public:
+    clsGearEmDef(clsGearCtrl* pcGearCtrl,
+                 const stcGearData& rsGearData,
+                 const stcAddPrfm& rsGearPrfm)
+        : clsGearPtnEmpty(pcGearCtrl, rsGearData, rsGearPrfm)
+    {
+    }
+    virtual ~clsGearEmDef() {}
+};
+
+// total size: 0x60
+class clsGearSpThrottle : public clsGearPtnEffectPart {
+public:
+    virtual ~clsGearSpThrottle() {}
+
+    virtual enmDraw2DType getDraw2DType() const { return m_eDraw2DType; }
+    virtual f32 getDraw2DRate() const;
+    virtual stcAddPrfm& getPrfm() const;
+    virtual void eventGearChange();
+    virtual void draw(const f32 (*pParam1)[4][4], f32 f32Param2, u32 u32Param3) {}
+    void copy(const clsGearSpThrottle* pcGear);
+
+    nspGear::enmLevel m_eLevel;  // offset 0x50, size 0x4
+    enmDraw2DType m_eDraw2DType; // offset 0x54, size 0x4
+    u32 m_u32SelectNo;           // offset 0x58, size 0x4
+    f32 m_f32SelectFrame;        // offset 0x5C, size 0x4
+};
+
+// total size: 0x50
+class clsGearSpTank : public clsGearPtnEffectPart {
+public:
+    virtual ~clsGearSpTank() {}
+
+    virtual enmDraw2DType getDraw2DType() const { return (enmDraw2DType)(16); }
+    virtual void eventGearChange();
+    virtual void draw(const f32 (*pParam1)[4][4], f32 f32Param2, u32 u32Param3) {}
+};
+
+// total size: 0x50
+class clsGearSpMagBarrier : public clsGearPtnEffectPart {
+public:
+    virtual ~clsGearSpMagBarrier() {}
+
+    virtual enmDraw2DType getDraw2DType() const { return (enmDraw2DType)(17); }
+    virtual void eventGearChange();
+    virtual void draw(const f32 (*pParam1)[4][4], f32 f32Param2, u32 u32Param3) {}
+};
+
+// total size: 0x50
+class clsGearSpCtrlTrap : public clsGearPtnEffectPart {
+public:
+    virtual ~clsGearSpCtrlTrap() {}
+
+    virtual enmDraw2DType getDraw2DType() const { return (enmDraw2DType)(22); }
+    virtual void eventGearChange();
+    virtual void draw(const f32 (*pParam1)[4][4], f32 f32Param2, u32 u32Param3) {}
+};
+
+// total size: 0x50
+class clsGearSpSpeedTrap : public clsGearPtnEffectPart {
+public:
+    virtual ~clsGearSpSpeedTrap() {}
+
+    virtual enmDraw2DType getDraw2DType() const { return (enmDraw2DType)(23); }
+    virtual void eventGearChange();
+    virtual void draw(const f32 (*pParam1)[4][4], f32 f32Param2, u32 u32Param3) {}
+};
+
+// total size: 0x50
+class clsGearSpViewTrap : public clsGearPtnEffectPart {
+public:
+    virtual ~clsGearSpViewTrap() {}
+
+    virtual enmDraw2DType getDraw2DType() const { return (enmDraw2DType)(21); }
+    virtual void eventGearChange();
+    virtual void draw(const f32 (*pParam1)[4][4], f32 f32Param2, u32 u32Param3) {}
+};
+
+// total size: 0x60
+class clsGearSpGpInfinity : public clsGearPtnModelPart {
+public:
+    clsGearSpGpInfinity(clsGearCtrl* pcGearCtrl,
+                        const stcGearData& rsGearData,
+                        const stcAddPrfm& rsGearPrfm)
+        : clsGearPtnModelPart(pcGearCtrl, rsGearData, rsGearPrfm)
+    {
+    }
+    virtual ~clsGearSpGpInfinity() {}
+
+    virtual enmDraw2DType getDraw2DType() const { return (enmDraw2DType)(26); }
+    virtual void draw(const f32 (*psGearMtx)[4][4], f32 f32Alpha, u32 u32AddDrawFlagI);
+};
+
+// total size: 0x60
+class clsGearAngelOrDevil : public clsGearPtnAirride {
+public:
+    virtual ~clsGearAngelOrDevil() {}
+
+    virtual void clearChangeActionParam();
+    virtual void behavior();
+};
+
+// total size: 0x80
+class clsGearAngelOrDevilChange : public clsGearPtnAirride {
+public:
+    enum enmType {
+        TYPE_NORAML = 0,
+        TYPE_ANGEL = 1,
+        TYPE_DEVIL = 2,
+        TYPE_MAX = 3,
+    };
+
+    virtual ~clsGearAngelOrDevilChange() {}
+
+    virtual enmDraw2DType getDraw2DType() const { return m_eDraw2DType; }
+    virtual f32 getDraw2DRate() const;
+    virtual void behavior();
+    virtual void eventGearChange();
+
+    enmDraw2DType m_eDraw2DType;       // offset 0x60, size 0x4
+    u32 m_u32SelectNo;                 // offset 0x64, size 0x4
+    f32 m_f32SelectFrame;              // offset 0x68, size 0x4
+    enmType m_eType;                   // offset 0x6C, size 0x4
+    clsModelType_OB_TX* m_apcModel[3]; // offset 0x70, size 0xC
+};
+
+// total size: 0x70
+class clsInitialBoard : public clsGearPtnBoard {
+public:
+    virtual ~clsInitialBoard() {}
+
+    void drawNonAction(const f32 (*psGearMtx)[4][4], f32 f32Alpha, u32 u32AddDrawFlagI);
+};
+
+// total size: 0x80
+class clsGearThrottle : public clsGearPtnBoard {
+public:
+    virtual ~clsGearThrottle() {}
+
+    virtual void clearChangeActionParam();
+    virtual void behavior();
+
+    clsGearSpThrottle* m_pcGearOldThrottle; // offset 0x70, size 0x4
+};
+
+// total size: 0x70
+class clsGearReserveTank : public clsGearPtnBike {
+public:
+    virtual ~clsGearReserveTank() {}
+
+    virtual void setHideNodeStatus(u32* psNodeStat);
+    virtual void clearChangeActionParam();
+
+    u8 m_u8RestRankCnt; // offset 0x60, size 0x1
+};
+
+// total size: 0x80
+class clsGearMag : public clsGearPtnBoard {
+public:
+    virtual ~clsGearMag() {}
+
+    virtual void setHideNodeStatus(u32* psNodeStat);
+    virtual void clearChangeActionParam();
+    virtual void behavior();
+    virtual void draw(const f32 (*psGearMtx)[4][4], f32 f32Alpha, u32 u32AddDrawFlagI);
+
+    NNS_VECTOR* m_psTranslation; // offset 0x70, size 0x4
+};
+
+// total size: 0x60
+class clsGearSp1stSpeed : public clsGearPtnEffectPart {
+public:
+    clsGearSp1stSpeed(clsGearCtrl* pcGearCtrl,
+                      const stcGearData& rsGearData,
+                      const stcAddPrfm& rsGearPrfm)
+        : clsGearPtnEffectPart(pcGearCtrl, rsGearData, rsGearPrfm)
+    {
+    }
+    virtual ~clsGearSp1stSpeed();
+    virtual enmDraw2DType getDraw2DType() const;
+    virtual void clearChangeActionParam();
+    virtual void draw(const f32 (*psGearMtx)[4][4], f32 f32Alpha, u32 u32AddDrawFlag);
+
+    u8 m_u8EffectType;       // offset 0x50, size 0x1
+    clsTask* m_pcEffectTask; // offset 0x54, size 0x4
+};
+
+// total size: 0x50
+class clsGearSpMaxSpeed : public clsGearPtnEffectPart {
+public:
+    clsGearSpMaxSpeed(clsGearCtrl* pcGearCtrl,
+                      const stcGearData& rsGearData,
+                      const stcAddPrfm& rsGearPrfm)
+        : clsGearPtnEffectPart(pcGearCtrl, rsGearData, rsGearPrfm)
+    {
+    }
+    virtual ~clsGearSpMaxSpeed();
+    virtual enmDraw2DType getDraw2DType() const;
+    virtual void eventGearChange();
+    virtual void draw(const f32 (*psGearMtx)[4][4], f32 f32Alpha, u32 u32AddDrawFlag);
+};
+
+// total size: 0x50
+class clsGearSpAgp : public clsGearPtnEffectPart {
+public:
+    clsGearSpAgp(clsGearCtrl* pcGearCtrl,
+                 const stcGearData& rsGearData,
+                 const stcAddPrfm& rsGearPrfm)
+        : clsGearPtnEffectPart(pcGearCtrl, rsGearData, rsGearPrfm)
+    {
+    }
+    virtual ~clsGearSpAgp();
+    virtual enmDraw2DType getDraw2DType() const;
+    virtual void draw(const f32 (*psGearMtx)[4][4], f32 f32Alpha, u32 u32AddDrawFlag);
+};
+
+// total size: 0x50
+class clsGearSpAttackTimeUp : public clsGearPtnModelPart {
+public:
+    clsGearSpAttackTimeUp(clsGearCtrl* pcGearCtrl,
+                          const stcGearData& rsGearData,
+                          const stcAddPrfm& rsGearPrfm)
+        : clsGearPtnModelPart(pcGearCtrl, rsGearData, rsGearPrfm)
+    {
+    }
+    virtual ~clsGearSpAttackTimeUp();
+    virtual enmDraw2DType getDraw2DType() const;
+};
+
+// total size: 0x50
+class clsGearSpAllParamUp : public clsGearPtnModelPart {
+public:
+    clsGearSpAllParamUp(clsGearCtrl* pcGearCtrl,
+                        const stcGearData& rsGearData,
+                        const stcAddPrfm& rsGearPrfm)
+        : clsGearPtnModelPart(pcGearCtrl, rsGearData, rsGearPrfm)
+    {
+    }
+    virtual ~clsGearSpAllParamUp();
+    virtual enmDraw2DType getDraw2DType() const;
+};
+
+// total size: 0x50
+class clsGearSpDurability : public clsGearPtnModelPart {
+public:
+    clsGearSpDurability(clsGearCtrl* pcGearCtrl,
+                        const stcGearData& rsGearData,
+                        const stcAddPrfm& rsGearPrfm)
+        : clsGearPtnModelPart(pcGearCtrl, rsGearData, rsGearPrfm)
+    {
+    }
+    virtual ~clsGearSpDurability();
+    virtual enmDraw2DType getDraw2DType() const;
+};
+
+class clsGearSpGpGetRate : public clsGearPtnEffectPart {
+public:
+    clsGearSpGpGetRate(clsGearCtrl* pcGearCtrl,
+                       const stcGearData& rsGearData,
+                       const stcAddPrfm& rsGearPrfm)
+        : clsGearPtnEffectPart(pcGearCtrl, rsGearData, rsGearPrfm)
+    {
+    }
+    virtual ~clsGearSpGpGetRate();
+    virtual enmDraw2DType getDraw2DType() const;
+    virtual void draw(const f32 (*psGearMtx)[4][4], f32 f32Alpha, u32 u32AddDrawFlag);
+};
+
+class clsGearSpSoundChange : public clsGearPtnEffectPart {
+public:
+    clsGearSpSoundChange(clsGearCtrl* pcGearCtrl,
+                         const stcGearData& rsGearData,
+                         const stcAddPrfm& rsGearPrfm)
+        : clsGearPtnEffectPart(pcGearCtrl, rsGearData, rsGearPrfm)
+    {
+    }
+    virtual ~clsGearSpSoundChange();
+    virtual enmDraw2DType getDraw2DType() const;
+    virtual void draw(const f32 (*psGearMtx)[4][4], f32 f32Alpha, u32 u32AddDrawFlag);
+};
+
+class clsGearSpItemRankUp : public clsGearPtnEffectPart {
+public:
+    clsGearSpItemRankUp(clsGearCtrl* pcGearCtrl,
+                        const stcGearData& rsGearData,
+                        const stcAddPrfm& rsGearPrfm)
+        : clsGearPtnEffectPart(pcGearCtrl, rsGearData, rsGearPrfm)
+    {
+    }
+    virtual ~clsGearSpItemRankUp();
+    virtual enmDraw2DType getDraw2DType() const;
+    virtual void draw(const f32 (*psGearMtx)[4][4], f32 f32Alpha, u32 u32AddDrawFlag);
+};
+
+class clsGearSpRingCapacity : public clsGearPtnEffectPart {
+public:
+    clsGearSpRingCapacity(clsGearCtrl* pcGearCtrl,
+                          const stcGearData& rsGearData,
+                          const stcAddPrfm& rsGearPrfm)
+        : clsGearPtnEffectPart(pcGearCtrl, rsGearData, rsGearPrfm)
+    {
+    }
+    virtual ~clsGearSpRingCapacity();
+    virtual enmDraw2DType getDraw2DType() const;
+    virtual void draw(const f32 (*psGearMtx)[4][4], f32 f32Alpha, u32 u32AddDrawFlag);
+};
+
+class clsGearSpAutoWall : public clsGearPtnEffectPart {
+public:
+    clsGearSpAutoWall(clsGearCtrl* pcGearCtrl,
+                      const stcGearData& rsGearData,
+                      const stcAddPrfm& rsGearPrfm)
+        : clsGearPtnEffectPart(pcGearCtrl, rsGearData, rsGearPrfm)
+    {
+    }
+    virtual ~clsGearSpAutoWall();
+    virtual enmDraw2DType getDraw2DType() const;
+    virtual void draw(const f32 (*psGearMtx)[4][4], f32 f32Alpha, u32 u32AddDrawFlag);
+};
+
+class clsGearSpGhost : public clsGearPtnEffectPart {
+public:
+    clsGearSpGhost(clsGearCtrl* pcGearCtrl,
+                   const stcGearData& rsGearData,
+                   const stcAddPrfm& rsGearPrfm)
+        : clsGearPtnEffectPart(pcGearCtrl, rsGearData, rsGearPrfm)
+    {
+    }
+    virtual ~clsGearSpGhost();
+    virtual enmDraw2DType getDraw2DType() const;
+    virtual void draw(const f32 (*psGearMtx)[4][4], f32 f32Alpha, u32 u32AddDrawFlag);
+};
+
+class clsGearSpAddTrick : public clsGearPtnEffectPart {
+public:
+    clsGearSpAddTrick(clsGearCtrl* pcGearCtrl,
+                      const stcGearData& rsGearData,
+                      const stcAddPrfm& rsGearPrfm)
+        : clsGearPtnEffectPart(pcGearCtrl, rsGearData, rsGearPrfm)
+    {
+    }
+    virtual ~clsGearSpAddTrick();
+    virtual enmDraw2DType getDraw2DType() const;
+    virtual void draw(const f32 (*psGearMtx)[4][4], f32 f32Alpha, u32 u32AddDrawFlag);
+};
+
+class clsGearSpGcSpeed : public clsGearPtnEffectPart {
+public:
+    clsGearSpGcSpeed(clsGearCtrl* pcGearCtrl,
+                     const stcGearData& rsGearData,
+                     const stcAddPrfm& rsGearPrfm)
+        : clsGearPtnEffectPart(pcGearCtrl, rsGearData, rsGearPrfm)
+    {
+    }
+    virtual ~clsGearSpGcSpeed();
+    virtual enmDraw2DType getDraw2DType() const;
+    virtual void draw(const f32 (*psGearMtx)[4][4], f32 f32Alpha, u32 u32AddDrawFlag);
+};
+
+#endif // GEARCHILDREN_HPP

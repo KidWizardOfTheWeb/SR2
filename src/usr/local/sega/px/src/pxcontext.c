@@ -2,6 +2,10 @@
 #include "usr/local/sce/ee/lib/eestruct.h"
 #include "usr/local/sega/px/src/px.h"
 
+struct PXS_CONTEXT pxg_context[2];
+unsigned long pxg_frame_addr[2] = {0x4C, 0x4D};
+unsigned long pxg_scissor_addr[2] = {0x40, 0x41};
+
 void PXInitContext(enum PXE_CTX context)
 {
     unsigned long* p;

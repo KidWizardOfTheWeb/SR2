@@ -3,4 +3,4 @@
 
 void PXPutShader(unsigned int type);
 
-#endif
+#endif // PXPUTSHADER_H

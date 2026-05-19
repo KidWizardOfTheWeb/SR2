@@ -1,6 +1,6 @@
 # MWLD Linker Command File (LCF) Template
 # For Sonic Riders: Zero Gravity (PS2)
-# 
+#
 # This template is processed by tools/convert_ld_to_lcf.py
 # which replaces the placeholders with actual object files from splat.
 
@@ -28,76 +28,76 @@ SECTIONS
 	.main :
 	{
 		# =============================================================================
-		# Text Section                                                                 
+		# Text Section
 		# =============================================================================
-		
+
 		. = ALIGN(0x80);
 		_text_start = .;
-		
+
 		#<REPLACE_W_TEXT_FILES>
-		
+
 		_text_end = .;
-		
+
 		# =============================================================================
-		# Data Section                                                                 
+		# Data Section
 		# =============================================================================
-		
+
 		. = ALIGN(0x80);
 		_data_start = .;
-		
+
 		#<REPLACE_W_DATA_FILES>
-		
+
 		# =============================================================================
-		# Read-Only Data Section                                                       
+		# Read-Only Data Section
 		# =============================================================================
-		
+
 		. = ALIGN(0x80);
 		_rodata_start = .;
-		
+
 		#<REPLACE_W_RODATA_FILES>
-		
+
 		_rodata_end = .;
-		
+
 		# =============================================================================
-		# Small Data Section                                                           
+		# Small Data Section
 		# =============================================================================
-		
+
 		. = ALIGN(0x80);
 		_sdata_start = .;
-		
+
 		#<REPLACE_W_SDATA_FILES>
-		
+
 		_sdata_end = .;
 		_data_end = .;
-		
+
 		# =============================================================================
-		# Small BSS Section                                                            
+		# Small BSS Section
 		# =============================================================================
-		
+
 		. = ALIGN(0x80);
 		_sbss_start = .;
-		
+
 		#<REPLACE_W_SBSS_FILES>
-		
+
 		_sbss_end = .;
-		
+
 		# =============================================================================
-		# BSS Section                                                                  
+		# BSS Section
 		# =============================================================================
-		
+
 		. = ALIGN(0x80);
 		_bss_start = .;
-		
+
 		#<REPLACE_W_BSS_FILES>
-		
+
 		_bss_end = .;
-		
+
 		# =============================================================================
-		# End of Sections                                                              
+		# End of Sections
 		# =============================================================================
-		
+
 		. = ALIGN(0x80);
 		_end = .;
-		
+
 	} > main
 }

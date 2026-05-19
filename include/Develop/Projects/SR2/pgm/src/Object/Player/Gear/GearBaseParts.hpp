@@ -17,11 +17,13 @@ public:
 
     virtual u8 isUseModel() const { return 1; }
 
-    virtual enmChangeRes
-    initAddParts(clsGear* pcReleaseGear, clsGear** pParam2, clsGearBaseParts* pParam3);
+    virtual enmChangeRes initAddParts(clsGear* pcReleaseGear,
+                                      clsGear** pParam2,
+                                      clsGearBaseParts* pParam3);
 
-    virtual enmChangeRes
-    execAddParts(clsGear* pcReleaseGear, clsGear** pParam2, clsGearBaseParts* pParam3);
+    virtual enmChangeRes execAddParts(clsGear* pcReleaseGear,
+                                      clsGear** pParam2,
+                                      clsGearBaseParts* pParam3);
 };
 
 #endif // GEARBASEPARTS_HPP

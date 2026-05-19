@@ -94,8 +94,9 @@ public:
     void checkPlayerRestart();
     void setSurfaceDir(struct NNS_VECTORFAST& rsVerocityFast, struct NNS_VECTORFAST& rsDirVecFast);
     void setReturnPath();
-    void
-    setPosturalCtrl(const struct NNS_VECTORFAST& rsDirVecFast, f32 f32InterpolateRate, f32 f32RotZ);
+    void setPosturalCtrl(const struct NNS_VECTORFAST& rsDirVecFast,
+                         f32 f32InterpolateRate,
+                         f32 f32RotZ);
     void stepMotionFrame();
     void destroyData();
     void createData();

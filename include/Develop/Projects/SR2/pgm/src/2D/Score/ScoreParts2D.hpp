@@ -181,8 +181,8 @@ public:
                        bool bBotton);
     void _drawPartsName(
         s32 s32PosX, s32 s32PosY, s32 s32Dir, clsPlayerTask* pcPlayer, stcUserStatus* psUserSt);
-    void
-    _drawPartsLight(s32 s32PosX, s32 s32PosY, s32 s32Dir, clsPlayerTask* pcPlayer, u8 u8AddAlpha);
+    void _drawPartsLight(
+        s32 s32PosX, s32 s32PosY, s32 s32Dir, clsPlayerTask* pcPlayer, u8 u8AddAlpha);
     void _drawSelectLine(
         s32 s32PosX, s32 s32PosY, s32 s32Dir, clsPlayerTask* pcPlayer, stcUserStatus* psUserSt);
     void drawParts(u32 u32View, u32 u32PlayerNo);

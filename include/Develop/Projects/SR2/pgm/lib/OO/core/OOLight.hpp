@@ -15,8 +15,9 @@ public:
     void setParallelPos(u32 ou32NoI, f32 of32xI, f32 of32yI, f32 of32zI);
     void setSpecularRgba(u32 ou32NoI, f32 of32rI, f32 of32gI, f32 of32bI, f32 of32aI);
     void setSpecularDir(u32 ou32NoI, f32 of32xI, f32 of32yI, f32 of32zI);
-    virtual void
-    reinitLight(u32 ou32HardWareNumI, u32 ou32SoftWareNumI, const f32 (*pParam3)[4][4]);
+    virtual void reinitLight(u32 ou32HardWareNumI,
+                             u32 ou32SoftWareNumI,
+                             const f32 (*pParam3)[4][4]);
 
     stcDetail* m_psDetail_Heap; // offset 0x4, size 0x4
     u8 m_u8HardWareNum;         // offset 0x8, size 0x1

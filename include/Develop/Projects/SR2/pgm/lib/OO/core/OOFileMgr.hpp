@@ -69,8 +69,10 @@ public:
     void tRenderNowLoading();
     void cancel(const c8* pcName);
     void cancel();
-    s32
-    requestRead(const c8* pcName, void** ppvBuf, u32 uSize, volatile nspOOFileMgr::enmRet* peRet);
+    s32 requestRead(const c8* pcName,
+                    void** ppvBuf,
+                    u32 uSize,
+                    volatile nspOOFileMgr::enmRet* peRet);
     void setChangeBuffer(const c8* pcName, void** ppvBuf, nspOOFileMgr::enmRet* peRet);
     void* thread_read(const clsOOThread::_EntryArg* psArg);
 

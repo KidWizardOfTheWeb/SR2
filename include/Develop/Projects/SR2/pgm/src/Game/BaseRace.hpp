@@ -309,14 +309,14 @@ public:
     virtual void setPauseScreen(s32 s32PushPausePadNo,
                                 clsBaseRacePause_Task::enmPadConnectDraw enConnectDraw);
     virtual void setPauseReslutScreen(s32 s32PushPausePadNo);
-    virtual void
-    addReadChara(oostd::clsOOSet<u32, std::less<u32>, oostd::clsOOStlAllocator<u32> >* pcParam1);
-    virtual void
-    addReadGear(oostd::clsOOSet<u32, std::less<u32>, oostd::clsOOStlAllocator<u32> >* pcParam1,
-                u32* pu32Param2);
-    virtual void
-    addReadCharaMotion(std::vector<const clsGameMgr::stcSendAdv*,
-                                   std::allocator<const clsGameMgr::stcSendAdv*> >* pcParam1);
+    virtual void addReadChara(
+        oostd::clsOOSet<u32, std::less<u32>, oostd::clsOOStlAllocator<u32> >* pcParam1);
+    virtual void addReadGear(
+        oostd::clsOOSet<u32, std::less<u32>, oostd::clsOOStlAllocator<u32> >* pcParam1,
+        u32* pu32Param2);
+    virtual void addReadCharaMotion(
+        std::vector<const clsGameMgr::stcSendAdv*, std::allocator<const clsGameMgr::stcSendAdv*> >*
+            pcParam1);
     virtual void execGoal();
     virtual void setBestTime();
     virtual void selectedPauseMenu_RET___RESTART();

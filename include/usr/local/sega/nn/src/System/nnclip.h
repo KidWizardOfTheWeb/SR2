@@ -49,8 +49,8 @@ extern struct NNS_CLIP nngClip3d;
 extern struct NNS_CLIP_PLANE nngClipPlane;
 extern struct NNS_CLIP_PLANE nngClipPlaneGs;
 
-unsigned int
-nnCalcClipBox(struct NNS_VECTOR* center, float sx, float sy, float sz, float (*mtx)[4][4]);
+unsigned int nnCalcClipBox(
+    struct NNS_VECTOR* center, float sx, float sy, float sz, float (*mtx)[4][4]);
 unsigned int nnCalcClipCore(struct NNS_VECTOR* center, float radius, float (*mtx)[4][4]);
 unsigned int nnCalcClip(struct NNS_VECTOR* center, float radius, float (*mtx)[4][4]);
 void nnCalcClipSetNodeStatus(unsigned int* pNodeStatList,

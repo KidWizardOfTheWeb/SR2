@@ -12,12 +12,16 @@ public:
     virtual void renderVector(u32 ou32ViewI, const NNS_VECTOR* opsVecI, u32 ou32ColI) const {}
     virtual void renderVectorAddDiff(u32 ou32ViewI, NNS_VECTOR* psVecI, u32 ou32ColI) const {}
     virtual void renderVectorSubDiff(u32 ou32ViewI, NNS_VECTOR* psVecI, u32 ou32ColI) const {}
-    virtual void
-    renderTriangle(u32 ou32ViewI, const NNS_VECTOR* opsVecI, u32 ou32ColI, u32 oeRenderFlag) const
+    virtual void renderTriangle(u32 ou32ViewI,
+                                const NNS_VECTOR* opsVecI,
+                                u32 ou32ColI,
+                                u32 oeRenderFlag) const
     {
     }
-    virtual void
-    renderPolygon(u32 ou32ViewI, const NNS_VECTOR* opsVecI, u32 ou32ColI, u32 oeRenderFlag) const
+    virtual void renderPolygon(u32 ou32ViewI,
+                               const NNS_VECTOR* opsVecI,
+                               u32 ou32ColI,
+                               u32 oeRenderFlag) const
     {
     }
     virtual void renderSphere(u32 ou32ViewI,
@@ -45,10 +49,14 @@ public:
     virtual void renderVector(u32 ou32ViewI, const NNS_VECTOR* opsVecI, u32 ou32ColI) const;
     virtual void renderVectorAddDiff(u32 ou32ViewI, NNS_VECTOR* psVecI, u32 ou32ColI) const;
     virtual void renderVectorSubDiff(u32 ou32ViewI, NNS_VECTOR* psVecI, u32 ou32ColI) const;
-    virtual void
-    renderTriangle(u32 ou32ViewI, const NNS_VECTOR* opsVecI, u32 ou32ColI, u32 oeRenderFlag) const;
-    virtual void
-    renderPolygon(u32 ou32ViewI, const NNS_VECTOR* opsVecI, u32 ou32ColI, u32 oeRenderFlag) const;
+    virtual void renderTriangle(u32 ou32ViewI,
+                                const NNS_VECTOR* opsVecI,
+                                u32 ou32ColI,
+                                u32 oeRenderFlag) const;
+    virtual void renderPolygon(u32 ou32ViewI,
+                               const NNS_VECTOR* opsVecI,
+                               u32 ou32ColI,
+                               u32 oeRenderFlag) const;
     virtual void renderSphere(u32 ou32ViewI,
                               const NNS_VECTOR* opsVecI,
                               f32 of32RadI,

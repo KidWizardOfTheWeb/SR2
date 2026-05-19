@@ -61,8 +61,8 @@ public:
     f32 m_f32SpeedOld;                      // offset 0x180, size 0x4
     NNS_VECTOR m_sAngleVelocityOld;         // offset 0x184, size 0xC
 
-    void
-    init(u32 u32PathNo, u32 u32DirFlag, f32 f32Speed, f32 f32TotalFrame, f32 f32StartWaitFrame);
+    void init(
+        u32 u32PathNo, u32 u32DirFlag, f32 f32Speed, f32 f32TotalFrame, f32 f32StartWaitFrame);
     void reset();
     void updatePosition(f32 f32SlerpAddRate, clsRigidBody* pcRigid);
     void updatePosition(f32 f32SlerpAddRate);

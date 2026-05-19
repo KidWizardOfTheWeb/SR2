@@ -48,8 +48,9 @@ public:
     clsContactControl() {}
     ~clsContactControl() {}
 
-    void
-    setContactStatus(enmContactPlayerType eType, enmContactAction ePlayer, enmContactAction eRigid)
+    void setContactStatus(enmContactPlayerType eType,
+                          enmContactAction ePlayer,
+                          enmContactAction eRigid)
     {
     }
     void boundNormalPlayer(hkContactPoint* pcContact,

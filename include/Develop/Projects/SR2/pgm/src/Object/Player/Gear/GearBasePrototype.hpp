@@ -137,8 +137,9 @@ public:
                                     f32 f32LinkFrame,
                                     nspMotion::enmMotion eMotion);
 
-    virtual enmChangeRes
-    changeWalk(clsGear** apcEquipsGears, f32 f32LinkFrame, nspMotion::enmMotion eMotion);
+    virtual enmChangeRes changeWalk(clsGear** apcEquipsGears,
+                                    f32 f32LinkFrame,
+                                    nspMotion::enmMotion eMotion);
 
     virtual enmChangeRes changeHideWalk(clsGear** apcEquipsGears);
 

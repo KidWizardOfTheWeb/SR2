@@ -41,8 +41,10 @@ public:
     virtual void execute();
     virtual void draw();
 
-    void
-    regist(u32 u32ViewNoI, f32 f32EndFrameI, clsFadeCircle_Obj::enmType eTypeI, u32 u32RgbColI);
+    void regist(u32 u32ViewNoI,
+                f32 f32EndFrameI,
+                clsFadeCircle_Obj::enmType eTypeI,
+                u32 u32RgbColI);
 
     NNS_PRIM2D_PC* m_psPrimArray; // offset 0x58, size 0x4
     u32 m_u32PrimArrayNum;        // offset 0x5C, size 0x4

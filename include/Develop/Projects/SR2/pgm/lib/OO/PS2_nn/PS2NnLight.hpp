@@ -11,8 +11,9 @@ public:
     clsPfLight() {}
     virtual ~clsPfLight() {}
 
-    virtual void
-    reinitLight(u32 ou32HardWareNumI, u32 ou32SoftWareNumI, const f32 (*paViewMtxI)[4][4]);
+    virtual void reinitLight(u32 ou32HardWareNumI,
+                             u32 ou32SoftWareNumI,
+                             const f32 (*paViewMtxI)[4][4]);
     virtual void updateLightMtx(const f32 (&pParam1)[4][4]) const {}
     virtual void sendLight(u32 ou32NoI);
 

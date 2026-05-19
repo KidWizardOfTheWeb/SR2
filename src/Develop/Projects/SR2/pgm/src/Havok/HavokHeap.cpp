@@ -2240,8 +2240,9 @@ hkStepResult hkSimulation::stepDeltaTime(f32 f32Param1)
     return HK_STEP_RESULT_SUCCESS;
 }
 
-hkStepResult
-hkSimulation::collideEntitiesBroadPhaseDiscrete(hkEntity** pParam1, s32 s32Param2, hkWorld* pParam3)
+hkStepResult hkSimulation::collideEntitiesBroadPhaseDiscrete(hkEntity** pParam1,
+                                                             s32 s32Param2,
+                                                             hkWorld* pParam3)
 {
     return HK_STEP_RESULT_SUCCESS;
 }

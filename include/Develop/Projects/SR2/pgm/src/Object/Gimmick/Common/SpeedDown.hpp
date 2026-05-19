@@ -39,8 +39,9 @@ public:
     virtual nspPackId::enm getPackId() const { return nspPackId::SPEED_DOWN_2240; }
 
     void createChain();
-    void
-    setLimit(clsGimmickRigidBody* pcRigidBodyA, clsGimmickRigidBody* pcRigidBodyB, f32 f32MaxAngle);
+    void setLimit(clsGimmickRigidBody* pcRigidBodyA,
+                  clsGimmickRigidBody* pcRigidBodyB,
+                  f32 f32MaxAngle);
     void execute();
     void draw(clsMultiObTxModels& rcObj,
               f32 (*psMtxPal)[4][4],

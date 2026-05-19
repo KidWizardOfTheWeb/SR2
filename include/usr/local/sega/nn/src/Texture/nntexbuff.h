@@ -76,8 +76,9 @@ void* nnInitTextureBufferPS2(void* pushbuf,
                              signed int blocknum);
 void nnExitTextureBufferPS2();
 void nnExecTextureBufferPS2();
-signed int
-nnChangeTextureBufferPS2(void* localbuf, unsigned int localsize, enum NNE_BOOL immediate);
+signed int nnChangeTextureBufferPS2(void* localbuf,
+                                    unsigned int localsize,
+                                    enum NNE_BOOL immediate);
 void nnRequestTextureBufferSyncPS2();
 
 #endif // NNTEXBUFF_H

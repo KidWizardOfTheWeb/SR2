@@ -111,10 +111,14 @@ clsParticleLayer* registTaskAdr(u8 u8Param1,
                                 const _NNS_TEXLIST* psParam5,
                                 u8 u8Param6,
                                 u8 u8Param7);
-clsParticleLayer*
-registTaskAdr(u8 u8Param1, u32 u32Param2, const NNS_VECTORFAST* psParam3, u8 u8Param4);
-clsParticleLayer*
-registTask(u8 u8Param1, u32 u32Param2, const NNS_VECTORFAST* psParam3, u8 u8Param4);
+clsParticleLayer* registTaskAdr(u8 u8Param1,
+                                u32 u32Param2,
+                                const NNS_VECTORFAST* psParam3,
+                                u8 u8Param4);
+clsParticleLayer* registTask(u8 u8Param1,
+                             u32 u32Param2,
+                             const NNS_VECTORFAST* psParam3,
+                             u8 u8Param4);
 clsParticleLayer* registTaskObjData(u8 u8Param1,
                                     u32 u32Param2,
                                     const NNS_VECTORFAST* psParam3,

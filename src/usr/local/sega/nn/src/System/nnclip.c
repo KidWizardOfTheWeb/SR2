@@ -1,7 +1,7 @@
 #include "usr/local/sega/nn/src/System/nnclip.h"
 
-unsigned int
-nnCalcClipBox(struct NNS_VECTOR* center, float sx, float sy, float sz, float (*mtx)[4][4])
+unsigned int nnCalcClipBox(
+    struct NNS_VECTOR* center, float sx, float sy, float sz, float (*mtx)[4][4])
 {
 }
 

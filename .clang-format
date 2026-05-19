@@ -9,6 +9,8 @@ ColumnLimit: 100
 DerivePointerAlignment: false
 PointerAlignment: Left
 ReferenceAlignment: Left
+# Prefer wrapping parameters over putting the return type on its own line.
+PenaltyReturnTypeOnItsOwnLine: 1000000
 BreakBeforeBraces: Custom
 BraceWrapping:
   AfterControlStatement: MultiLine

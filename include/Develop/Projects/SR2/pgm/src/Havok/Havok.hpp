@@ -96,8 +96,10 @@ class clsHavok : public clsSingleton<clsHavok> {
 public:
     virtual ~clsHavok() {} // vtable at 0x0
 
-    void
-    drawShape(u32 u32ViewNo, const hkShape* pcShape, const hkTransform& rcTransform, u8 u8Alpha);
+    void drawShape(u32 u32ViewNo,
+                   const hkShape* pcShape,
+                   const hkTransform& rcTransform,
+                   u8 u8Alpha);
     void exit();
     void init();
     static clsHavok& createInstance(u32 u32Param1);

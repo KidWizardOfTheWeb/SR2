@@ -13,8 +13,10 @@ public:
     void actionRotateMotion(clsTrickParam& rcParam, f32 of32Frame, f32 of32TotalFrame);
     void setFallMotion(clsTrickParam& rcParam);
     void setTrickMotion(clsTrickParam& rcParam, f32 of32MotionFrame, f32 of32LinkFrame);
-    void
-    calcRotateRad(clsTrickParam& rcParam, f32 of32ActionFrame, s16 os16RotateDeg, s8 os8RotDir);
+    void calcRotateRad(clsTrickParam& rcParam,
+                       f32 of32ActionFrame,
+                       s16 os16RotateDeg,
+                       s8 os8RotDir);
     void exitCommon(clsTrickParam& rcParam);
     void initCommon(clsTrickParam& rcParam);
     s32 setKeyRecord(clsTrickParam& rcParam);

@@ -91,8 +91,9 @@ public:
     virtual void setLoadDataBuff(u32 param_1, void* param_2) {}
     virtual void setCrcCheckFunc(bool (*param_1)(const void*)) {}
     virtual void freeAccessBuffer() {}
-    virtual void
-    setNextTaskMode(enmPollingMc_Ret eExecUnionRetI, s32 s32NextCursorNoI, s32 s32CancelCursorNoI);
+    virtual void setNextTaskMode(enmPollingMc_Ret eExecUnionRetI,
+                                 s32 s32NextCursorNoI,
+                                 s32 s32CancelCursorNoI);
     virtual void setReturnOs() = 0;
     virtual void exec_SEQ_REQ___BOOT() {}
     virtual void draw_SEQ_REQ___BOOT() {}
@@ -142,9 +143,8 @@ public:
     void reinit(
         enmSeqReq eSeqReqI, enmDataType eDataTypeI, s32 s32FileNoI, s32 s32StageNoI, u8 eTaskModeI);
     enmPollingMc_Ret pollingMc(enmMcMovin eMcMovinI);
-    enmPollingMc_Ret
-    deleteTask_And_setAutoSave(enmdeleteTask_And_setAutoSave_Arg edeleteTask_And_setAutoSave_ArgI,
-                               enmRtnCode enRtnCode);
+    enmPollingMc_Ret deleteTask_And_setAutoSave(
+        enmdeleteTask_And_setAutoSave_Arg edeleteTask_And_setAutoSave_ArgI, enmRtnCode enRtnCode);
     u8 exec_UnionCursor(u32 bOnlyOkI);
     void draw_UnionFont(s32 s32FontTblNoI,
                         enmdraw_UnionFont_Arg edraw_UnionFont_ArgI,

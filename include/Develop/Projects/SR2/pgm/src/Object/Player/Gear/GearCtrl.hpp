@@ -176,8 +176,10 @@ public:
     u8 requestGearRide_HideActiveGear(u8 u8IsRide, f32 f32LinkFrame, s32 eSuccessActionType);
     u8 requestGearRide_AttackAction(u8 u8IsRide, f32 f32LinkFrame, s32 eSuccessActionType);
     u8 requestGearRide(u8 u8IsRide, f32 f32LinkFrame, s32 eSuccessActionType);
-    u8
-    rideGear(u8 u8IsRide, f32 f32LinkFrame, s32 eSuccessActionType, nspMotion::enmMotion eMotion);
+    u8 rideGear(u8 u8IsRide,
+                f32 f32LinkFrame,
+                s32 eSuccessActionType,
+                nspMotion::enmMotion eMotion);
     void requestGearChangeForGhost(u8 u8ChangeNo);
     u8 requestGearChange();
     nspGear::enmLevel calcChageGearLevel();

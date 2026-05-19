@@ -10,8 +10,9 @@ class clsMemoryCard_Task : public clsBaseMemoryCard_Task {
 public:
     virtual ~clsMemoryCard_Task() {}
     virtual void setSaveData(void* param_1) {}
-    virtual void
-    setNextTaskMode(enmPollingMc_Ret eExecUnionRetI, s32 s32NextCursorNoI, s32 s32CancelCursorNoI);
+    virtual void setNextTaskMode(enmPollingMc_Ret eExecUnionRetI,
+                                 s32 s32NextCursorNoI,
+                                 s32 s32CancelCursorNoI);
     virtual void setReturnOs() {}
     virtual void exec_SEQ_REQ___BOOT();
     virtual void draw_SEQ_REQ___BOOT();

@@ -45,11 +45,11 @@ public:
                                 clsBaseRacePause_Task::enmPadConnectDraw enConnectDraw);
     virtual void draw();
     virtual void createGhostTask();
-    virtual void
-    addReadChara(oostd::clsOOSet<u32, std::less<u32>, oostd::clsOOStlAllocator<u32> >* pcCharaList);
-    virtual void
-    addReadGear(oostd::clsOOSet<u32, std::less<u32>, oostd::clsOOStlAllocator<u32> >* pcGearList,
-                u32* pu32GearLoadCnt);
+    virtual void addReadChara(
+        oostd::clsOOSet<u32, std::less<u32>, oostd::clsOOStlAllocator<u32> >* pcCharaList);
+    virtual void addReadGear(
+        oostd::clsOOSet<u32, std::less<u32>, oostd::clsOOStlAllocator<u32> >* pcGearList,
+        u32* pu32GearLoadCnt);
     virtual void addReadCharaMotion(
         std::vector<const clsGameMgr::stcSendAdv*, std::allocator<const clsGameMgr::stcSendAdv*> >*
             pcCharaMotionList);

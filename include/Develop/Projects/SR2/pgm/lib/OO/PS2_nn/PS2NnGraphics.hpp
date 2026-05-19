@@ -64,8 +64,9 @@ public:
 
     virtual ~clsOOGraphics_Consumer() {}
 
-    virtual void
-    clip2Screen(nspOOMisc::stcPoint2D_s16& rDst, const NNS_VECTOR& rSrc, s32 param) const;
+    virtual void clip2Screen(nspOOMisc::stcPoint2D_s16& rDst,
+                             const NNS_VECTOR& rSrc,
+                             s32 param) const;
     virtual void updatePalParam();
     virtual void setScreenMode(enmScreenMode mode);
 
@@ -116,8 +117,9 @@ public:
     virtual f32 getPalOffsetRatioY() const { return m_f32PalOffsetRatioY; }
     virtual f32 getPalOffsetY(s32 s32Param1) const { return m_s32PalOffsetY; }
     virtual f32 getPalOffsetRatioY(f32 f32Param1) const { return f32Param1; }
-    virtual void
-    clip2Screen(nspOOMisc::stcPoint2D_s16& rDst, const NNS_VECTOR& rSrc, s32 s32Param1) const
+    virtual void clip2Screen(nspOOMisc::stcPoint2D_s16& rDst,
+                             const NNS_VECTOR& rSrc,
+                             s32 s32Param1) const
     {
     }
     virtual void updatePalParam();

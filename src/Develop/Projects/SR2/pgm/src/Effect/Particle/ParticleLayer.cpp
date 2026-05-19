@@ -73,8 +73,10 @@ clsParticleLayer* nspParticleSet::registTask(u8 u8Param1,
     return 0;
 }
 
-clsParticleLayer*
-nspParticleSet::registTask(u8 u8Param1, u32 u32Param2, const NNS_VECTORFAST* psParam3, u8 u8Param4)
+clsParticleLayer* nspParticleSet::registTask(u8 u8Param1,
+                                             u32 u32Param2,
+                                             const NNS_VECTORFAST* psParam3,
+                                             u8 u8Param4)
 {
     return 0;
 }

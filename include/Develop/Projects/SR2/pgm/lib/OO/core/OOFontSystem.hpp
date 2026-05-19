@@ -227,14 +227,14 @@ public:
 
     void SetBtnSplitTexture(clsOOSplitTexture* pcTex, u32 u32PointSize) {}
 
-    virtual void
-    DrawString(const nspFontSystem::stcCharaData* pcChara,
-               const nspOOMisc::stcPoint3d<f32>* psPos,
-               u32 u32Param,
-               const nspOOMisc::stcPoint3d<f32>* psScale,
-               nspOOMisc::stcPoint3d<f32>* psEndPos,
-               nspOOMisc::stcRect<nspOOMisc::stcPoint2d<f32>, nspOOMisc::stcSize2d<f32> >* psRect,
-               f32* pf32);
+    virtual void DrawString(
+        const nspFontSystem::stcCharaData* pcChara,
+        const nspOOMisc::stcPoint3d<f32>* psPos,
+        u32 u32Param,
+        const nspOOMisc::stcPoint3d<f32>* psScale,
+        nspOOMisc::stcPoint3d<f32>* psEndPos,
+        nspOOMisc::stcRect<nspOOMisc::stcPoint2d<f32>, nspOOMisc::stcSize2d<f32> >* psRect,
+        f32* pf32);
 
     virtual u8 DrawChara(
         const nspFontSystem::stcCharaData& rChara,
@@ -278,12 +278,12 @@ public:
         f32 f32a,
         const nspOOMisc::stcSize2d<s32>& rSizeInt);
 
-    virtual u8
-    DrawBtn(u8 u8Param,
-            const nspOOMisc::stcPoint3d<f32>& rPos,
-            const nspOOMisc::stcRect<nspOOMisc::stcPoint2d<s32>, nspOOMisc::stcSize2d<s32> >& rClip,
-            nspOOMisc::stcSize2d<f32>* psSize,
-            nspOOMisc::stcRect<nspOOMisc::stcPoint2d<f32>, nspOOMisc::stcSize2d<f32> >* psRect);
+    virtual u8 DrawBtn(
+        u8 u8Param,
+        const nspOOMisc::stcPoint3d<f32>& rPos,
+        const nspOOMisc::stcRect<nspOOMisc::stcPoint2d<s32>, nspOOMisc::stcSize2d<s32> >& rClip,
+        nspOOMisc::stcSize2d<f32>* psSize,
+        nspOOMisc::stcRect<nspOOMisc::stcPoint2d<f32>, nspOOMisc::stcSize2d<f32> >* psRect);
 
     virtual void DrawLocalCode(
         s32 s32a,
@@ -295,26 +295,26 @@ public:
         nspOOMisc::stcRect<nspOOMisc::stcPoint2d<f32>, nspOOMisc::stcSize2d<f32> >* psRect,
         f32* pf32);
 
-    void
-    DrawStrTbl(s32 s32TblIdx,
-               const nspOOMisc::stcPoint3d<f32>* psPos,
-               u32 u32Param,
-               const nspOOMisc::stcPoint3d<f32>* psScale,
-               nspOOMisc::stcPoint3d<f32>* psEndPos,
-               nspOOMisc::stcRect<nspOOMisc::stcPoint2d<f32>, nspOOMisc::stcSize2d<f32> >* psRect,
-               f32* pf32);
+    void DrawStrTbl(
+        s32 s32TblIdx,
+        const nspOOMisc::stcPoint3d<f32>* psPos,
+        u32 u32Param,
+        const nspOOMisc::stcPoint3d<f32>* psScale,
+        nspOOMisc::stcPoint3d<f32>* psEndPos,
+        nspOOMisc::stcRect<nspOOMisc::stcPoint2d<f32>, nspOOMisc::stcSize2d<f32> >* psRect,
+        f32* pf32);
 
-    void
-    DrawStrTbl(u32 u32LangIdx,
-               s32 s32TblIdx,
-               f32 f32a,
-               f32 f32b,
-               f32 f32c,
-               u32 u32Param,
-               const nspOOMisc::stcPoint3d<f32>* psPos,
-               nspOOMisc::stcPoint3d<f32>* psEndPos,
-               nspOOMisc::stcRect<nspOOMisc::stcPoint2d<f32>, nspOOMisc::stcSize2d<f32> >* psRect,
-               f32* pf32)
+    void DrawStrTbl(
+        u32 u32LangIdx,
+        s32 s32TblIdx,
+        f32 f32a,
+        f32 f32b,
+        f32 f32c,
+        u32 u32Param,
+        const nspOOMisc::stcPoint3d<f32>* psPos,
+        nspOOMisc::stcPoint3d<f32>* psEndPos,
+        nspOOMisc::stcRect<nspOOMisc::stcPoint2d<f32>, nspOOMisc::stcSize2d<f32> >* psRect,
+        f32* pf32)
     {
     }
 

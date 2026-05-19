@@ -14,8 +14,9 @@ public:
     f32 m_f32Add;                 // offset 0x34, size 0x4
     u8 m_bIsSlerp;                // offset 0x38, size 0x1
 
-    void
-    startSlerp(const NNS_QUATERNION* psBaseQuat, const NNS_QUATERNION* psSlerpQuat, f32 f32Frame);
+    void startSlerp(const NNS_QUATERNION* psBaseQuat,
+                    const NNS_QUATERNION* psSlerpQuat,
+                    f32 f32Frame);
     void update();
     u8 isSlerp() { return m_bIsSlerp; }
     const NNS_QUATERNION* getResultQuatPtr() const { return &m_sResultQuat; }

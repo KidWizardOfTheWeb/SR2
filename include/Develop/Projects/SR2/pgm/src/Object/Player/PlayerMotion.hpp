@@ -125,8 +125,9 @@ public:
     void initTriangle(const hkConvexShape* pParam1,
                       const hkTriangleShape* pParam2,
                       const hkTransform& rParam3);
-    void
-    init(const hkConvexShape* pParam1, const hkConvexShape* pParam2, const hkTransform& rParam3);
+    void init(const hkConvexShape* pParam1,
+              const hkConvexShape* pParam2,
+              const hkTransform& rParam3);
 
     u16 m_vertices[4]; // offset 0x0, size 0x8
     u8 m_dimA;         // offset 0x8, size 0x1

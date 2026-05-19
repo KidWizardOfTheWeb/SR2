@@ -52,8 +52,8 @@ public:
     virtual void requestDrawBreakEffect();
     virtual void callbackBreakEvent();
 
-    void
-    draw(NNS_OBJECT* p1, f32 (*p2)[4][4], u32* p3, const f32 (*p4)[4][4], f32 (*p5)[4][4], u32 p6);
+    void draw(
+        NNS_OBJECT* p1, f32 (*p2)[4][4], u32* p3, const f32 (*p4)[4][4], f32 (*p5)[4][4], u32 p6);
     void checkHitPlayer();
     void shoot(s32 s32LockOnNo, f32 f32Frame);
     void charge();

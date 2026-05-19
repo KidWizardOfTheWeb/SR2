@@ -67,8 +67,8 @@ public:
                      u32 u32DisableType) const;
 
     const _LineData* getLineData(u16 u16LineNoI) const; // [ASM-derived guess — verify return type]
-    const NNS_VECTORFAST*
-    getPoint(u32 u32PointNoI) const; // [ASM-derived guess — verify return type]
+    const NNS_VECTORFAST* getPoint(
+        u32 u32PointNoI) const; // [ASM-derived guess — verify return type]
     _BinData* getPathData() const { return m_pPathData; } // [ASM-derived guess — verify]
 
     _BinData* m_pPathData;             // offset 0x8, size 0x4

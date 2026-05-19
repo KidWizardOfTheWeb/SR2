@@ -18,8 +18,8 @@ public:
     f32 calcRankingPointDepth(clsPlayerTask* pcPlayer);
     s32 serarchActiveNextLine(clsRetPath* pcRetIO);
     void calcOnLinePlayerPos(clsPlayerTask* pcPlayer, NNS_VECTORFAST& rsDstPos);
-    const u32*
-    getUserData(const _LineData* psLineI) const; // [ASM-derived guess — verify return type]
+    const u32* getUserData(
+        const _LineData* psLineI) const; // [ASM-derived guess — verify return type]
 
     NNS_VECTORFAST m_sGoalLinePos;  // offset 0x20, size 0x10
     NNS_VECTORFAST m_sGoalLineDir;  // offset 0x30, size 0x10

@@ -840,8 +840,9 @@ public:
                     u16& rParam5,
                     u16& rParam6);
         void remove(s32 s32Param1, s32 s32Param2);
-        hkBpEndPoint*
-        find(const hkBpEndPoint* pParam1, const hkBpEndPoint* pParam2, u16 u16Param3) const;
+        hkBpEndPoint* find(const hkBpEndPoint* pParam1,
+                           const hkBpEndPoint* pParam2,
+                           u16 u16Param3) const;
     };
 
     hk3AxisSweep(const hkVector4& rParam1, const hkVector4& rParam2, s32 s32Param3);
@@ -849,8 +850,9 @@ public:
 
     s32 getType() const;
     void convertAabbToInt(const hkAabb& rParam1, hkBroadPhase::hkBpAabb& rParam2) const;
-    void
-    beginOverlap(hkBpNode& rParam1, hkBpNode& rParam2, hkArray<hkBroadPhaseHandlePair>& rParam3);
+    void beginOverlap(hkBpNode& rParam1,
+                      hkBpNode& rParam2,
+                      hkArray<hkBroadPhaseHandlePair>& rParam3);
     void endOverlap(hkBpNode& rParam1, hkBpNode& rParam2, hkArray<hkBroadPhaseHandlePair>& rParam3);
     void beginOverlapCheckMarker(hkBpMarker* pParam1,
                                  hkBpNode& rParam2,
@@ -886,8 +888,9 @@ public:
     void getAllAabbs(hkArray<hkAabb>& rParam1);
     void getAabb(const hkBroadPhaseHandle* pParam1, hkAabb& rParam2) const;
     void getExtents(hkVector4& rParam1, hkVector4& rParam2) const;
-    void
-    queryBatchAabbSub(u32* pParam1, hkArray<hkBroadPhaseHandlePair>& rParam2, hkBool sParam3) const;
+    void queryBatchAabbSub(u32* pParam1,
+                           hkArray<hkBroadPhaseHandlePair>& rParam2,
+                           hkBool sParam3) const;
     void querySingleAabb(const hkAabb& rParam1, hkArray<hkBroadPhaseHandlePair>& rParam2) const;
     s32 getAabbCacheSize() const;
     void calcAabbCache(const hkAabb& rParam1, c8* pParam2) const;
@@ -911,8 +914,9 @@ public:
     static hkVector4 MaxVal;
 };
 
-hkBroadPhase*
-hk3AxisSweep16CreateBroadPhase(const hkVector4& rParam1, const hkVector4& rParam2, s32 s32Param3);
+hkBroadPhase* hk3AxisSweep16CreateBroadPhase(const hkVector4& rParam1,
+                                             const hkVector4& rParam2,
+                                             s32 s32Param3);
 
 enum LastProcessingStep {
     INTEGRATE = 0,
@@ -2184,8 +2188,9 @@ public:
     virtual void getCollisionSpheresImpl(hkSphere* pParam1) const;
     virtual void getFirstVertex(hkVector4& rParam1) const;
     virtual void getSupportingVertexImpl(const hkVector4& rParam1, hkCdVertex& rParam2) const;
-    virtual void
-    convertVertexIdsToVerticesImpl(const u16* pParam1, s32 s32Param2, hkCdVertex* pParam3) const;
+    virtual void convertVertexIdsToVerticesImpl(const u16* pParam1,
+                                                s32 s32Param2,
+                                                hkCdVertex* pParam3) const;
     virtual void getCentreImpl(hkVector4& rParam1) const;
 
     void getOriginalVertices(hkArray<hkVector4>& rParam1) const;
@@ -2213,8 +2218,9 @@ public:
     virtual void getCollisionSpheresImpl(hkSphere* pParam1) const;
     virtual void getFirstVertex(hkVector4& rParam1) const;
     virtual void getSupportingVertexImpl(const hkVector4& rParam1, hkCdVertex& rParam2) const;
-    virtual void
-    convertVertexIdsToVerticesImpl(const u16* pParam1, s32 s32Param2, hkCdVertex* pParam3) const;
+    virtual void convertVertexIdsToVerticesImpl(const u16* pParam1,
+                                                s32 s32Param2,
+                                                hkCdVertex* pParam3) const;
     virtual void getCentreImpl(hkVector4& rParam1) const;
 
     void closestInfLineSegInfLineSeg(const hkVector4& rParam1,
@@ -2249,8 +2255,9 @@ public:
     virtual void getCollisionSpheresImpl(hkSphere* pParam1) const;
     virtual void getFirstVertex(hkVector4& rParam1) const;
     virtual void getSupportingVertexImpl(const hkVector4& rParam1, hkCdVertex& rParam2) const;
-    virtual void
-    convertVertexIdsToVerticesImpl(const u16* pParam1, s32 s32Param2, hkCdVertex* pParam3) const;
+    virtual void convertVertexIdsToVerticesImpl(const u16* pParam1,
+                                                s32 s32Param2,
+                                                hkCdVertex* pParam3) const;
     virtual void getCentreImpl(hkVector4& rParam1) const;
 
     void setHalfExtents(const hkVector4& rParam1);
@@ -2272,8 +2279,9 @@ public:
     virtual void getCollisionSpheresImpl(hkSphere* pParam1) const;
     virtual void getFirstVertex(hkVector4& rParam1) const;
     virtual void getSupportingVertexImpl(const hkVector4& rParam1, hkCdVertex& rParam2) const;
-    virtual void
-    convertVertexIdsToVerticesImpl(const u16* pParam1, s32 s32Param2, hkCdVertex* pParam3) const;
+    virtual void convertVertexIdsToVerticesImpl(const u16* pParam1,
+                                                s32 s32Param2,
+                                                hkCdVertex* pParam3) const;
     virtual void getCentreImpl(hkVector4& rParam1) const;
 };
 
@@ -2370,8 +2378,9 @@ public:
     virtual hkBool isBuildJacobianCallbackRequired() { return hkBool(); }
     virtual void buildJacobianCallback(const hkConstraintQueryIn& rParam1) {}
 
-    static void
-    getConstraintInfoUtil(const hkConstraintAtom* pParam1, s32 s32Param2, ConstraintInfo& rParam3);
+    static void getConstraintInfoUtil(const hkConstraintAtom* pParam1,
+                                      s32 s32Param2,
+                                      ConstraintInfo& rParam3);
 
     u32 m_userData; // offset 0x8, size 0x4
 };
@@ -2639,8 +2648,9 @@ public:
 
     hkStepResult reCollideAfterStepFailure();
     f32 snapSimulateTimeAndGetTimeToAdvanceTo();
-    hkStepResult
-    collideEntitiesBroadPhaseDiscrete(hkEntity** pParam1, s32 s32Param2, hkWorld* pParam3);
+    hkStepResult collideEntitiesBroadPhaseDiscrete(hkEntity** pParam1,
+                                                   s32 s32Param2,
+                                                   hkWorld* pParam3);
     hkStepResult integrateInternal(const hkStepInfo& rParam1);
     void applyActions();
     void collideEntitiesNarrowPhaseDiscrete(hkEntity** pParam1,
@@ -3148,8 +3158,9 @@ public:
 class hkDefaultConvexListFilter {
 public:
     virtual ~hkDefaultConvexListFilter() {}
-    virtual s32
-    getConvexListCollisionType(const hkCdBody&, const hkCdBody&, const hkCollisionInput&) const
+    virtual s32 getConvexListCollisionType(const hkCdBody&,
+                                           const hkCdBody&,
+                                           const hkCollisionInput&) const
     {
         return 0;
     }
@@ -3295,10 +3306,10 @@ public:
     virtual ~hkMoppShapeMediator();
     virtual void setSplittingPlaneDirections(const hkMoppSplittingPlaneDirection*, s32);
     virtual void getPrimitiveProperties(const hkMoppCompilerPrimitive&, u32*);
-    virtual void
-    projectPrimitives(const hkVector4&, s32, hkMoppCompilerPrimitive*, s32, f32*, f32*);
-    virtual void
-    findExtents(const hkVector4&, s32, const hkMoppCompilerPrimitive*, s32, f32*, f32*);
+    virtual void projectPrimitives(
+        const hkVector4&, s32, hkMoppCompilerPrimitive*, s32, f32*, f32*);
+    virtual void findExtents(
+        const hkVector4&, s32, const hkMoppCompilerPrimitive*, s32, f32*, f32*);
     virtual void getPrimitives(hkMoppCompilerPrimitive*);
     virtual void splitPrimitive(
         const hkMoppCompilerPrimitive&, const hkVector4&, f32, s32, hkMoppCompilerPrimitive*);
@@ -3312,10 +3323,10 @@ public:
     void addConvexShape(const hkConvexShape*, u32, const hkMoppSplittingPlaneDirection*, s32);
     virtual void setSplittingPlaneDirections(const hkMoppSplittingPlaneDirection*, s32);
     virtual void getPrimitiveProperties(const hkMoppCompilerPrimitive&, u32*);
-    virtual void
-    projectPrimitives(const hkVector4&, s32, hkMoppCompilerPrimitive*, s32, f32*, f32*);
-    virtual void
-    findExtents(const hkVector4&, s32, const hkMoppCompilerPrimitive*, s32, f32*, f32*);
+    virtual void projectPrimitives(
+        const hkVector4&, s32, hkMoppCompilerPrimitive*, s32, f32*, f32*);
+    virtual void findExtents(
+        const hkVector4&, s32, const hkMoppCompilerPrimitive*, s32, f32*, f32*);
     virtual void getPrimitives(hkMoppCompilerPrimitive*);
     virtual void splitPrimitive(
         const hkMoppCompilerPrimitive&, const hkVector4&, f32, s32, hkMoppCompilerPrimitive*);
@@ -3366,8 +3377,8 @@ public:
     void patchInBoundaryToPointOfViewExpansion(s32, Edge*, Vertex*);
     void addTetrahedron();
     void findTriangleNearestOrigin(Triangle*);
-    void
-    find2ClosestMultiTriangles(hkWingedEdge&, hkWingedEdge&, hkVector4&, Triangle*&, Triangle*&);
+    void find2ClosestMultiTriangles(
+        hkWingedEdge&, hkWingedEdge&, hkVector4&, Triangle*&, Triangle*&);
 };
 
 class hkInertiaTensorComputer {
@@ -3452,8 +3463,10 @@ class hkPredGskfAgent {
 public:
     virtual ~hkPredGskfAgent();
     static void registerAgent(hkCollisionDispatcher*);
-    static void
-    createPredGskfAgent(const hkCdBody&, const hkCdBody&, const hkCollisionInput&, hkContactMgr*);
+    static void createPredGskfAgent(const hkCdBody&,
+                                    const hkCdBody&,
+                                    const hkCollisionInput&,
+                                    hkContactMgr*);
     virtual void processCollision(const hkCdBody&,
                                   const hkCdBody&,
                                   const hkProcessCollisionInput&,
@@ -3544,8 +3557,10 @@ class hkGskfAgent {
 public:
     hkGskfAgent(const hkCdBody&, const hkCdBody&, hkContactMgr*);
     virtual ~hkGskfAgent();
-    static void
-    createGskfAgent(const hkCdBody&, const hkCdBody&, const hkCollisionInput&, hkContactMgr*);
+    static void createGskfAgent(const hkCdBody&,
+                                const hkCdBody&,
+                                const hkCollisionInput&,
+                                hkContactMgr*);
     virtual void cleanup(hkConstraintOwner&);
     virtual void removePoint(u16);
     virtual void commitPotential(u16);
@@ -3574,10 +3589,12 @@ class hkDefaultToiResourceMgr {
 public:
     hkDefaultToiResourceMgr();
     virtual ~hkDefaultToiResourceMgr();
-    virtual void
-    beginToiAndSetupResources(const hkToiEvent&, const hkArray<hkToiEvent>&, hkToiResources&);
-    virtual void
-    endToiAndFreeResources(const hkToiEvent&, const hkArray<hkToiEvent>&, const hkToiResources&);
+    virtual void beginToiAndSetupResources(const hkToiEvent&,
+                                           const hkArray<hkToiEvent>&,
+                                           hkToiResources&);
+    virtual void endToiAndFreeResources(const hkToiEvent&,
+                                        const hkArray<hkToiEvent>&,
+                                        const hkToiResources&);
     virtual void shouldHandleGivenToi(const hkToiEvent&);
     virtual void resourcesDepleted();
     virtual void cannotSolve(hkArray<ConstraintViolationInfo>&);
@@ -3666,10 +3683,14 @@ public:
     hkMultiSphereAgent(const hkCdBody&, const hkCdBody&, hkContactMgr*);
     virtual ~hkMultiSphereAgent();
     static void registerAgent(hkCollisionDispatcher*);
-    static void
-    createListAAgent(const hkCdBody&, const hkCdBody&, const hkCollisionInput&, hkContactMgr*);
-    static void
-    createListBAgent(const hkCdBody&, const hkCdBody&, const hkCollisionInput&, hkContactMgr*);
+    static void createListAAgent(const hkCdBody&,
+                                 const hkCdBody&,
+                                 const hkCollisionInput&,
+                                 hkContactMgr*);
+    static void createListBAgent(const hkCdBody&,
+                                 const hkCdBody&,
+                                 const hkCollisionInput&,
+                                 hkContactMgr*);
     virtual void cleanup(hkConstraintOwner&);
     virtual void processCollision(const hkCdBody&,
                                   const hkCdBody&,
@@ -3712,12 +3733,18 @@ public:
                                         const hkCdBody&,
                                         const hkCollisionInput&,
                                         hkContactMgr*);
-    static void
-    createConvexListAgent(const hkCdBody&, const hkCdBody&, const hkCollisionInput&, hkContactMgr*);
-    static void
-    createListConvexAgent(const hkCdBody&, const hkCdBody&, const hkCollisionInput&, hkContactMgr*);
-    static void
-    createListListAgent(const hkCdBody&, const hkCdBody&, const hkCollisionInput&, hkContactMgr*);
+    static void createConvexListAgent(const hkCdBody&,
+                                      const hkCdBody&,
+                                      const hkCollisionInput&,
+                                      hkContactMgr*);
+    static void createListConvexAgent(const hkCdBody&,
+                                      const hkCdBody&,
+                                      const hkCollisionInput&,
+                                      hkContactMgr*);
+    static void createListListAgent(const hkCdBody&,
+                                    const hkCdBody&,
+                                    const hkCollisionInput&,
+                                    hkContactMgr*);
     virtual void cleanup(hkConstraintOwner&);
     virtual void updateShapeCollectionFilter(const hkCdBody&,
                                              const hkCdBody&,
@@ -3767,8 +3794,8 @@ public:
     static void initAgentFunc(hkCollisionDispatcher::Agent3Funcs&);
     static void registerAgent3(hkCollisionDispatcher*);
     static void create(const hkAgent3Input&, hkAgentEntry*, void*);
-    static void
-    destroy(hkAgentEntry*, void*, hkContactMgr*, hkConstraintOwner&, hkCollisionDispatcher*);
+    static void destroy(
+        hkAgentEntry*, void*, hkContactMgr*, hkConstraintOwner&, hkCollisionDispatcher*);
     static void process(
         const hkAgent3ProcessInput&, hkAgentEntry*, void*, hkVector4*, hkProcessCollisionOutput&);
     static void updateFilter(hkAgentEntry*,
@@ -3791,8 +3818,10 @@ public:
                                        const hkCdBody&,
                                        const hkCollisionInput&,
                                        hkContactMgr*);
-    static void
-    createShapeBvAgent(const hkCdBody&, const hkCdBody&, const hkCollisionInput&, hkContactMgr*);
+    static void createShapeBvAgent(const hkCdBody&,
+                                   const hkCdBody&,
+                                   const hkCollisionInput&,
+                                   hkContactMgr*);
     virtual void getPenetrations(const hkCdBody&,
                                  const hkCdBody&,
                                  const hkCollisionInput&,
@@ -3914,10 +3943,14 @@ public:
     hkBvAgent(const hkCdBody&, const hkCdBody&, hkContactMgr*);
     virtual ~hkBvAgent();
     static void registerAgent(hkCollisionDispatcher*);
-    static void
-    createBvShapeAgent(const hkCdBody&, const hkCdBody&, const hkCollisionInput&, hkContactMgr*);
-    static void
-    createShapeBvAgent(const hkCdBody&, const hkCdBody&, const hkCollisionInput&, hkContactMgr*);
+    static void createBvShapeAgent(const hkCdBody&,
+                                   const hkCdBody&,
+                                   const hkCollisionInput&,
+                                   hkContactMgr*);
+    static void createShapeBvAgent(const hkCdBody&,
+                                   const hkCdBody&,
+                                   const hkCollisionInput&,
+                                   hkContactMgr*);
     virtual void cleanup(hkConstraintOwner&);
     virtual void invalidateTim(hkCollisionInput&);
     virtual void warpTime(f32, f32, hkCollisionInput&);
@@ -3965,8 +3998,8 @@ public:
     static void initAgentFunc(hkCollisionDispatcher::Agent3Funcs&);
     static void registerAgent3(hkCollisionDispatcher*);
     static void create(const hkAgent3Input&, hkAgentEntry*, void*);
-    static void
-    destroy(hkAgentEntry*, void*, hkContactMgr*, hkConstraintOwner&, hkCollisionDispatcher*);
+    static void destroy(
+        hkAgentEntry*, void*, hkContactMgr*, hkConstraintOwner&, hkCollisionDispatcher*);
     static void process(
         const hkAgent3ProcessInput&, hkAgentEntry*, void*, hkVector4*, hkProcessCollisionOutput&);
     static void updateFilter(hkAgentEntry*,
@@ -3999,10 +4032,14 @@ public:
     hkTransformAgent(const hkCdBody&, const hkCdBody&, hkContactMgr*);
     virtual ~hkTransformAgent();
     static void registerAgent(hkCollisionDispatcher*);
-    static void
-    createTransformAAgent(const hkCdBody&, const hkCdBody&, const hkCollisionInput&, hkContactMgr*);
-    static void
-    createTransformBAgent(const hkCdBody&, const hkCdBody&, const hkCollisionInput&, hkContactMgr*);
+    static void createTransformAAgent(const hkCdBody&,
+                                      const hkCdBody&,
+                                      const hkCollisionInput&,
+                                      hkContactMgr*);
+    static void createTransformBAgent(const hkCdBody&,
+                                      const hkCdBody&,
+                                      const hkCollisionInput&,
+                                      hkContactMgr*);
     virtual void cleanup(hkConstraintOwner&);
     virtual void processCollision(const hkCdBody&,
                                   const hkCdBody&,
@@ -4127,8 +4164,8 @@ public:
     static void commitPotential(hkAgentEntry*, void*, u16);
     static void createZombie(hkAgentEntry*, void*, u16);
     static void cleanup(hkAgentEntry*, void*, hkContactMgr*, hkConstraintOwner&);
-    static void
-    destroy(hkAgentEntry*, void*, hkContactMgr*, hkConstraintOwner&, hkCollisionDispatcher*);
+    static void destroy(
+        hkAgentEntry*, void*, hkContactMgr*, hkConstraintOwner&, hkCollisionDispatcher*);
     static void process(
         const hkAgent3ProcessInput&, hkAgentEntry*, void*, hkVector4*, hkProcessCollisionOutput&);
 };
@@ -4138,8 +4175,10 @@ public:
     virtual ~hkBoxBoxAgent();
     static void initAgentFunc(hkCollisionDispatcher::AgentFuncs&);
     static void registerAgent(hkCollisionDispatcher*);
-    static void
-    createBoxBoxAgent(const hkCdBody&, const hkCdBody&, const hkCollisionInput&, hkContactMgr*);
+    static void createBoxBoxAgent(const hkCdBody&,
+                                  const hkCdBody&,
+                                  const hkCollisionInput&,
+                                  hkContactMgr*);
     virtual void cleanup(hkConstraintOwner&);
     virtual void processCollision(const hkCdBody&,
                                   const hkCdBody&,
@@ -4199,10 +4238,14 @@ class hkSphereBoxAgent {
 public:
     virtual ~hkSphereBoxAgent();
     static void registerAgent(hkCollisionDispatcher*);
-    static void
-    createBoxSphereAgent(const hkCdBody&, const hkCdBody&, const hkCollisionInput&, hkContactMgr*);
-    static void
-    createSphereBoxAgent(const hkCdBody&, const hkCdBody&, const hkCollisionInput&, hkContactMgr*);
+    static void createBoxSphereAgent(const hkCdBody&,
+                                     const hkCdBody&,
+                                     const hkCollisionInput&,
+                                     hkContactMgr*);
+    static void createSphereBoxAgent(const hkCdBody&,
+                                     const hkCdBody&,
+                                     const hkCollisionInput&,
+                                     hkContactMgr*);
     virtual void cleanup(hkConstraintOwner&);
     virtual void processCollision(const hkCdBody&,
                                   const hkCdBody&,
@@ -4233,10 +4276,14 @@ public:
     static void initAgentFunc(hkCollisionDispatcher::AgentFuncs&);
     static void initAgentFuncInverse(hkCollisionDispatcher::AgentFuncs&);
     static void registerAgent(hkCollisionDispatcher*);
-    static void
-    createListAAgent(const hkCdBody&, const hkCdBody&, const hkCollisionInput&, hkContactMgr*);
-    static void
-    createListBAgent(const hkCdBody&, const hkCdBody&, const hkCollisionInput&, hkContactMgr*);
+    static void createListAAgent(const hkCdBody&,
+                                 const hkCdBody&,
+                                 const hkCollisionInput&,
+                                 hkContactMgr*);
+    static void createListBAgent(const hkCdBody&,
+                                 const hkCdBody&,
+                                 const hkCollisionInput&,
+                                 hkContactMgr*);
     virtual void cleanup(hkConstraintOwner&);
     virtual void invalidateTim(hkCollisionInput&);
     virtual void warpTime(f32, f32, hkCollisionInput&);
@@ -4318,8 +4365,8 @@ public:
     static void removePoint(hkAgentEntry*, void*, u16);
     static void commitPotential(hkAgentEntry*, void*, u16);
     static void createZombie(hkAgentEntry*, void*, u16);
-    static void
-    destroy(hkAgentEntry*, void*, hkContactMgr*, hkConstraintOwner&, hkCollisionDispatcher*);
+    static void destroy(
+        hkAgentEntry*, void*, hkContactMgr*, hkConstraintOwner&, hkCollisionDispatcher*);
     static void process(
         const hkAgent3ProcessInput&, hkAgentEntry*, void*, hkVector4*, hkProcessCollisionOutput&);
 };
@@ -4329,8 +4376,8 @@ public:
     static void initAgentFunc(hkCollisionDispatcher::Agent3Funcs&);
     static void registerAgent3(hkCollisionDispatcher*);
     static void create(const hkAgent3Input&, hkAgentEntry*, void*);
-    static void
-    destroy(hkAgentEntry*, void*, hkContactMgr*, hkConstraintOwner&, hkCollisionDispatcher*);
+    static void destroy(
+        hkAgentEntry*, void*, hkContactMgr*, hkConstraintOwner&, hkCollisionDispatcher*);
     static void process(
         const hkAgent3ProcessInput&, hkAgentEntry*, void*, hkVector4*, hkProcessCollisionOutput&);
     static void updateFilter(hkAgentEntry*,
@@ -4349,8 +4396,10 @@ public:
     hkPhantomAgent(const hkCdBody&, const hkCdBody&, hkContactMgr*);
     virtual ~hkPhantomAgent();
     static void registerAgent(hkCollisionDispatcher*);
-    static void
-    createPhantomAgent(const hkCdBody&, const hkCdBody&, const hkCollisionInput&, hkContactMgr*);
+    static void createPhantomAgent(const hkCdBody&,
+                                   const hkCdBody&,
+                                   const hkCollisionInput&,
+                                   hkContactMgr*);
     virtual void cleanup(hkConstraintOwner&);
     virtual void processCollision(const hkCdBody&,
                                   const hkCdBody&,
@@ -4388,8 +4437,10 @@ class hkMoppAgent {
 public:
     hkMoppAgent(hkContactMgr*);
     virtual ~hkMoppAgent();
-    static void
-    createBvBvAgent(const hkCdBody&, const hkCdBody&, const hkCollisionInput&, hkContactMgr*);
+    static void createBvBvAgent(const hkCdBody&,
+                                const hkCdBody&,
+                                const hkCollisionInput&,
+                                hkContactMgr*);
     static void staticLinearCast(const hkCdBody&,
                                  const hkCdBody&,
                                  const hkLinearCastCollisionInput&,
@@ -4403,8 +4454,8 @@ public:
     static void create(const hkAgent3Input&, hkAgentEntry*, void*);
     static void process(
         const hkAgent3ProcessInput&, hkAgentEntry*, void*, hkVector4*, hkProcessCollisionOutput&);
-    static void
-    destroy(hkAgentEntry*, void*, hkContactMgr*, hkConstraintOwner&, hkCollisionDispatcher*);
+    static void destroy(
+        hkAgentEntry*, void*, hkContactMgr*, hkConstraintOwner&, hkCollisionDispatcher*);
     static void updateFilter(hkAgentEntry*,
                              void*,
                              const hkCdBody&,
@@ -4423,8 +4474,10 @@ class hkNullAgent {
 public:
     hkNullAgent(const hkCdBody&, const hkCdBody&, hkContactMgr*);
     virtual ~hkNullAgent();
-    static hkCollisionAgent*
-    createNullAgent(const hkCdBody&, const hkCdBody&, const hkCollisionInput&, hkContactMgr*);
+    static hkCollisionAgent* createNullAgent(const hkCdBody&,
+                                             const hkCdBody&,
+                                             const hkCollisionInput&,
+                                             hkContactMgr*);
     static hkNullAgent* getNullAgent();
     static void staticGetClosestPoints(const hkCdBody&,
                                        const hkCdBody&,
@@ -4462,8 +4515,8 @@ public:
 class hkNullAgent3 {
 public:
     static void create(const hkAgent3Input&, hkAgentEntry*, void*);
-    static void
-    destroy(hkAgentEntry*, void*, hkContactMgr*, hkConstraintOwner&, hkCollisionDispatcher*);
+    static void destroy(
+        hkAgentEntry*, void*, hkContactMgr*, hkConstraintOwner&, hkCollisionDispatcher*);
     static void process(
         const hkAgent3ProcessInput&, hkAgentEntry*, void*, hkVector4*, hkProcessCollisionOutput&);
 };
@@ -4475,8 +4528,10 @@ public:
 
     void checkTriangleBoundaries(const hkVector4&, hkVector4*, SupportTypes);
     void processEdgeTriangle(hkVector4*, hkVector4*, hkPadSpu&, hkPadSpu&, hkBool, SupportTypes);
-    void
-    getClosestFeature(const hkConvexShape*, const hkConvexShape*, const hkTransform&, hkVector4&);
+    void getClosestFeature(const hkConvexShape*,
+                           const hkConvexShape*,
+                           const hkTransform&,
+                           hkVector4&);
     void exitAndExportCacheImpl(hkGskCache&) const;
     void convertFeatureToClosestDistance(const hkVector4&, hkGskOut&);
     void getClosestPoint(const GetClosesetPointInput&, hkGskCache&, hkVector4&, hkVector4&);
@@ -4575,8 +4630,8 @@ public:
                                     const hkArray<hkVector4>&,
                                     hkArray<hkVector4>&);
     static void removeCollinearVertices(hkArray<hkVector4>&, f32);
-    static void
-    postFilterVertices(hkGeomHull&, s32, s32, const hkGeomConvexHullTolerances&, hkBool&);
+    static void postFilterVertices(
+        hkGeomHull&, s32, s32, const hkGeomConvexHullTolerances&, hkBool&);
     static void buildPlaneEquations(const hkGeomConvexHullTolerances&,
                                     hkGeomHull&,
                                     const hkArray<hkVector4>&,
@@ -4595,8 +4650,10 @@ public:
         const hkGeomConvexHullTolerances&, const hkVector4*, s32, hkGeomHull&, hkArray<hkVector4>&);
     static void buildConvexSubHull(
         const hkGeomConvexHullTolerances&, hkArray<hkVector4>&, s32, s32, hkGeomHull&);
-    static void
-    mergeHulls(const hkGeomConvexHullTolerances&, hkGeomHull&, hkGeomHull&, hkGeomHull&);
+    static void mergeHulls(const hkGeomConvexHullTolerances&,
+                           hkGeomHull&,
+                           hkGeomHull&,
+                           hkGeomHull&);
     static void isSingleLine(f32, hkGeomHull&, hkGeomHull&, hkGeomHull&);
     static void removeFlaggedVertices(hkArray<hkVector4>&);
     static void removeUnusedVertices(hkGeomHull&, hkArray<hkVector4>&);
@@ -4641,8 +4698,10 @@ public:
                                  hkArray<WeightedNeighbour>&,
                                  hkArray<WeightedNeighbour>&,
                                  hkArray<WeightedLine>&);
-    static void
-    findWrapping(hkGeomHull&, hkGeomHull&, const hkArray<WeightedLine>&, hkArray<WrappingLine>&);
+    static void findWrapping(hkGeomHull&,
+                             hkGeomHull&,
+                             const hkArray<WeightedLine>&,
+                             hkArray<WrappingLine>&);
     static void isValidEdgeCheck(hkGeomHull&, hkGeomEdge*, s32);
     static void isValidWrapping(hkGeomHull&, hkGeomEdge*, hkBool, hkArray<WrappingLine>&);
     static void getAngleBetweenVertexAndPlane(const hkGeomConvexHullTolerances&,
@@ -4708,10 +4767,12 @@ class hkGeomConvexHullTester {
 public:
     static hkBool isValidHull(
         const hkGeomConvexHullTolerances&, const hkVector4*, s32, hkGeomHull&, hkArray<hkVector4>&);
-    static void
-    checkPlaneEquations(hkArray<hkVector4>&, hkArray<hkVector4>&, hkArray<hkVector4>&, f32);
-    static void
-    findSameEdges(const PlaneAndPoints&, const PlaneAndPoints&, hkBool&, hkBool&, hkBool&);
+    static void checkPlaneEquations(hkArray<hkVector4>&,
+                                    hkArray<hkVector4>&,
+                                    hkArray<hkVector4>&,
+                                    f32);
+    static void findSameEdges(
+        const PlaneAndPoints&, const PlaneAndPoints&, hkBool&, hkBool&, hkBool&);
     static hkBool isValidPlanarHull(hkArray<hkVector4>&,
                                     hkGeomHull&,
                                     hkArray<hkVector4>&,

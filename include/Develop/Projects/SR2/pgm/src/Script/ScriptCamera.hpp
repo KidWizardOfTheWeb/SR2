@@ -13,8 +13,10 @@ public:
     clsScriptCamera();
     virtual ~clsScriptCamera() {}
 
-    void
-    calcCamera(f32 f32Frame, NNS_CAMERAPTR* psPtr, NNS_MOTION* psMotion, NNS_CAMERAPTR* psCalcPtr);
+    void calcCamera(f32 f32Frame,
+                    NNS_CAMERAPTR* psPtr,
+                    NNS_MOTION* psMotion,
+                    NNS_CAMERAPTR* psCalcPtr);
     void codeSetCamera(u8* pu8Ptr, clsScript_Task* pcTask);
     void codeAllDelCamera(u8* pcParam1, clsScript_Task* pParam2);
     void codeViewport(u8* pcParam1, clsScript_Task* pParam2);

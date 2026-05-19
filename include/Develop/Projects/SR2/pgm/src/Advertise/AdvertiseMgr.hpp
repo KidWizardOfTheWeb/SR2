@@ -159,8 +159,8 @@ public:
                         s32 s32Param5,
                         s32 s32Param6,
                         u32 u32Param7);
-    void
-    drawUnLockWindow(s32 s32Param1, s32 s32Param2, s32 s32Param3, s32 s32Param4, u32 u32Param5);
+    void drawUnLockWindow(
+        s32 s32Param1, s32 s32Param2, s32 s32Param3, s32 s32Param4, u32 u32Param5);
     u8 checkUnLock();
     void drawShopModel(u8 u8Param1, f32 f32Param2);
     u32 callbackOption(void* pvParam1, u32 u32Param2, u32 u32Param3, u32 u32Param4);

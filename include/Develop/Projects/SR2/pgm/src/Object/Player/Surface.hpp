@@ -19,8 +19,9 @@ public:
     void updateDirection(NNS_VECTORFAST& rsUpVecFast,
                          const NNS_VECTORFAST* opsBaseDirVecFast,
                          const NNS_VECTORFAST* opsDirVecFast);
-    void
-    convertQuatToSurface(NNS_VECTORFAST& rsUpVecFast, f32& rf32Rad, const NNS_QUATERNION& rsQuat);
+    void convertQuatToSurface(NNS_VECTORFAST& rsUpVecFast,
+                              f32& rf32Rad,
+                              const NNS_QUATERNION& rsQuat);
 
     NNS_QUATERNION* getQuatPtr() const { return const_cast<NNS_QUATERNION*>(&m_sQuat); }
     void setQuat(const NNS_QUATERNION& rsQuat) { nnNormalizeQuaternion(&m_sQuat, &rsQuat); }

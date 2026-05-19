@@ -1,0 +1,4 @@
+#ifndef OOMAINHEAP_HPP
+#define OOMAINHEAP_HPP
+
+#endif // OOMAINHEAP_HPP

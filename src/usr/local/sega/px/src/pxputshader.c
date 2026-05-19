@@ -4,10 +4,12 @@
 #include "usr/local/sega/px/src/pxvutable.h"
 #include "usr/local/sega/px/src/pxvutable2.h"
 
-void PXPutShader(unsigned int type) {
-    unsigned int type_masked; //not in the dwarf dump.
+void PXPutShader(unsigned int type)
+{
+    unsigned int type_masked; // not in the dwarf dump.
     void* shader;
-    type_masked = type & 0xFFF; 
+
+    type_masked = type & 0xFFF;
     if ((type & 0x80000000) != 0) {
         if (type & 0x100000) {
             shader = pxgShaderTableSpecialFast[type_masked];

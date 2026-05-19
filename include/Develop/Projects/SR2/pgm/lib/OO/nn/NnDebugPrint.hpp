@@ -1,0 +1,4 @@
+#ifndef NNDEBUGPRINT_HPP
+#define NNDEBUGPRINT_HPP
+
+#endif // NNDEBUGPRINT_HPP

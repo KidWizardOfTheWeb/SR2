@@ -19,3 +19,63 @@ const static char pxgVersion[] = "\nPX Ver.1.46.07 Build:Jun  2 2006 18:45:32\n"
 char* pxgVersionPtr;
 
 struct PXS_INITPARAM pxgInitParam;
+
+enum PXE_ERR PXInit(struct PXS_INITPARAM* iprm)
+{
+}
+
+signed int PXGsInterruptHandler(signed int ca)
+{
+}
+
+void PXInitInterrupt(unsigned int flag)
+{
+}
+
+void PXExit()
+{
+}
+
+enum PXE_ERR PXRender(unsigned int flag)
+{
+}
+
+void* PXBegin(unsigned int flag)
+{
+}
+
+void PXEnd(void* p)
+{
+}
+
+void PXPutReg(unsigned int addr, unsigned long data)
+{
+}
+
+void PXPutCustomShader(void* addr)
+{
+}
+
+void PXStartShader()
+{
+}
+
+void PXPutCall(void* addr)
+{
+}
+
+void PXPutRef(void* addr, unsigned int qwc, unsigned int flag)
+{
+}
+
+void* PXBeginPrim(void* addr, unsigned int vertices, unsigned int stride, unsigned int prim)
+{
+}
+
+void* PXEndPrim(void* addr)
+{
+}
+
+void PXPutVifMask()
+{
+}

@@ -1,37 +1,42 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-typedef signed char      int8_t;
-typedef short            int16_t;
-typedef int              int32_t;
-typedef long long        int64_t;
+typedef char               c8;
 
-typedef unsigned char    uint8_t;
-typedef unsigned short   uint16_t;
-typedef unsigned int     uint32_t;
-typedef unsigned long long uint64_t;
+typedef signed char        s8;
+typedef signed short       s16;
+typedef signed int         s32;
+typedef signed long long   s64;
 
-typedef uint8_t     uchar;
-typedef uint16_t    ushort;
-typedef uint32_t    uint;
+typedef unsigned char      u8;
+typedef unsigned short     u16;
+typedef unsigned int       u32;
+typedef unsigned long long u64;
 
-typedef uchar   undefined1;
-typedef ushort  undefined2;
-typedef uint    undefined4;
-
-#ifdef _WIN32
-    typedef unsigned long ulong;
+#ifndef SR2_SIZE_T_DEFINED
+#define SR2_SIZE_T_DEFINED
+#ifdef __MWERKS__
+typedef u32 size_t;
+#elif defined(__SIZE_TYPE__)
+typedef __SIZE_TYPE__ size_t;
 #else
-    typedef unsigned int ulong;
+typedef u64 size_t;
+#endif
 #endif
 
-typedef ulong   undefined8;
+typedef float  f32;
+typedef double f64;
 
-typedef int32_t s32;
+#ifndef NULL
+#define NULL 0
+#endif
 
-#ifndef _SIZE_T_DEFINED
-#define _SIZE_T_DEFINED
-typedef unsigned int size_t;
+#ifndef TRUE
+#define TRUE 1
+#endif
+
+#ifndef FALSE
+#define FALSE 0
 #endif
 
 #endif // TYPES_H

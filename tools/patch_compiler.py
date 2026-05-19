@@ -39,14 +39,14 @@ def main():
     # Copy DLLs
     print(f"Copying {lmgr8c} to {ps2_compiler_path}")
     shutil.copy(lmgr8c, ps2_compiler_path / "lmgr8c.dll")
-    
+
     print(f"Copying {lmgr326b} to {ps2_compiler_path}")
     shutil.copy(lmgr326b, ps2_compiler_path / "lmgr326b.dll")
 
     # Create marker file
     marker_file.parent.mkdir(parents=True, exist_ok=True)
     marker_file.touch()
-    
+
     print(f"Successfully patched PS2 compiler at {ps2_compiler_path}")
 
 

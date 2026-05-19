@@ -13,7 +13,7 @@ import platform
 import sys
 import re
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Set, Tuple, TypedDict
+from typing import Any, cast, Dict, Iterable, List, Optional, Set, Tuple, TypedDict, Union
 
 from . import ninja_syntax
 from .ninja_syntax import serialize_path
@@ -171,6 +171,12 @@ class ProjectConfig:
         self.warn_missing_config: bool = False
         self.warn_missing_source: bool = False
         self.reconfig_deps: Optional[List[Path]] = None
+        self.custom_build_rules: Optional[List[Dict[str, Any]]] = (
+            None  # Custom ninja build rules
+        )
+        self.custom_build_steps: Optional[Dict[str, List[Dict[str, Any]]]] = (
+            None  # Custom build steps, types are ["pre-compile", "post-compile", "post-link", "post-build"]
+        )
         self.short_loop_workaround: bool = True
         self.generate_compile_commands: bool = True
         self.extra_clang_flags: List[str] = []
@@ -327,18 +333,18 @@ def replace_instructions_with_opcodes(asm_folder: Path) -> None:
 def generate_build(config: ProjectConfig) -> None:
     config.validate()
     objects = config.objects()
-    
+
     # Run splat to generate asm and linker script
     print("Running splat to split binary...")
     import splat.scripts.split as split
     split.main([config.config_path], modes="all", verbose=False)
-    
+
     # Convert GNU ld script to MWLD LCF format
     print("Converting linker script to LCF format...")
     splat_ld = config.out_path() / "SLUS_216.42.splat.ld"
     template_lcf = Path("include") / "template.lcf"
     output_lcf = config.out_path() / "SLUS_216.42.lcf"
-    
+
     import subprocess
     subprocess.run([
         sys.executable,
@@ -348,14 +354,14 @@ def generate_build(config: ProjectConfig) -> None:
         "--output", str(output_lcf),
         "--build-dir", str(config.out_path()),
     ], check=True)
-    
+
     # Apply short loop workaround if enabled
     if config.short_loop_workaround:
         asm_path = config.out_path() / "asm"
         if asm_path.exists():
             print("Applying short loop workaround...")
             replace_instructions_with_opcodes(asm_path)
-    
+
     generate_build_ninja(config, objects)
     generate_objdiff_config(config, objects)
     # Construct a BuildConfig from objects for compile_commands generation.
@@ -619,6 +625,59 @@ def generate_build_ninja(
     )
     n.newline()
 
+    if len(config.custom_build_rules or {}) > 0:
+        n.comment("Custom project build rules (pre/post-processing)")
+    for rule in config.custom_build_rules or {}:
+        n.rule(
+            name=cast(str, rule.get("name")),
+            command=cast(str, rule.get("command")),
+            description=rule.get("description", None),
+            depfile=rule.get("depfile", None),
+            generator=rule.get("generator", False),
+            pool=rule.get("pool", None),
+            restat=rule.get("restat", False),
+            rspfile=rule.get("rspfile", None),
+            rspfile_content=rule.get("rspfile_content", None),
+            deps=rule.get("deps", None),
+        )
+        n.newline()
+
+    def write_custom_step(
+        step: str,
+        prev_step: Optional[str] = None,
+        extra_inputs: Optional[List[str]] = None,
+    ) -> None:
+        implicit: List[Union[str, Path]] = []
+        if config.custom_build_steps and step in config.custom_build_steps:
+            n.comment(f"Custom build steps ({step})")
+            for custom_step in config.custom_build_steps[step]:
+                outputs = cast(List[Union[str, Path]], custom_step.get("outputs"))
+                if isinstance(outputs, list):
+                    implicit.extend(outputs)
+                else:
+                    implicit.append(outputs)
+                n.build(
+                    outputs=outputs,
+                    rule=cast(str, custom_step.get("rule")),
+                    inputs=custom_step.get("inputs", None),
+                    implicit=custom_step.get("implicit", None),
+                    order_only=custom_step.get("order_only", None),
+                    variables=custom_step.get("variables", None),
+                    implicit_outputs=custom_step.get("implicit_outputs", None),
+                    pool=custom_step.get("pool", None),
+                    dyndep=custom_step.get("dyndep", None),
+                )
+                n.newline()
+        n.build(
+            outputs=step,
+            rule="phony",
+            inputs=implicit,
+            order_only=prev_step,
+            implicit=extra_inputs,
+        )
+
+    write_custom_step("pre-compile")
+
     ###
     # Source files
     ###
@@ -647,6 +706,7 @@ def generate_build_ninja(
                 "cflags": cflags_str,
             },
             implicit=mwcc_implicit,
+            order_only="pre-compile",
         )
         n.newline()
 
@@ -683,6 +743,7 @@ def generate_build_ninja(
             inputs=src_path,
             variables={"asflags": asflags_str},
             implicit=gnu_as_implicit,
+            order_only="pre-compile",
         )
         n.newline()
 
@@ -734,12 +795,14 @@ def generate_build_ninja(
     )
     n.newline()
 
+    write_custom_step("post-compile", "pre-compile")
+
     ###
     # Link
     ###
     elf_path = build_path / f"{config.version}.elf"
     lcf_script = build_path / "SLUS_216.42.lcf"  # Generated LCF file
-    
+
     n.comment("Link ELF")
     elf_ldflags = f"$ldflags {serialize_path(lcf_script)}"
     if config.generate_map:
@@ -747,7 +810,7 @@ def generate_build_ninja(
         elf_ldflags += f" -map {serialize_path(elf_map)}"
     else:
         elf_map = None
-    
+
     n.build(
         outputs=elf_path,
         rule="link",
@@ -757,6 +820,8 @@ def generate_build_ninja(
         variables={"ldflags": elf_ldflags},
     )
     n.newline()
+
+    write_custom_step("post-link", "post-compile")
 
     ###
     # Check hash
@@ -818,12 +883,7 @@ def generate_build_ninja(
         )
         n.newline()
 
-        n.comment("Post-build ordering phony (no custom steps in this project)")
-        n.build(
-            outputs="post-build",
-            rule="phony",
-            inputs=["all_source"],
-        )
+        write_custom_step("post-build", "post-link")
         n.newline()
 
         ###

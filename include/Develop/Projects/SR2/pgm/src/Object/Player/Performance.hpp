@@ -5,9 +5,8 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Player/GravityAction/GravityControl.hpp"
 #include "Develop/Projects/SR2/pgm/src/Game/Game.hpp"
 
-class clsGearCtrl;   // forward decl
-class clsCharacter;  // forward decl
-class clsPlayerTask; // forward decl
+class clsGearCtrl;
+class clsCharacter;
 
 enum enmBaseType {
     BASE_PRFM_SPEED = 0,
@@ -30,96 +29,101 @@ enum enmWalkType {
 
 // total size: 0x2C
 struct stcBasePrfm {
-    float f32Speed[3];      // 0x00
-    float f32Accele[3];     // 0x0C
-    float f32RotateSpeed;   // 0x18
-    float f32RotateAccele;  // 0x1C
-    float f32Grip;          // 0x20
-    float f32Durability;    // 0x24
-    unsigned int u32Ability;// 0x28
+    f32 f32Speed[3];     // offset 0x0, size 0xC
+    f32 f32Accele[3];    // offset 0xC, size 0xC
+    f32 f32RotateSpeed;  // offset 0x18, size 0x4
+    f32 f32RotateAccele; // offset 0x1C, size 0x4
+    f32 f32Grip;         // offset 0x20, size 0x4
+    f32 f32Durability;   // offset 0x24, size 0x4
+    u32 u32Ability;      // offset 0x28, size 0x4
 };
 
-class stcAddPrfm {
-    // total size: 0x6C
-public:
-    float f32MaxSpeedRate; // offset 0x0, size 0x4
-    float f32AcceleRate; // offset 0x4, size 0x4
-    float f32RotateSpeedRate; // offset 0x8, size 0x4
-    float f32RotateAcceleRate; // offset 0xC, size 0x4
-    float f32GripRate; // offset 0x10, size 0x4
-    float f32DurabilityRate; // offset 0x14, size 0x4
-    float f32Speed[3]; // offset 0x18, size 0xC
-    float f32Accele[3]; // offset 0x24, size 0xC
-    float f32RotateSpeed; // offset 0x30, size 0x4
-    float f32RotateAccele; // offset 0x34, size 0x4
-    float f32Grip; // offset 0x38, size 0x4
-    float f32JumpSpeed; // offset 0x3C, size 0x4
-    float f32JumpAccele; // offset 0x40, size 0x4
-    float f32Durability; // offset 0x44, size 0x4
-    unsigned int u32Ability; // offset 0x48, size 0x4
-    float f32MaxAgp; // offset 0x4C, size 0x4
-    float f32GCtrlDischargeSpeed; // offset 0x50, size 0x4
-    float f32GDiveSpeedRate; // offset 0x54, size 0x4
-    float f32GPTakeRate; // offset 0x58, size 0x4
-    float f32GCtrlGpUseRate; // offset 0x5C, size 0x4
-    float f32GDiveGpUseRate; // offset 0x60, size 0x4
-    signed int s32AttackEnableFrame; // offset 0x64, size 0x4
-    signed short s16RingCapacity; // offset 0x68, size 0x2
-    signed char s8TrickRank; // offset 0x6A, size 0x1
-    signed char s8ItemRank; // offset 0x6B, size 0x1
+struct stcAddPrfm {
+    f32 f32MaxSpeedRate;        // offset 0x0, size 0x4
+    f32 f32AcceleRate;          // offset 0x4, size 0x4
+    f32 f32RotateSpeedRate;     // offset 0x8, size 0x4
+    f32 f32RotateAcceleRate;    // offset 0xC, size 0x4
+    f32 f32GripRate;            // offset 0x10, size 0x4
+    f32 f32DurabilityRate;      // offset 0x14, size 0x4
+    f32 f32Speed[3];            // offset 0x18, size 0xC
+    f32 f32Accele[3];           // offset 0x24, size 0xC
+    f32 f32RotateSpeed;         // offset 0x30, size 0x4
+    f32 f32RotateAccele;        // offset 0x34, size 0x4
+    f32 f32Grip;                // offset 0x38, size 0x4
+    f32 f32JumpSpeed;           // offset 0x3C, size 0x4
+    f32 f32JumpAccele;          // offset 0x40, size 0x4
+    f32 f32Durability;          // offset 0x44, size 0x4
+    u32 u32Ability;             // offset 0x48, size 0x4
+    f32 f32MaxAgp;              // offset 0x4C, size 0x4
+    f32 f32GCtrlDischargeSpeed; // offset 0x50, size 0x4
+    f32 f32GDiveSpeedRate;      // offset 0x54, size 0x4
+    f32 f32GPTakeRate;          // offset 0x58, size 0x4
+    f32 f32GCtrlGpUseRate;      // offset 0x5C, size 0x4
+    f32 f32GDiveGpUseRate;      // offset 0x60, size 0x4
+    s32 s32AttackEnableFrame;   // offset 0x64, size 0x4
+    s16 s16RingCapacity;        // offset 0x68, size 0x2
+    s8 s8TrickRank;             // offset 0x6A, size 0x1
+    s8 s8ItemRank;              // offset 0x6B, size 0x1
 };
 
 class clsPrfm {
 public:
     struct stcData {
-        float f32Speed[3];        // 0x00
-        float f32Accele[3];       // 0x0C
-        float f32RotateSpeed;     // 0x18
-        float f32RotateAccele;    // 0x1C
-        float f32Grip;            // 0x20
-        float f32JumpSpeed;       // 0x24
-        float f32JumpAccele;      // 0x28
-        float f32Durability;      // 0x2C
-        uint32_t u32Ability;      // 0x30
-        float f32MaxAgp;          // 0x34
-        float f32GCtrlDischargeSpeed; // 0x38
-        float f32GDiveSpeedRate;  // 0x3C
-        float f32GPTakeRate;      // 0x40
-        float f32GCtrlGpUseRate;  // 0x44
-        float f32GDiveGpUseRate;  // 0x48
-        int32_t s32AttackEnableFrame; // 0x4C
-        int16_t s16RingCapacity;  // 0x50
-        int8_t s8TrickRank;       // 0x52
-        int8_t s8ItemRank;        // 0x53
-    }; // total size: 0x54
+        f32 f32Speed[3];            // offset 0x0, size 0xC
+        f32 f32Accele[3];           // offset 0xC, size 0xC
+        f32 f32RotateSpeed;         // offset 0x18, size 0x4
+        f32 f32RotateAccele;        // offset 0x1C, size 0x4
+        f32 f32Grip;                // offset 0x20, size 0x4
+        f32 f32JumpSpeed;           // offset 0x24, size 0x4
+        f32 f32JumpAccele;          // offset 0x28, size 0x4
+        f32 f32Durability;          // offset 0x2C, size 0x4
+        u32 u32Ability;             // offset 0x30, size 0x4
+        f32 f32MaxAgp;              // offset 0x34, size 0x4
+        f32 f32GCtrlDischargeSpeed; // offset 0x38, size 0x4
+        f32 f32GDiveSpeedRate;      // offset 0x3C, size 0x4
+        f32 f32GPTakeRate;          // offset 0x40, size 0x4
+        f32 f32GCtrlGpUseRate;      // offset 0x44, size 0x4
+        f32 f32GDiveGpUseRate;      // offset 0x48, size 0x4
+        s32 s32AttackEnableFrame;   // offset 0x4C, size 0x4
+        s16 s16RingCapacity;        // offset 0x50, size 0x2
+        s8 s8TrickRank;             // offset 0x52, size 0x1
+        s8 s8ItemRank;              // offset 0x53, size 0x1
+    };
 
-    stcData m_sBase;                // 0x00
-    stcData m_sWalk;                // 0x54
-    stcData m_sData;                // 0xA8
-    clsGearCtrl* m_pcGearCtrl;      // 0xFC
-    float m_f32WeightRate;          // 0x100
-    float m_f32InfiniGpFrame;       // 0x104
-    float m_f32AdjustSpeedRate;     // 0x108
-    float m_f32AdjustAcceleRate;    // 0x10C
+    clsPrfm() {}
 
-    const stcData* getDataPtr() const;
-    void setMaxAgp(float f32MaxAGP);
-    void setRingCapacity(signed short s16Ring);
-    void reset();
+    const stcData* getGearDataPtr() const { return &m_sData; }
+    u32 getGearAbility() const { return m_sData.u32Ability; }
+    u32 getAbility() const { return m_sData.u32Ability | m_sBase.u32Ability; }
+
+    stcData* getDataPtr() const;
+    void setMaxAgp(f32 f32MaxAGP);
+    void setRingCapacity(s16 s16Ring);
     void setup(clsCharacter* pcChara, clsGearCtrl* pcGearCtrl);
     void updateFrame();
     void updateData();
     void Limit(stcData& rsData);
+    void reset();
+
+    static f32 t_of32FLightMaxSpeed;         // address: 0x00664D50
+    static f32 t_of32FlightMinSpeed;         // address: 0x00664D58
+    static f32 t_of32FlightResistanceRate;   // address: 0x00664D60
+    static f32 t_of32FlightFloatingBaseRate; // address: 0x00664D68
+    static f32 t_of32FlightFloatingDiffRate; // address: 0x00664D70
+    static f32 t_of32InfiniGpCheckNotUse;    // address: 0x00664D78
+
+    stcData m_sBase;           // offset 0x0, size 0x54
+    stcData m_sWalk;           // offset 0x54, size 0x54
+    stcData m_sData;           // offset 0xA8, size 0x54
+    clsGearCtrl* m_pcGearCtrl; // offset 0xFC, size 0x4
+    f32 m_f32WeightRate;       // offset 0x100, size 0x4
+    f32 m_f32InfiniGpFrame;    // offset 0x104, size 0x4
+    f32 m_f32AdjustSpeedRate;  // offset 0x108, size 0x4
+    f32 m_f32AdjustAcceleRate; // offset 0x10C, size 0x4
 }; // total size: 0x110
 
-namespace nspChara {
-    extern stcBasePrfm osWalkPrfm[MAX_WALK_PRFM_NUM];
-    extern stcBasePrfm oasBasePrfm[MAX_BASE_PRFM_NUM];
-}
-using namespace nspChara;
-
 namespace nspAgp {
-    extern float toaf32GpUsedRate[5]; // address: 0x664D80
+extern f32 toaf32GpUsedRate[5]; // address: 0x664D80
 }
 
 #endif // PERFORMANCE_HPP

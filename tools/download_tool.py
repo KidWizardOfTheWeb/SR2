@@ -27,7 +27,7 @@ def binutils_url(tag: str) -> str:
     """Download MIPS binutils for PS2"""
     uname = platform.uname()
     system = uname.system.lower()
-    
+
     if system == "windows":
         # Windows binutils
         return f"https://github.com/dbalatoni13/mips-binutils/releases/download/{tag}/windows-x86_64.zip"

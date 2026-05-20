@@ -44,6 +44,9 @@ public:
     virtual u8 isStereo() const { return m_eSoundMode == SOUND_MODE___STEREO; }
     virtual u8 isPrologic2() const { return m_eSoundMode == SOUND_MODE___DOLBY_PROLOGIC2; }
     virtual u8 isDolbyDigital() const { return m_eSoundMode == SOUND_MODE___DOLBY_DIGITAL; }
+    virtual void setViewPort(u32 u32I) {}
+    virtual void getNowDateTime(stcDateTime* psNow) {}
+    virtual void VWait() {}
 
     f32 getFrameRate() const { return m_f32FrameRate; }
     f32 getFrameRateAdd() const { return m_f32FrameRateAdd; }

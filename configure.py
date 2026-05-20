@@ -192,6 +192,7 @@ config.compilers_tag = "20250812"
 config.dtk_tag = "v1.8.3"
 config.mwccps2_tag = "3.0.1b198-051011"
 config.objdiff_tag = "v3.7.1"
+config.sjiswrap_tag = "v1.2.2"
 config.wibo_tag = "1.0.0-beta.5"
 
 # Project

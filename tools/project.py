@@ -71,6 +71,7 @@ class Object:
             "mw_version": None,
             "progress_category": None,
             "scratch_preset_id": None,
+            "shift_jis": None,
             "source": name,
             "src_dir": None,
         }
@@ -99,6 +100,7 @@ class Object:
         set_default("asflags", config.asflags)
         set_default("asm_dir", config.asm_dir)
         set_default("mw_version", config.linker_version)
+        set_default("shift_jis", config.shift_jis)
         set_default("src_dir", config.src_dir)
 
         # Validate progress categories
@@ -151,6 +153,8 @@ class ProjectConfig:
         self.dtk_tag: Optional[str] = None
         self.dtk_path: Optional[Path] = None
         self.mwccps2_tag: Optional[str] = None
+        self.sjiswrap_tag: Optional[str] = None
+        self.sjiswrap_path: Optional[Path] = None
         self.wibo_tag: Optional[str] = None
         self.wrapper: Optional[Path] = None
         self.ninja_path: Optional[Path] = None
@@ -178,6 +182,7 @@ class ProjectConfig:
             None  # Custom build steps, types are ["pre-compile", "post-compile", "post-link", "post-build"]
         )
         self.short_loop_workaround: bool = True
+        self.shift_jis = True
         self.generate_compile_commands: bool = True
         self.extra_clang_flags: List[str] = []
 
@@ -246,6 +251,14 @@ class ProjectConfig:
             and platform.machine() in ("i386", "x86_64", "aarch64", "arm64")
             and self.wrapper is None
         )
+
+    def sjiswrap(self) -> Path:
+        if self.sjiswrap_path:
+            return self.sjiswrap_path
+        elif self.sjiswrap_tag:
+            return self.build_dir / "tools" / "sjiswrap.exe"
+        else:
+            sys.exit("ProjectConfig.sjiswrap_tag missing")
 
 
 def is_windows() -> bool:
@@ -456,6 +469,22 @@ def generate_build_ninja(
     else:
         sys.exit("ProjectConfig.objdiff_tag missing")
 
+    if config.sjiswrap_path:
+        sjiswrap = config.sjiswrap_path
+    elif config.sjiswrap_tag:
+        sjiswrap = build_tools_path / "sjiswrap.exe"
+        n.build(
+            outputs=sjiswrap,
+            rule="download_tool",
+            implicit=download_tool,
+            variables={
+                "tool": "sjiswrap",
+                "tag": config.sjiswrap_tag,
+            },
+        )
+    else:
+        sys.exit("ProjectConfig.sjiswrap_tag missing")
+
     # wibo or wine wrapper
     wrapper = config.compiler_wrapper()
     wrapper_implicit: Optional[Path] = None
@@ -533,7 +562,7 @@ def generate_build_ninja(
     n.build(
         outputs="tools",
         rule="phony",
-        inputs=[wrapper, compilers, mwccps2_dir, binutils, dtk, objdiff],
+        inputs=[wrapper, compilers, mwccps2_dir, binutils, dtk, objdiff, sjiswrap],
     )
     n.newline()
 
@@ -546,6 +575,10 @@ def generate_build_ninja(
     mwcc = compiler_path / "mwccps2.exe"
     mwcc_cmd = f"{wrapper_cmd}{mwcc} $cflags -c $in -o $out"
     mwcc_implicit: List[Optional[Path]] = [compilers_implicit or mwcc, wrapper_implicit]
+
+    # MWCCPS2 with UTF-8 to Shift JIS wrapper
+    mwcc_sjis_cmd = f"{wrapper_cmd}{sjiswrap} {mwcc} $cflags -c $in -o $out"
+    mwcc_sjis_implicit: List[Optional[Path]] = [*mwcc_implicit, sjiswrap]
 
     # Patch MWCCPS2 compiler DLLs (done after download)
     n.comment("Patch MWCCPS2 compiler DLLs")
@@ -585,7 +618,9 @@ def generate_build_ninja(
     if os.name != "nt":
         transform_dep = config.tools_dir / "transform_dep.py"
         mwcc_cmd += f" -MMD && $python {transform_dep} $out.d $out.d"
+        mwcc_sjis_cmd += f" -MMD && $python {transform_dep} $out.d $out.d"
         mwcc_implicit.append(transform_dep)
+        mwcc_sjis_implicit.append(transform_dep)
 
     n.comment("Link ELF file")
     n.rule(
@@ -599,6 +634,16 @@ def generate_build_ninja(
     n.rule(
         name="mwcc",
         command=mwcc_cmd,
+        description="MWCC $out",
+        depfile="$out.d",
+        deps="gcc",
+    )
+    n.newline()
+
+    n.comment("MWCC build (with UTF-8 to Shift JIS wrapper)")
+    n.rule(
+        name="mwcc_sjis",
+        command=mwcc_sjis_cmd,
         description="MWCC $out",
         depfile="$out.d",
         deps="gcc",
@@ -696,16 +741,18 @@ def generate_build_ninja(
         cflags_str = make_flags_str(all_cflags)
 
         lib_name = obj.options["lib"]
+        build_rule = "mwcc_sjis" if obj.options["shift_jis"] else "mwcc"
+        build_implicit = mwcc_sjis_implicit if obj.options["shift_jis"] else mwcc_implicit
         n.comment(f"{obj.name}: {lib_name} (linked {obj.completed})")
         n.build(
             outputs=obj.src_obj_path,
-            rule="mwcc",
+            rule=build_rule,
             inputs=src_path,
             variables={
                 "mw_version": Path(obj.options["mw_version"]),
                 "cflags": cflags_str,
             },
-            implicit=mwcc_implicit,
+            implicit=build_implicit,
             order_only="pre-compile",
         )
         n.newline()

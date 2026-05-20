@@ -11,9 +11,9 @@ public:
 
     static s32 tVBlanking_CallBack(s32 s32CaIn);
 
-    void VWait();
-    void setViewPort(u32 u32I);
-    void getNowDateTime(stcDateTime* psNow);
+    virtual void setViewPort(u32 u32I);
+    virtual void getNowDateTime(stcDateTime* psNow);
+    virtual void VWait();
 };
 
 #endif // PS2SYSTEM_HPP

@@ -39,4 +39,8 @@ typedef double f64;
 #define FALSE 0
 #endif
 
+#ifndef ABORT
+#define ABORT() asm("breakc 1")
+#endif
+
 #endif // TYPES_H

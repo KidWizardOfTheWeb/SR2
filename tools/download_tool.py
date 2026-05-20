@@ -80,6 +80,11 @@ def objdiff_cli_url(tag: str) -> str:
     return f"{repo}/releases/download/{tag}/objdiff-cli-{system}-{arch}{suffix}"
 
 
+def sjiswrap_url(tag: str) -> str:
+    repo = "https://github.com/encounter/sjiswrap"
+    return f"{repo}/releases/download/{tag}/sjiswrap-windows-x86.exe"
+
+
 def wibo_url(tag: str) -> str:
     uname = platform.uname()
     arch = uname.machine.lower()
@@ -97,6 +102,7 @@ TOOLS: Dict[str, Callable[[str], str]] = {
     "dtk": dtk_url,
     "mwccps2": mwccps2_url,
     "objdiff-cli": objdiff_cli_url,
+    "sjiswrap": sjiswrap_url,
     "wibo": wibo_url,
 }
 

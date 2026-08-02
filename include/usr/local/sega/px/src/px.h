@@ -2,9 +2,13 @@
 #define PX_H
 
 #include "usr/local/sce/ee/lib/eestruct.h"
+#include "usr/local/sce/ee/lib/eekernel.h"
 #include "usr/local/sega/px/src/pxgeom.h"
 #include "usr/local/sega/px/src/pxpushbuffer.h"
 #include "usr/local/sega/px/src/pxtex2.h"
+#include "usr/local/sega/px/src/pxcontext.h"
+#include "usr/local/sce/ee/lib/libgraph.h"
+#include "usr/local/sce/ee/gcc/ee/lib/libc/memset.h"
 
 // total size: 0x20
 struct PXS_INITPARAM {
@@ -82,7 +86,7 @@ enum PXE_SVF {
     PXE_SVF_UV16M = 8,
 };
 
-extern char* __license_string_ptr__;
+extern const char* __license_string_ptr__;
 extern struct PXS_MATERIAL pxgDefaultMaterial;
 extern signed int (*pxgDmaStartCallback)(void*);
 extern float pxgGsGuardBand;
@@ -98,9 +102,11 @@ extern unsigned int pxgRenderDmaBusy;
 extern unsigned int pxgRenderFlag;
 extern struct PXS_SCREENPARAM pxgScreenParam;
 extern struct PXS_SUBSHADERPARAM pxgSubShaderParam;
-extern char* pxgVersionPtr;
+extern const char * pxgVersionPtr;
 extern struct PXS_MATRIX pxgViewMatrix;
-extern unsigned int pxgVuCode_Scissor;
+extern unsigned int pxgVuCode_Scissor __attribute__((section(".vutext")));
+
+extern unsigned int D_005A44E0 __attribute__((section(".vutext"))); //temporary fake match
 
 enum PXE_ERR PXInit(struct PXS_INITPARAM* iprm);
 signed int PXGsInterruptHandler(signed int ca);

@@ -1,4 +1,5 @@
 #include "usr/local/sega/px/src/pxtex.h"
+#include "usr/local/sega/px/src/px.h"
 
 void PXTexBlockSizeToWidthHeight(
     unsigned int bit, unsigned int inw, unsigned int inh, unsigned int* outw, unsigned int* outh)
@@ -66,6 +67,8 @@ enum PXE_ERR PXLoadTex(void* tagbuf)
 
 void PXPutTexImage(void* imgtag)
 {
+    imgtag = (void *)(((int *)imgtag) + 0x8);
+    PXPutCall(imgtag);
 }
 
 unsigned int PXPrepareTexImagePacketLinear(void* startbuf,

@@ -75,6 +75,7 @@ void* PXBeginPrimPB(struct tagPXS_PUSHBUFFER* pb,
                     unsigned int vertices,
                     unsigned int stride,
                     unsigned int prim);
-void* PXEndPrimPB(void* addr);
+// The pb variable in PXEndPrimPB is probably unused and that's why it got cut from the DWARF'
+void* PXEndPrimPB(struct tagPXS_PUSHBUFFER* pb, void* addr);
 
 #endif // PXPUSHBUFFER_H

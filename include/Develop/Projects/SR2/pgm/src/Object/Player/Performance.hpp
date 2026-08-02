@@ -123,7 +123,7 @@ public:
 }; // total size: 0x110
 
 namespace nspAgp {
-extern f32 toaf32GpUsedRate[5]; // address: 0x664D80
+extern const f32 toaf32GpUsedRate[5]; // address: 0x664D80
 }
 
 #endif // PERFORMANCE_HPP

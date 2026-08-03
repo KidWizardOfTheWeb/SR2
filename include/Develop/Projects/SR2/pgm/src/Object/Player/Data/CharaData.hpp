@@ -60,8 +60,8 @@ struct stcData {
 };
 namespace nspChara {
 extern f32 of32BaseHeight;                             // size: 0x4, address: 0x6651C0
-extern stcBasePrfm oasBasePrfm[5];                     // size: 0xDC, address: 0x6651D0
-extern stcBasePrfm osWalkPrfm[4];                      // size: 0xB0, address: 0x6652B0
+extern const stcBasePrfm oasBasePrfm[5];               // size: 0xDC, address: 0x6651D0
+extern const stcBasePrfm osWalkPrfm[4];                // size: 0xB0, address: 0x6652B0
 extern stcData oasData[19];                            // size: 0x2AC, address: 0x665360
 static u8 chk__oasData_SizeCheck_[1];                  // size: 0x1, address: 0x0
 extern s8* oasCharaCode3[19];                          // size: 0x4C, address: 0x620CA0

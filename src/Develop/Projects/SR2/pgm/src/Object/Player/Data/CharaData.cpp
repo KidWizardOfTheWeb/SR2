@@ -2,8 +2,8 @@
 
 namespace nspChara {
 f32 of32BaseHeight;
-stcBasePrfm oasBasePrfm[5];
-stcBasePrfm osWalkPrfm[4];
+const stcBasePrfm oasBasePrfm[5] = {};
+const stcBasePrfm osWalkPrfm[4] = {};
 stcData oasData[19];
 s8* oasCharaCode3[19];
 u32 oasImageColor[19];

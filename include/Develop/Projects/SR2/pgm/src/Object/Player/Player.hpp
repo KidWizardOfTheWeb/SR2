@@ -297,10 +297,10 @@ public:
     {
     }
     virtual ~clsPlayerTask();
+    virtual enmPlayerType getPlayerType() const { return PLAYER_TYPE__NORMAL; } // vtable slot 0x58
     virtual void reset();
     virtual void draw();
     virtual void execute();
-    virtual enmPlayerType getPlayerType() const { return PLAYER_TYPE__NORMAL; } // vtable slot 0x58
 
     static f32 t_of32DefaultMinSpeed;
     static f32 t_of32TurbMinSpeed;

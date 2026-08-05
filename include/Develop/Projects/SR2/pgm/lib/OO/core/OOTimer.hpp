@@ -7,6 +7,9 @@
 class clsOOTimer {
 public:
     virtual ~clsOOTimer() {}
+    virtual s32 getTick() const { return 0; }
+    virtual s32 TickDiff2MicroSec(s32 s32Tick) const;
+    virtual s32 TickDiff2MicroSec(s32 s32TickA, s32 s32TickB) const { return 0; }
 
     static clsOOTimer* t_cInstance;
 

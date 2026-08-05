@@ -4,11 +4,12 @@
 #include "Develop/Projects/SR2/pgm/src/Effect/BaseEffect.hpp"
 #include "Develop/Projects/SR2/pgm/src/Effect/GearChenge/FlyAction.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Player/Gear/Gear.hpp"
+#include "Develop/Projects/SR2/pgm/lib/OO/core/OOHeapFragment.hpp"
 #include "types.h"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 
-// total size: 0x1
-class clsOOMainHeap {
+// total size: 0x34
+class clsOOMainHeap : public clsOOHeapFragment {
 public:
     static clsOOMainHeap* getInstance() { return t_cInstance; }
 

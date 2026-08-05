@@ -1,6 +1,10 @@
 #ifndef NNPRINT_H
 #define NNPRINT_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // total size: 0x14
 struct NNS_PRINT_BUF_PS2 {
     float x;         // offset 0x0, size 0x4
@@ -37,7 +41,11 @@ void nnInitPrint(void* buf, signed int n, void* font);
 void nnExitPrint();
 void nnSetPrintSize(float sizex, float sizey);
 void nnSetPrintColor(unsigned int c);
-void nnPrint(signed int x, signed int y, char* fmt);
+void nnPrint(signed int x, signed int y, char* fmt, ...);
 void nnFlushPrint();
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // NNPRINT_H

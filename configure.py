@@ -211,7 +211,8 @@ config.reconfig_deps = []
 # Base flags for MWCCPS2 (C++ game code)
 cflags_base = [
     "-lang=c++",
-    "-O3,p",
+    "-O4,p",
+    "-inline bottomup",
     "-sdatathreshold 0",
     "-i include",
     f"-DBUILD_VERSION={version_num}",
@@ -555,6 +556,7 @@ config.libs = [
         Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/Catapult.cpp"),
         Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/DashPanel.cpp"),
         Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/DashRing.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/MultiShape.cpp"),
         Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/GoalLine.cpp"),
         Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/GravityRing.cpp"),
         Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/HideKicker.cpp"),

@@ -3,11 +3,10 @@
 
 #include "Develop/Projects/SR2/pgm/lib/OO/core/OODraw2d.hpp"
 #include "Develop/Projects/SR2/pgm/lib/OO/core/Singleton.hpp"
-#include "Develop/Projects/SR2/pgm/src/Task/TaskManager.hpp"
 #include "types.h"
 
-// total size: 0x60
-class clsPfDraw2d : public clsTask, public clsSingleton<clsPfDraw2d>, public clsOODraw2d {
+// total size: 0x10
+class clsPfDraw2d : public clsSingleton<clsPfDraw2d>, public clsOODraw2d {
 public:
     virtual ~clsPfDraw2d() {}
 

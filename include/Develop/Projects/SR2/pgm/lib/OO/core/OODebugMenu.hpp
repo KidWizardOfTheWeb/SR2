@@ -23,7 +23,7 @@ public:
 // total size: 0x14
 class clsOOMainMenu {
 public:
-    ~clsOOMainMenu();
+    ~clsOOMainMenu() {}
     const c8* getName() const { return m_opc8Name; }
     void addSubMenu(const c8* name, const s32 (*func)(s32, s32, s32, s32));
     bool operator==(const clsOOMainMenu& rhs) const;

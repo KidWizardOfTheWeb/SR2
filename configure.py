@@ -212,7 +212,9 @@ config.reconfig_deps = []
 cflags_base = [
     "-lang=c++",
     "-O4,p",
-    "-inline bottomup",
+    "-inline auto,deferred,bottomup",
+    "-Cpp_exceptions off",
+    "-sym full",
     "-sdatathreshold 0",
     "-i include",
     f"-DBUILD_VERSION={version_num}",
@@ -222,14 +224,15 @@ cflags_base = [
 cflags_c = [
     "-lang=c",
     "-O3,p",
+    "-sym full",
     "-i include",
     f"-DBUILD_VERSION={version_num}",
 ]
 
 # Debug flags
 if args.debug:
-    cflags_base.extend(["-sym on", "-DDEBUG=1"])
-    cflags_c.extend(["-sym on", "-DDEBUG=1"])
+    cflags_base.append("-DDEBUG=1")
+    cflags_c.append("-DDEBUG=1")
 else:
     cflags_base.append("-DNDEBUG=1")
     cflags_c.append("-DNDEBUG=1")

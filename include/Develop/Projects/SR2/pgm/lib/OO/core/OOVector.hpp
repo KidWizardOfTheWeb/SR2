@@ -3,13 +3,15 @@
 
 #include "types.h"
 
+// total size: 0xC
 class vector {
 public:
-    u32 _capacity;
-    u32 _size;
-    void* _data;
+    u32 _capacity; // offset 0x0, size 0x4
+    u32 _size;     // offset 0x4, size 0x4
+    void* _data;   // offset 0x8, size 0x4
 };
 
+// total size: 0x10 (vtptr 0x4 + vector 0xC)
 class clsOOVector : public vector {
 public:
     virtual ~clsOOVector() {}
@@ -22,13 +24,14 @@ struct forward_iterator_tag {};
 template <class T>
 class allocator {};
 
+// total size: 0x4
 template <class Vector, class Pointer>
 class __wrap_iterator {
 public:
     typedef typename Vector::value_type value_type;
     typedef value_type& reference;
 
-    Pointer it_;
+    Pointer it_; // offset 0x0, size 0x4
 
     __wrap_iterator() {}
     explicit __wrap_iterator(const Pointer& p) : it_(p) {}
@@ -78,18 +81,20 @@ inline bool operator!=(const __wrap_iterator<V, P>& lhs, const __wrap_iterator<V
     return !(lhs.base() == rhs.base());
 }
 
+// total size: 0xC
 template <class T, class A>
 class __vector_deleter {
 public:
-    u32 _capacity;
-    u32 _size;
-    T* _data;
+    u32 _capacity; // offset 0x0, size 0x4
+    u32 _size;     // offset 0x4, size 0x4
+    T* _data;      // offset 0x8, size 0x4
 
     __vector_deleter() : _capacity(0), _size(0), _data(0) {}
     void clear();
     ~__vector_deleter();
 };
 
+// total size: 0xC
 template <class T, class A, int N>
 class __vector_imp : public __vector_deleter<T, A> {
 public:
@@ -103,6 +108,7 @@ public:
     void do_assign(Iter, Iter, forward_iterator_tag);
 };
 
+// total size: 0xC
 template <class T, class A>
 class vector : public __vector_imp<T, A, 0> {
 public:

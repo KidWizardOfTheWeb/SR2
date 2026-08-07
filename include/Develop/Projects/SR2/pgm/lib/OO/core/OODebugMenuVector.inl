@@ -434,38 +434,22 @@ void std::__vector_imp<clsOOMainMenu, std::allocator<clsOOMainMenu>, 0>::reserve
     }
 }
 
-template <>
-void std::__vector_deleter<clsOOSubMenu, std::allocator<clsOOSubMenu> >::clear()
+template <class T, class A>
+void std::__vector_deleter<T, A>::clear()
 {
-    this->_size = 0;
-}
-
-template <>
-void std::__vector_deleter<clsOOMainMenu, std::allocator<clsOOMainMenu> >::clear()
-{
-    clsOOMainMenu* destroyBegin = this->_data;
-    clsOOMainMenu* destroyEnd = destroyBegin + this->_size;
+    T* destroyBegin = this->_data;
+    T* destroyEnd = destroyBegin + this->_size;
     while (destroyBegin < destroyEnd) {
         --destroyEnd;
-        if (destroyEnd != 0) {
-            destroyEnd->m_cSubMenu.~vector();
-        }
+        destroyEnd->~T();
     }
     this->_size = 0;
 }
 
-template <>
-std::__vector_deleter<clsOOMainMenu, std::allocator<clsOOMainMenu> >::~__vector_deleter()
+template <class T, class A>
+std::__vector_deleter<T, A>::~__vector_deleter()
 {
-    clsOOMainMenu* destroyBegin = this->_data;
-    clsOOMainMenu* destroyEnd = destroyBegin + this->_size;
-    while (destroyBegin < destroyEnd) {
-        --destroyEnd;
-        if (destroyEnd != 0) {
-            destroyEnd->m_cSubMenu.~vector();
-        }
-    }
-    this->_size = 0;
+    clear();
     if (this->_data != 0) {
         ::operator delete(this->_data);
     }
@@ -565,15 +549,6 @@ void std::__vector_imp<clsOOSubMenu, std::allocator<clsOOSubMenu>, 0>::do_assign
             ++out;
             ++this->_size;
         }
-    }
-}
-
-template <>
-inline std::__vector_deleter<clsOOSubMenu, std::allocator<clsOOSubMenu> >::~__vector_deleter()
-{
-    this->_size = 0;
-    if (this->_data != 0) {
-        ::operator delete(this->_data);
     }
 }
 

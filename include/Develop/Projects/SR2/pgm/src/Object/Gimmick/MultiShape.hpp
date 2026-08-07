@@ -8,11 +8,13 @@ extern "C" int memcmp(const void*, const void*, unsigned int);
 
 class hkShape;
 
+// total size: 0xC
 class clsMultiShape {
 public:
+    // total size: 0x10
     struct stcShapeInfo {
-        NNS_VECTOR sScaleVec;
-        hkShape* pcShape;
+        NNS_VECTOR sScaleVec; // offset 0x0, size 0xC
+        hkShape* pcShape;     // offset 0xC, size 0x4
     };
 
     struct isShapeInfoComp {
@@ -31,7 +33,7 @@ public:
 
     stcShapeInfo* findMultiShape(const NNS_VECTOR& rsScaleVec);
 
-    ShapeInfoVector m_vecShpeInfo;
+    ShapeInfoVector m_vecShpeInfo; // offset 0x0, size 0xC
 };
 
 #endif // MULTISHAPE_HPP

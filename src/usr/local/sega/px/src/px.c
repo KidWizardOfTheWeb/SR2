@@ -114,7 +114,7 @@ enum PXE_ERR PXRender(unsigned int flag)
 
 void* PXBegin(unsigned int flag)
 {
-    PXBeginPB(pxgCurrentPB, flag);
+    return PXBeginPB(pxgCurrentPB, flag);
 }
 
 void PXEnd(void* p)
@@ -149,12 +149,12 @@ void PXPutRef(void* addr, unsigned int qwc, unsigned int flag)
 
 void* PXBeginPrim(void* addr, unsigned int vertices, unsigned int stride, unsigned int prim)
 {
-    PXBeginPrimPB(pxgCurrentPB, addr, vertices, stride, prim);
+    return PXBeginPrimPB(pxgCurrentPB, addr, vertices, stride, prim);
 }
 
 void* PXEndPrim(void* addr)
 {
-    PXEndPrimPB(pxgCurrentPB, addr);
+    return PXEndPrimPB(pxgCurrentPB, addr);
 }
 
 void PXPutVifMask()

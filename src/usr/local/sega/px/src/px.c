@@ -109,7 +109,7 @@ void PXExit()
 enum PXE_ERR PXRender(unsigned int flag)
 {
     pxgRenderFlag = flag;
-    PXRenderPB(pxgCurrentPB, pxgRenderFlag);
+    return PXRenderPB(pxgCurrentPB, pxgRenderFlag);
 }
 
 void* PXBegin(unsigned int flag)

@@ -32,7 +32,7 @@ int DIntr(void); /* System used */
 #define ExitHandler() __asm__ volatile("sync.l; ei")
 #ifdef __cplusplus
 extern "C" {
-    #endif
+#endif
 extern int DisableIntc(int);
 extern int RemoveIntcHandler(int, int);
 #ifdef __cplusplus

@@ -434,6 +434,14 @@ def generate_build_ninja(
         command=f"$python {download_tool} $tool $out --tag $tag",
         description="TOOL $out",
     )
+    n.rule(
+        name="download_tool_dir",
+        command=(
+            f"$python {download_tool} $tool $output_dir --tag $tag "
+            "--skip-existing --stamp $out"
+        ),
+        description="TOOL $output_dir",
+    )
 
     # dtk
     if config.dtk_path is not None and config.dtk_path.is_file():
@@ -506,14 +514,15 @@ def generate_build_ninja(
     compilers = config.compilers()
     compilers_implicit: Optional[Path] = None
     if config.compilers_path is None and config.compilers_tag is not None:
-        compilers_implicit = compilers
+        compilers_implicit = compilers / ".downloaded"
         n.build(
-            outputs=compilers,
-            rule="download_tool",
+            outputs=compilers_implicit,
+            rule="download_tool_dir",
             implicit=download_tool,
             variables={
                 "tool": "compilers",
                 "tag": config.compilers_tag,
+                "output_dir": compilers,
             },
         )
 
@@ -521,14 +530,15 @@ def generate_build_ninja(
     mwccps2_implicit: Optional[Path] = None
     if config.mwccps2_tag is not None:
         mwccps2_dir = compilers / "PS2" / f"mwcps2-{config.mwccps2_tag}"
-        mwccps2_implicit = mwccps2_dir
+        mwccps2_implicit = mwccps2_dir / ".downloaded"
         n.build(
-            outputs=mwccps2_dir,
-            rule="download_tool",
+            outputs=mwccps2_implicit,
+            rule="download_tool_dir",
             implicit=download_tool,
             variables={
                 "tool": "mwccps2",
                 "tag": config.mwccps2_tag,
+                "output_dir": mwccps2_dir,
             },
         )
     else:
@@ -540,14 +550,15 @@ def generate_build_ninja(
         binutils = config.binutils_path
     elif config.binutils_tag:
         binutils = config.build_dir / "binutils"
-        binutils_implicit = binutils
+        binutils_implicit = binutils / ".downloaded"
         n.build(
-            outputs=binutils,
-            rule="download_tool",
+            outputs=binutils_implicit,
+            rule="download_tool_dir",
             implicit=download_tool,
             variables={
                 "tool": "binutils",
                 "tag": config.binutils_tag,
+                "output_dir": binutils,
             },
         )
     else:
@@ -562,7 +573,7 @@ def generate_build_ninja(
     n.build(
         outputs="tools",
         rule="phony",
-        inputs=[wrapper, compilers, mwccps2_dir, binutils, dtk, objdiff, sjiswrap],
+        inputs=[wrapper, compilers_implicit, mwccps2_implicit, binutils_implicit, dtk, objdiff, sjiswrap],
     )
     n.newline()
 

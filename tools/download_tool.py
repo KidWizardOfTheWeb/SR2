@@ -138,10 +138,27 @@ def main() -> None:
     parser.add_argument("tool", help="Tool name")
     parser.add_argument("output", type=Path, help="output file path")
     parser.add_argument("--tag", help="GitHub tag", required=True)
+    parser.add_argument(
+        "--skip-existing",
+        action="store_true",
+        help="skip archive download when output directory already has contents",
+    )
+    parser.add_argument(
+        "--stamp",
+        type=Path,
+        help="stamp file to touch after a successful download or skip",
+    )
     args = parser.parse_args()
 
     url = TOOLS[args.tool](args.tag)
     output = Path(args.output)
+
+    if args.skip_existing and output.is_dir() and any(output.iterdir()):
+        print(f"Using existing {output}")
+        if args.stamp is not None:
+            args.stamp.parent.mkdir(parents=True, exist_ok=True)
+            args.stamp.touch()
+        return
 
     print(f"Downloading {url} to {output}")
     req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
@@ -164,6 +181,10 @@ def main() -> None:
             req, context=ssl.create_default_context(cafile=certifi.where())
         ) as response:
             download(url, response, output)
+
+    if args.stamp is not None:
+        args.stamp.parent.mkdir(parents=True, exist_ok=True)
+        args.stamp.touch()
 
 
 if __name__ == "__main__":

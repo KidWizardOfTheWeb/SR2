@@ -33,11 +33,14 @@ public:
     virtual ~clsOOPeripheral();
 
     u32 getActiveRel() const { return m_sActivePeripheral.m_u32Rel; }
-    u32 getActiveBetaBool(u32 u32Bit) const { return 0; }
-    u32 getActiveTrig(u32 u32Bit) const { return 0; }
-    u32 getActiveRep(u32 u32Bit) const { return 0; }
-    u32 getActiveRel(u32 u32Bit) const { return 0; }
-    u32 getActiveBetaEq(u32 u32Bit) const { return 0; }
+    u32 getActiveBetaBool(u32 u32Bit) const
+    {
+        return (m_sActivePeripheral.m_u32Beta & u32Bit) != 0;
+    }
+    u32 getActiveTrig(u32 u32Bit) const { return m_sActivePeripheral.m_u32Trig & u32Bit; }
+    u32 getActiveRep(u32 u32Bit) const { return m_sActivePeripheral.m_u32Rep & u32Bit; }
+    u32 getActiveRel(u32 u32Bit) const { return m_sActivePeripheral.m_u32Rel & u32Bit; }
+    u32 getActiveBetaEq(u32 u32Bit) const { return m_sActivePeripheral.m_u32Beta == u32Bit; }
 
     stcActivePeripheral m_sActivePeripheral; // offset 0x4, size 0x10
     u32 m_u32ConnectNum;                     // offset 0x14, size 0x4

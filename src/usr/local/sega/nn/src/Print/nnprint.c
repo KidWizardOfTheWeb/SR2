@@ -20,7 +20,7 @@ void nnSetPrintColor(unsigned int c)
 {
 }
 
-void nnPrint(signed int x, signed int y, char* fmt)
+void nnPrint(signed int x, signed int y, char* fmt, ...)
 {
 }
 

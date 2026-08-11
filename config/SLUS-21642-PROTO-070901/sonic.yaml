@@ -1353,7 +1353,7 @@ segments:
       # - [0x267B00, h, Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/DashRing] # vram: 0x00367A80
       - [0x267C40, asmtu, Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/DashRing] # vram: 0x00367BC0
       # - [0x268B30, asmtu, unk_block_268B30] # vram: 0x00368AB0
-      # - [0x268BB0, h, Develop/Projects/SR2/pgm/src/Object/Gimmick/MultiShape] # vram: 0x00368B30
+      - [0x268BB0, asmtu, Develop/Projects/SR2/pgm/src/Object/Gimmick/MultiShape] # vram: 0x00368B30
       # - [0x268C70, h, Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/DashRing] # vram: 0x00368BF0
       # - [0x268C80, asmtu, unk_block_268C80] # vram: 0x00368C00
       # - [0x269110, h, Develop/Projects/SR2/pgm/src/Object/Gimmick/BaseGimmick] # vram: 0x00369090

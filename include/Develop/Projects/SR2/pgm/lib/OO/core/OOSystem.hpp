@@ -65,7 +65,7 @@ public:
         return m_apsScissorRect[u32Param1];
     }
     void setViewRect(u32 u32I, const stcViewRect* psViewRect);
-    u8 getTonTon_V() const { return 0; }
+    u8 getTonTon_V() const { return (m_u32VblankCnt & 0x28) != 0; }
     u8 getTonTon_G() const { return 0; }
 
     static c8* m_tac8LanguageName_Debug[11];

@@ -14,6 +14,10 @@ struct stcFree {
 // total size: 0x34
 class clsOOHeapFragment {
 public:
+    clsOOHeapFragment();
+    virtual ~clsOOHeapFragment();
+    virtual void DumpHi_Debug() const;
+
     stcFree* m_psAddrLo;                    // offset 0x4, size 0x4
     stcFree* m_psDefaultAddrLo;             // offset 0x8, size 0x4
     stcFree* m_psAddrHi;                    // offset 0xC, size 0x4
@@ -25,10 +29,6 @@ public:
     clsPfSemaphore m_cOOSemaphoreUpperNest; // offset 0x28, size 0x8
     u16 m_u16LoCnt_Debug;                   // offset 0x30, size 0x2
     u16 m_u16HiCnt_Debug;                   // offset 0x32, size 0x2
-
-    clsOOHeapFragment();
-    virtual ~clsOOHeapFragment();
-    virtual void DumpHi_Debug() const;
 
     void AllFree();
     void ___FreeLoFrame(void* pvFrameAddrLoI);

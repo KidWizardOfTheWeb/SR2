@@ -102,11 +102,11 @@ extern unsigned int pxgRenderDmaBusy;
 extern unsigned int pxgRenderFlag;
 extern struct PXS_SCREENPARAM pxgScreenParam;
 extern struct PXS_SUBSHADERPARAM pxgSubShaderParam;
-extern const char * pxgVersionPtr;
+extern const char* pxgVersionPtr;
 extern struct PXS_MATRIX pxgViewMatrix;
 extern unsigned int pxgVuCode_Scissor __attribute__((section(".vutext")));
 
-extern unsigned int D_005A44E0 __attribute__((section(".vutext"))); //temporary fake match
+extern unsigned int D_005A44E0 __attribute__((section(".vutext"))); // temporary fake match
 
 enum PXE_ERR PXInit(struct PXS_INITPARAM* iprm);
 signed int PXGsInterruptHandler(signed int ca);

@@ -67,7 +67,7 @@ enum PXE_ERR PXLoadTex(void* tagbuf)
 
 void PXPutTexImage(void* imgtag)
 {
-    imgtag = (void *)(((int *)imgtag) + 0x8);
+    imgtag = (void*)(((int*)imgtag) + 0x8);
     PXPutCall(imgtag);
 }
 

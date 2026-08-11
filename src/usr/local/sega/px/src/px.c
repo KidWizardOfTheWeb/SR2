@@ -5,12 +5,15 @@ struct tagPXS_PUSHBUFFER* pxgCurrentPB; // size: 0x4, address: 0x6D1F08
 
 struct tagPXS_PUSHBUFFER pxgPBWork; // size: 0xA0, address: 0x6E65D0
 
-static const char __license_string__[] = "\xa0\xb0\x40\x5a\x40\x98\xde\xee\x40\x98\xca\xec\xca\xd8\x40\x8e\xe4\xc2\xe0\xd0\xd2\xc6\xe6\x40\x98\xd2\xc4\xe4\xc2\xe4\xf2\x40\xcc\xde\xe4\x40\xa0\xd8\xc2\xf2\xa6\xe8\xc2\xe8\xd2\xde\xdc\x50\xa4\x52\x64\x40\x5a\x14";
-static char * const pxgVersion = "\nPX Ver.1.46.07 Build:Jun  2 2006 18:45:32\n";
+static const char __license_string__[] =
+    "\xa0\xb0\x40\x5a\x40\x98\xde\xee\x40\x98\xca\xec\xca\xd8\x40\x8e\xe4\xc2\xe0\xd0\xd2\xc6\xe6"
+    "\x40\x98\xd2\xc4\xe4\xc2\xe4\xf2\x40\xcc\xde\xe4\x40\xa0\xd8\xc2\xf2\xa6\xe8\xc2\xe8\xd2\xde"
+    "\xdc\x50\xa4\x52\x64\x40\x5a\x14";
+static char* const pxgVersion = "\nPX Ver.1.46.07 Build:Jun  2 2006 18:45:32\n";
 
-const char * __license_string_ptr__;
+const char* __license_string_ptr__;
 
-const char * pxgVersionPtr;
+const char* pxgVersionPtr;
 
 signed int pxgGsHandlerID;
 struct PXS_INITPARAM pxgInitParam;
@@ -38,12 +41,13 @@ enum PXE_ERR PXInit(struct PXS_INITPARAM* iprm)
     if (pxgInitParam.flag & 0x200) {
         flag |= 0x200;
     }
-    flag = (unsigned int) PXSetupPB(&pxgPBWork, iprm->tagSize, iprm->dataSize, iprm->pushBuffer, iprm->bufSize, flag);
-    pxgPrimaryPB = (struct tagPXS_PUSHBUFFER *)flag;
+    flag = (unsigned int)PXSetupPB(
+        &pxgPBWork, iprm->tagSize, iprm->dataSize, iprm->pushBuffer, iprm->bufSize, flag);
+    pxgPrimaryPB = (struct tagPXS_PUSHBUFFER*)flag;
     if (flag == 0) {
         return PXE_ERR_INVALIDARG;
     }
-    pxgCurrentPB = (struct tagPXS_PUSHBUFFER *)flag;
+    pxgCurrentPB = (struct tagPXS_PUSHBUFFER*)flag;
     memset(pxgLightMatrix, 0, 0x80);
     PXPutClipParam(PXE_CULL_NONE);
     PXSetupPrimMode(&prmode, 0x18, 0x18);
@@ -56,9 +60,9 @@ enum PXE_ERR PXInit(struct PXS_INITPARAM* iprm)
     PXInitSubShaderParam();
     PXPutSubShaderParam();
     PXSetAmbientColor(1.0f, 1.0f, 1.0f, 1.0f);
-    //TODO: Fix the fake match, error in the splits, no .vutext splits it seems
-    // PXPutCustomShader((void *)&pxgVuCode_Scissor);
-    PXPutCustomShader((void *)&D_005A44E0);
+    // TODO: Fix the fake match, error in the splits, no .vutext splits it seems
+    //  PXPutCustomShader((void *)&pxgVuCode_Scissor);
+    PXPutCustomShader((void*)&D_005A44E0);
     // D_005A44E0 should be pxgVuCode_Scissor
     PXMakeScreenParam(&pxgScreenParam, 320.0f, -112.0f, 2048.0f, 2048.0f, 1.6777215e7f, 0.0f);
     PXPutScreenParam(&pxgScreenParam);
@@ -93,7 +97,7 @@ void PXExit()
     if (pxgInitParam.flag & 0x700) {
         flg = DIntr();
         pxgRenderDmaBusy = 0;
-        RemoveIntcHandler(0,pxgGsHandlerID);
+        RemoveIntcHandler(0, pxgGsHandlerID);
         sceGsPutIMR(sceGsGetIMR() | 0x300);
         DisableIntc(0);
         if (flg) {
@@ -150,15 +154,15 @@ void* PXBeginPrim(void* addr, unsigned int vertices, unsigned int stride, unsign
 
 void* PXEndPrim(void* addr)
 {
-     PXEndPrimPB(pxgCurrentPB, addr);
+    PXEndPrimPB(pxgCurrentPB, addr);
 }
 
 void PXPutVifMask()
 {
-    unsigned int *p;
+    unsigned int* p;
 
     /* scope { */
-    p = PXBeginPB(pxgCurrentPB,1);
+    p = PXBeginPB(pxgCurrentPB, 1);
     p[0] = 0x30000000;
     p[1] = 0xaaaaaaaa;
     p[2] = 0xbbbbbbbb;
@@ -171,5 +175,5 @@ void PXPutVifMask()
     p[9] = 0x99999999;
     p[10] = 0;
     p[0xb] = 0;
-    PXEndPB(pxgCurrentPB,p + 0xc);
+    PXEndPB(pxgCurrentPB, p + 0xc);
 }

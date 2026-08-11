@@ -7,6 +7,9 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/FrameControl.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/HaveGimmickRigidBody.hpp"
 #include "usr/local/sega/nn/src/Object/nnobject.h"
+#include "usr/local/sega/nn/src/Matrix/nnmakematrix.h"
+#include "usr/local/sega/nn/src/Matrix/nnmatrix.h"
+#include "usr/local/sega/nn/src/Matrix/nnquaternion.h"
 
 // Enum used by clsGimmickObj for clip visibility state (owned by nspOOFileMgr)
 #ifndef ENMRET_DECLARED
@@ -65,23 +68,39 @@ public:
     void setSetData();
     void setSetData(const stcSetDataDetail& orsSetDataDetailI);
     stcSetDataDetail* getSetDataDetail() const { return m_psSetDataDetail; }
-    void setPortalNo(u8 u8Param1) { m_u8PortalNo = u8Param1; }
+    void setPortalNo(u8 ou8PortalNo) { m_u8PortalNo = ou8PortalNo; }
     NNS_VECTORFAST& getPositionRef() const { return const_cast<NNS_VECTORFAST&>(m_sPosVecFast); }
     NNS_QUATERNION& getRotQuatRef() const { return const_cast<NNS_QUATERNION&>(m_sRotQuat); }
     u32 getAttribute() const { return m_u32Attr; }
     NNS_VECTOR& getScaleRef() const { return const_cast<NNS_VECTOR&>(m_sScaleVec); }
     u8 getPortalNo() const { return m_u8PortalNo; }
     u8 getEffective() { return m_bEffective; }
-    void clearDrawFlg(u32 u32Param1) { m_u8DrawFlg &= ~u32Param1; }
-    void setPosition(f32 f32Param1, f32 f32Param2, f32 f32Param3) {}
-    void setPosition(const NNS_VECTORFAST& rsParam1) {}
-    void setRotate(f32 f32Param1, f32 f32Param2, f32 f32Param3) {}
-    void setRotate(const NNS_QUATERNION& rsParam1) { m_sRotQuat = rsParam1; }
-    u32 checkClip(u32 u32Param1,
-                  const NNS_OBJECT* psParam2,
-                  const f32 (*paf32Param3)[4][4],
-                  f32 f32Param4,
-                  f32* pf32Param5)
+    void clearDrawFlg(u32 u32ViewNo) { m_u8DrawFlg &= ~u32ViewNo; }
+    void setPosition(f32 of32xI, f32 of32yI, f32 of32zI)
+    {
+        nnSetUpVectorFast(&m_sPosVecFast, of32xI, of32yI, of32zI);
+    }
+    void setPosition(const NNS_VECTORFAST& orsVecFastI) {}
+    void setRotate(f32 of32xI, f32 of32yI, f32 of32zI)
+    {
+        NNS_MATRIX sMtx;
+        NNS_MATRIX sMtxWork;
+        const s32 s32RotX = static_cast<s32>(of32xI * 182.04444f);
+        s32 s32RotY;
+        s32 s32RotZ;
+        s32RotZ = static_cast<s32>(of32zI * 182.04444f);
+        s32RotY = static_cast<s32>(of32yI * 182.04444f);
+        nnMakeRotateXMatrix(&sMtx, s32RotX);
+        nnRotateZMatrix(&sMtxWork, &sMtx, s32RotZ);
+        nnRotateYMatrix(&sMtx, &sMtxWork, s32RotY);
+        nnMakeRotateMatrixQuaternion(&m_sRotQuat, &sMtx);
+    }
+    void setRotate(const NNS_QUATERNION& orsQuat) { m_sRotQuat = orsQuat; }
+    u32 checkClip(u32 u32ViewNo,
+                  const NNS_OBJECT* psObject,
+                  const NNS_MATRIX* psMtx,
+                  f32 f32ClipDistx2,
+                  f32* pf32CamDist)
     {
         return m_enClipRet;
     }

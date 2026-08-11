@@ -10,7 +10,7 @@ void nnMultiplyQuaternion(struct NNS_QUATERNION* dst,
 {
 }
 
-enum NNE_BOOL nnNormalizeQuaternion(struct NNS_QUATERNION* dst, struct NNS_QUATERNION* src)
+enum NNE_BOOL nnNormalizeQuaternion(struct NNS_QUATERNION* dst, const struct NNS_QUATERNION* src)
 {
 }
 

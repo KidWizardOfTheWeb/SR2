@@ -159,6 +159,7 @@ struct PXS_SHADOWPARAM {
 struct PXS_WIREPARAM;
 
 extern struct PXS_FXYZW pxgVuClipParam[2];
+extern struct PXS_FXYZW pxgLightMatrix[8]; // size: 0x80, address: 0x6E64D0
 
 void PXNormalizeVector(struct PXS_FXYZW* v0, struct PXS_FXYZW* v1);
 void PXSetLightColor(enum PXE_LIGHT num, float r, float g, float b, float a);

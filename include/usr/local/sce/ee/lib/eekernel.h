@@ -30,9 +30,14 @@ int DIntr(void); /* System used */
 #endif
 
 #define ExitHandler() __asm__ volatile("sync.l; ei")
-
+#ifdef __cplusplus
+extern "C" {
+    #endif
 extern int DisableIntc(int);
 extern int RemoveIntcHandler(int, int);
+#ifdef __cplusplus
+}
+#endif
 #define REG_GIF_MODE (*(volatile int*)0x10003010)
 
 #endif /* _EEKERNEL_H_ */

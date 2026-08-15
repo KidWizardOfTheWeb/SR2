@@ -5,10 +5,15 @@
 #include "Develop/Projects/SR2/pgm/lib/OO/core/Singleton.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Object.hpp"
 
-// total size: 0x4
+// total size: sizeof(T)
+template <class T>
 class hkPadSpu {
 public:
-    void* m_storage; // offset 0x0, size 0x4
+    T m_storage; // offset 0x0, size sizeof(T)
+
+    T val() const { return m_storage; }
+    void operator=(T value) { m_storage = value; }
+    operator T() const { return m_storage; }
 };
 
 // total size: 0x0
@@ -45,10 +50,10 @@ public:
 // total size: 0x10
 class hkStepInfo {
 public:
-    hkPadSpu m_startTime;    // offset 0x0, size 0x4
-    hkPadSpu m_endTime;      // offset 0x4, size 0x4
-    hkPadSpu m_deltaTime;    // offset 0x8, size 0x4
-    hkPadSpu m_invDeltaTime; // offset 0xC, size 0x4
+    hkPadSpu<f32> m_startTime;    // offset 0x0, size 0x4
+    hkPadSpu<f32> m_endTime;      // offset 0x4, size 0x4
+    hkPadSpu<f32> m_deltaTime;    // offset 0x8, size 0x4
+    hkPadSpu<f32> m_invDeltaTime; // offset 0xC, size 0x4
 };
 
 // total size: 0x20
@@ -56,7 +61,7 @@ class clsStepInfo : public hkStepInfo {
 public:
     void set(f32 f32StartTime, f32 f32DeltaTime) {}
 
-    hkPadSpu m_invDeltaTimeCaret2; // offset 0x10, size 0x4
+    hkPadSpu<f32> m_invDeltaTimeCaret2; // offset 0x10, size 0x4
 };
 
 class hkWorld;

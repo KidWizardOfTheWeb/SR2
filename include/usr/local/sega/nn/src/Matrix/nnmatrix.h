@@ -23,7 +23,7 @@ void nnRotateZXYMatrix(
 void nnScaleMatrix(NNS_MATRIX* dst, NNS_MATRIX* src, float x, float y, float z);
 void nnTranslateMatrix(NNS_MATRIX* dst, NNS_MATRIX* src, float x, float y, float z);
 void nnCopyVectorMatrixTranslation(NNS_MATRIX* mtx, struct NNS_VECTOR* vec);
-void nnCopyVectorFastMatrixTranslation(NNS_MATRIX* mtx, struct NNS_VECTORFAST* vec);
+void nnCopyVectorFastMatrixTranslation(NNS_MATRIX* mtx, const struct NNS_VECTORFAST* vec);
 
 #ifdef __cplusplus
 }

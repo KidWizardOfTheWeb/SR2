@@ -2,7 +2,7 @@
 #define OODEBUGMENU_HPP
 
 #include "types.h"
-#include "Develop/Projects/SR2/pgm/lib/OO/core/OODebugMenuVector.hpp"
+#include "Develop/Projects/SR2/pgm/lib/OO/core/OOVector.hpp"
 
 enum enmDraw {
     DRAW___NON = 0,
@@ -13,6 +13,8 @@ enum enmDraw {
 // total size: 0x8
 class clsOOSubMenu {
 public:
+    clsOOSubMenu() {}
+    clsOOSubMenu(const clsOOSubMenu& rhs) : m_opc8Name(rhs.m_opc8Name), m_oFunc(rhs.m_oFunc) {}
     ~clsOOSubMenu() {}
     const c8* getName() const { return m_opc8Name; }
 
@@ -43,23 +45,26 @@ public:
 
     void exec();
     void drawSystemMenu();
-    u8 isDrawSubMenuName(const c8* pc8Name);
-    void addMainMenu(const c8* pc8Name);
-    void addSubMenu(const c8* pc8Name, const c8* pc8Label, const s32 (*pFunc)(s32, s32, s32, s32));
+    u8 isDrawSubMenuName(const c8* opc8NameI);
+    void addMainMenu(const c8* opc8NameI);
+    void addSubMenu(const c8* opc8MainMenuNameI,
+                    const c8* opc8SubMenuNameI,
+                    const s32 (*oFuncI)(s32, s32, s32, s32));
     void removeAll();
 
     s32 execUrawaza(
         clsOOSubMenuVector::iterator iSubI, s32 s32xI, s32 s32yI, s32 s32CursorI, s32 s32SpeedI)
     {
+        s32 s32Cursor = s32CursorI;
         if (m_iUrawaza != iSubI) {
             if (m_bUrawaza != 0) {
                 m_iUrawaza.it_->m_oFunc(s32xI, s32yI, 0x7f, 0);
             }
-            s32CursorI = -0x80;
+            s32Cursor = -0x80;
             m_iUrawaza = iSubI;
             m_bUrawaza = 1;
         }
-        return iSubI.it_->m_oFunc(s32xI, s32yI, s32CursorI, s32SpeedI);
+        return iSubI.it_->m_oFunc(s32xI, s32yI, s32Cursor, s32SpeedI);
     }
     void execMainSubMenu();
     void drawDetailOnly();

@@ -2,6 +2,7 @@
 #define COMAI_HPP
 
 #include "types.h"
+#include "Develop/Projects/SR2/pgm/src/Object/Player/Player.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Player/Data/CharaData.hpp"
 #include "Develop/Projects/SR2/pgm/src/Data/Path/PathPoint.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Player/Trick/TrickParam.hpp"
@@ -15,55 +16,10 @@ struct stcTimePack {
     u16 u16MSec;  // offset 0x2, size 0x2
 };
 
-enum enmActionType {
-    ACTION_TYPE_NULL = 0,
-    ACTION_TYPE_DAMAGE00 = 1,
-    ACTION_TYPE_DAMAGE01 = 2,
-    ACTION_TYPE_DEMO = 3,
-    ACTION_TYPE_WALK_WAIT = 4,
-    ACTION_TYPE_WALK_RUN = 5,
-    ACTION_TYPE_WALK_BACK = 6,
-    ACTION_TYPE_WALK_BRAKE = 7,
-    ACTION_TYPE_WALK_FLIGHT = 8,
-    ACTION_TYPE_WALK_SPRING = 9,
-    ACTION_TYPE_INERTIA = 10,
-    ACTION_TYPE_RUN = 11,
-    ACTION_TYPE_BRAKE = 12,
-    ACTION_TYPE_FLIGHT = 13,
-    ACTION_TYPE_JUMP = 14,
-    ACTION_TYPE_TRICK = 15,
-    ACTION_TYPE_PATH = 16,
-    ACTION_TYPE_ATTACK = 17,
-    ACTION_TYPE_RAIL = 18,
-    ACTION_TYPE_FLY = 19,
-    ACTION_TYPE_POWER = 20,
-    ACTION_TYPE_GDIVE = 21,
-    ACTION_TYPE_GDIVE_AUTO = 22,
-    ACTION_TYPE_GCTRL_SLIDE = 23,
-    ACTION_TYPE_GCTRL_TRICK = 24,
-    ACTION_TYPE_GCTRL_FLIGHT = 25,
-    ACTION_TYPE_DIR_REGULATE_RUN = 26,
-    ACTION_TYPE_TRANSLATION_MOVE_PATH = 27,
-    ACTION_TYPE_WHEELDRIFT = 28,
-    ACTION_TYPE_AUTOWALLRUN = 29,
-    ACTION_TYPE_FALSE_START = 30,
-    ACTION_TYPE_RESTART = 31,
-    ACTION_TYPE_ATTACKDAMAGE = 32,
-    ACTION_TYPE_BOOST = 33,
-    ACTION_TYPE_MAX = 34,
-    ACTION_TYPE_ = 35,
-};
-
 enum enmRunMode {
     COM_RUN_MODE_HIGH = 0,
     COM_RUN_MODE_NORMAL = 1,
     COM_RUN_MODE_LOW = 2,
-};
-
-enum enmComType {
-    COM_AI_TYPE_LEADER = 0,
-    COM_AI_TYPE_NORMAL = 1,
-    MAX_COM_AI_TYPE = 2,
 };
 
 enum enmComMode {

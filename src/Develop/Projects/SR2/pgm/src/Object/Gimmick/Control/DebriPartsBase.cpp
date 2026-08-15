@@ -4,7 +4,7 @@ void clsDebriPartsBase::reset()
 {
 }
 
-void clsDebriPartsBase::setInfo(s32 s32Param1, f32 f32Param2, void (*)(const NNS_VECTORFAST&))
+void clsDebriPartsBase::setInfo(s32 s32NodeNo, f32 f32Frame, void (*pFunc)(const NNS_VECTORFAST&))
 {
 }
 

@@ -1,4 +1,11 @@
 * text=auto
 
+# Keep MWCC compiler inputs byte-stable across platforms.
+*.c text eol=crlf
+*.h text eol=crlf
+*.cpp text eol=crlf
+*.hpp text eol=crlf
+*.pch text eol=crlf
+
 *.h linguist-language=C++
 *.c linguist-language=C++

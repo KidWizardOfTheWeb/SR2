@@ -3,6 +3,7 @@
 
 u8 clsRigidBodyCollectorInfo::isAddCollector(const hkCollidable* pcCollidable)
 {
-    const s8* p = pcCollidable->m_broadPhaseHandle.m_type == 1 ? pcCollidable->getOwner() : 0;
+    const hkWorldObject* p =
+        pcCollidable->m_broadPhaseHandle.m_type == 1 ? pcCollidable->getOwner() : 0;
     return p != 0;
 }

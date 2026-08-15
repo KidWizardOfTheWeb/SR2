@@ -10,6 +10,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Player/PlayerMotion.hpp"
 
 class hkEntity;
+class hkWorldObject;
 class hkEntityActivationListener;
 class hkEntityDeactivator;
 class hkEntityListener;
@@ -41,6 +42,7 @@ class hkCollisionFilter;
 class hkCollidableCollidableFilter;
 class hkCollisionAgent;
 class hkCollisionInput;
+class hkCollisionQualityInfo;
 class hkConstraintInstance;
 class hkConstraintChainInstanceAction;
 class hkConstraintData;
@@ -101,6 +103,13 @@ class hkIslandPostIntegrateListener;
 class hkWorldPostCollideListener;
 class hkWorldPostIntegrateListener;
 class hkWorldPostSimulationListener;
+class PotentialInfo;
+
+// total size: 0x1
+class hkBool {
+public:
+    c8 m_bool; // offset 0x0, size 0x1
+};
 
 // total size: 0x4
 class hkCollidableCollidableFilter {
@@ -234,18 +243,18 @@ class hkToiResources {};
 // total size: 0x50
 class hkAgent3Input {
 public:
-    hkPadSpu m_bodyA;      // offset 0x0, size 0x4
-    hkPadSpu m_bodyB;      // offset 0x4, size 0x4
-    hkPadSpu m_input;      // offset 0x8, size 0x4
-    hkPadSpu m_contactMgr; // offset 0xC, size 0x4
-    hkTransform m_aTb;     // offset 0x10, size 0x40
+    hkPadSpu<hkCdBody*> m_bodyA;                // offset 0x0, size 0x4
+    hkPadSpu<hkCdBody*> m_bodyB;                // offset 0x4, size 0x4
+    hkPadSpu<hkProcessCollisionInput*> m_input; // offset 0x8, size 0x4
+    hkPadSpu<hkContactMgr*> m_contactMgr;       // offset 0xC, size 0x4
+    hkTransform m_aTb;                          // offset 0x10, size 0x40
 };
 // total size: 0x70
 class hkAgent3ProcessInput : public hkAgent3Input {
 public:
-    hkPadSpu m_distAtT1;                      // offset 0x50, size 0x4
-    hkPadSpu m_offsetPpuSectorMinusSpuSector; // offset 0x54, size 0x4
-    hkVector4 m_linearTimInfo;                // offset 0x60, size 0x10
+    hkPadSpu<f32> m_distAtT1;                      // offset 0x50, size 0x4
+    hkPadSpu<s32> m_offsetPpuSectorMinusSpuSector; // offset 0x54, size 0x4
+    hkVector4 m_linearTimInfo;                     // offset 0x60, size 0x10
 };
 // total size: 0x8
 class hkAgentEntry {
@@ -281,11 +290,11 @@ public:
 // total size: 0x14
 class hkCollisionInput {
 public:
-    hkPadSpu m_dispatcher;             // offset 0x0, size 0x4
-    hkPadSpu m_tolerance;              // offset 0x4, size 0x4
-    hkPadSpu m_filter;                 // offset 0x8, size 0x4
-    hkPadSpu m_convexListFilter;       // offset 0xC, size 0x4
-    hkPadSpu m_createPredictiveAgents; // offset 0x10, size 0x1
+    hkPadSpu<hkCollisionDispatcher*> m_dispatcher;    // offset 0x0, size 0x4
+    hkPadSpu<f32> m_tolerance;                        // offset 0x4, size 0x4
+    hkPadSpu<hkShapeCollectionFilter*> m_filter;      // offset 0x8, size 0x4
+    hkPadSpu<hkConvexListFilter*> m_convexListFilter; // offset 0xC, size 0x4
+    hkPadSpu<hkBool> m_createPredictiveAgents;        // offset 0x10, size 0x1
 };
 // total size: 0xC
 class hkContactMgr : public hkReferencedObject {
@@ -315,11 +324,11 @@ public:
 // total size: 0x40
 class hkProcessCollisionInput : public hkCollisionInput {
 public:
-    hkStepInfo m_stepInfo;            // offset 0x20, size 0x10
-    hkPadSpu m_collisionQualityInfo;  // offset 0x30, size 0x4
-    void* m_dynamicsInfo;             // offset 0x34, size 0x4
-    u8 m_enableDeprecatedWelding;     // offset 0x38, size 0x1
-    hkCollisionAgentConfig* m_config; // offset 0x3C, size 0x4
+    hkStepInfo m_stepInfo;                                    // offset 0x20, size 0x10
+    hkPadSpu<hkCollisionQualityInfo*> m_collisionQualityInfo; // offset 0x30, size 0x4
+    void* m_dynamicsInfo;                                     // offset 0x34, size 0x4
+    u8 m_enableDeprecatedWelding;                             // offset 0x38, size 0x1
+    hkCollisionAgentConfig* m_config;                         // offset 0x3C, size 0x4
 };
 class hkRayHitCollector {};
 // total size: 0x30
@@ -423,7 +432,11 @@ class hkFeaturePointCache {};
 class hkCollidable : public hkCdBody {
 public:
     u32 getCollisionFilterInfo() const { return m_broadPhaseHandle.m_collisionFilterInfo; }
-    const s8* getOwner() const { return (const s8*)this + m_ownerOffset; }
+    const hkWorldObject* getOwner() const
+    {
+        return reinterpret_cast<const hkWorldObject*>(reinterpret_cast<const s8*>(this) +
+                                                      m_ownerOffset);
+    }
 
     s8 m_ownerOffset;                           // offset 0x10, size 0x1
     u8 m_forceCollideOntoPpu;                   // offset 0x11, size 0x1
@@ -623,12 +636,6 @@ public:
 };
 
 // total size: 0x1
-class hkBool {
-public:
-    c8 m_bool; // offset 0x0, size 0x1
-};
-
-// total size: 0x1
 class hkUFloat8 {
 public:
     u8 m_value; // offset 0x0, size 0x1
@@ -663,16 +670,16 @@ class hkContactPointMaterial16 : public hkContactPointMaterial {};
 // total size: 0x30
 class hkProcessCdPoint {
 public:
-    hkContactPoint m_contact;  // offset 0x0, size 0x20
-    hkPadSpu m_contactPointId; // offset 0x20, size 0x4
+    hkContactPoint m_contact;       // offset 0x0, size 0x20
+    hkPadSpu<u32> m_contactPointId; // offset 0x20, size 0x4
 };
 
 // total size: 0x40
 class ToiInfo {
 public:
     hkContactPoint m_contactPoint;       // offset 0x0, size 0x20
-    hkPadSpu m_time;                     // offset 0x20, size 0x4
-    hkPadSpu m_seperatingVelocity;       // offset 0x24, size 0x4
+    hkPadSpu<f32> m_time;                // offset 0x20, size 0x4
+    hkPadSpu<f32> m_seperatingVelocity;  // offset 0x24, size 0x4
     hkGskCache16 m_gskCache;             // offset 0x28, size 0xC
     hkContactPointMaterial16 m_material; // offset 0x34, size 0x8
 };
@@ -680,22 +687,22 @@ public:
 // total size: 0x3050
 class hkProcessCollisionData {
 public:
-    hkPadSpu m_firstFreeContactPoint;      // offset 0x0, size 0x4
-    hkPadSpu m_constraintOwner;            // offset 0x4, size 0x4
-    hkProcessCdPoint m_contactPoints[256]; // offset 0x10, size 0x3000
-    ToiInfo m_toi;                         // offset 0x3010, size 0x40
+    hkPadSpu<hkProcessCdPoint*> m_firstFreeContactPoint; // offset 0x0, size 0x4
+    hkPadSpu<hkConstraintOwner*> m_constraintOwner;      // offset 0x4, size 0x4
+    hkProcessCdPoint m_contactPoints[256];               // offset 0x10, size 0x3000
+    ToiInfo m_toi;                                       // offset 0x3010, size 0x40
 };
 
 // total size: 0x3060
 class hkProcessCollisionOutput : public hkProcessCollisionData {
 public:
-    hkPadSpu m_potentialContacts; // offset 0x3050, size 0x4
+    hkPadSpu<PotentialInfo*> m_potentialContacts; // offset 0x3050, size 0x4
 };
 
 // total size: 0x8
 class hkCdBodyPairCollector {
 public:
-    virtual ~hkCdBodyPairCollector() {}
+    virtual ~hkCdBodyPairCollector();
 
     hkBool m_earlyOut; // offset 0x4, size 0x1
 };
@@ -1150,7 +1157,8 @@ enum hkUpdateCollectionFilterMode {
 };
 
 enum hkEntityActivation {
-    HK_ENTITY_ACTIVATION_DO_ACTIVATE = 0,
+    HK_ENTITY_ACTIVATION_DO_NOT_ACTIVATE = 0,
+    HK_ENTITY_ACTIVATION_DO_ACTIVATE = 1,
 };
 
 enum hkUpdateCollisionFilterOnWorldMode {
@@ -1159,6 +1167,7 @@ enum hkUpdateCollisionFilterOnWorldMode {
 
 enum hkUpdateCollisionFilterOnEntityMode {
     HK_UPDATE_FILTER_ON_ENTITY_FULL_CHECK = 0,
+    HK_UPDATE_FILTER_ON_ENTITY_DISABLE_ENTITY_ENTITY_COLLISIONS_ONLY = 1,
 };
 
 enum SimulationType {
@@ -1217,13 +1226,28 @@ public:
 // total size: 0x120
 class hkMotion : public hkReferencedObject {
 public:
-    enum MotionType { MOTION_INVALID = 0 };
+    enum MotionType {
+        MOTION_INVALID = 0,
+        MOTION_DYNAMIC = 1,
+        MOTION_SPHERE_INERTIA = 2,
+        MOTION_BOX_INERTIA = 3,
+        MOTION_KEYFRAMED = 4,
+        MOTION_FIXED = 5,
+        MOTION_THIN_BOX_INERTIA = 6,
+        MOTION_CHARACTER = 7,
+    };
 
     hkMotion(const hkVector4& rParam1, const hkQuaternion& rParam2, bool bParam3);
     hkMotion(hkFinishLoadedObjectFlag) {}
     virtual ~hkMotion() {}
     virtual void setMass(f32 f32Param1);
     virtual void setMassInv(f32 f32Param1);
+    virtual void getInertiaLocal(hkMatrix3& rParam1) const = 0;
+    virtual void getInertiaWorld(hkMatrix3& rParam1) const = 0;
+    virtual void setInertiaLocal(const hkMatrix3& rParam1) = 0;
+    virtual void setInertiaInvLocal(const hkMatrix3& rParam1) = 0;
+    virtual void getInertiaInvLocal(hkMatrix3& rParam1) const = 0;
+    virtual void getInertiaInvWorld(hkMatrix3& rParam1) const = 0;
     virtual void setCenterOfMassInLocal(const hkVector4& rParam1);
     virtual void setPosition(const hkVector4& rParam1);
     virtual void setRotation(const hkQuaternion& rParam1);
@@ -1232,7 +1256,7 @@ public:
     virtual void setLinearVelocity(const hkVector4& rParam1);
     virtual void setAngularVelocity(const hkVector4& rParam1);
     virtual void applyLinearImpulse(const hkVector4& rParam1);
-    virtual void getMotionStateAndVelocitiesAndDeactivationType(hkMotion* pParam1);
+    void getMotionStateAndVelocitiesAndDeactivationType(hkMotion* pParam1);
 
     f32 getMass() const;
     void setDeactivationClass(s32 s32Param1);
@@ -1353,9 +1377,17 @@ public:
     void setPositionAndRotation(const hkVector4& rParam1, const hkQuaternion& rParam2);
     void setTransform(const hkTransform& rParam1);
     void setMass(f32 f32Param1);
-    void setAngularVelocity(const hkVector4& rParam1);
-    const hkVector4& getLinearVelocity() const;
-    void setLinearVelocity(const hkVector4& rParam1);
+    void setAngularVelocity(const hkVector4& rParam1)
+    {
+        activate();
+        m_motion.setAngularVelocity(rParam1);
+    }
+    const hkVector4& getLinearVelocity() const { return m_motion.m_linearVelocity; }
+    void setLinearVelocity(const hkVector4& rParam1)
+    {
+        activate();
+        m_motion.setLinearVelocity(rParam1);
+    }
     const hkQuaternion& getRotation() const;
 };
 
@@ -1365,6 +1397,13 @@ class hkPhantom : public hkWorldObject {
 public:
     virtual ~hkPhantom();
     virtual void calcStatistics(hkStatisticsCollector* pParam1) const;
+    virtual void* getMotionState() = 0;
+    virtual s32 getType() const = 0;
+    virtual void calcAabb(hkAabb& rParam1) = 0;
+    virtual void addOverlappingCollidable(hkCollidable* pParam1) = 0;
+    virtual hkBool isOverlappingCollidableAdded(hkCollidable* pParam1) = 0;
+    virtual void removeOverlappingCollidable(hkCollidable* pParam1) = 0;
+    virtual hkPhantom* clone() const = 0;
     virtual void updateShapeCollectionFilter() {}
     virtual void deallocateInternalArrays();
 
@@ -1394,11 +1433,18 @@ public:
     virtual ~hkShapePhantom();
     virtual void deallocateInternalArrays();
 
-    void* getMotionState();
+    virtual void* getMotionState();
     void setTransform(const hkTransform& rParam1);
     void setPosition(const hkVector4& rParam1, f32 f32Param2);
-    void calcAabb(hkAabb& rParam1);
+    virtual void calcAabb(hkAabb& rParam1);
     virtual void setShape(const hkShape* pParam1);
+    virtual void setPositionAndLinearCast(const hkVector4& rParam1,
+                                          const hkLinearCastInput& rParam2,
+                                          hkCdPointCollector& rParam3,
+                                          hkCdPointCollector* pParam4) = 0;
+    virtual void getClosestPoints(hkCdPointCollector& rParam1, const hkCollisionInput* pParam2) = 0;
+    virtual void getPenetrations(hkCdBodyPairCollector& rParam1,
+                                 const hkCollisionInput* pParam2) = 0;
     const hkTransform* getTransform() const;
 
     hkMotionState m_motionState; // offset 0x70, size 0xC0
@@ -1411,17 +1457,17 @@ public:
     virtual void calcStatistics(hkStatisticsCollector* pParam1) const;
     virtual void deallocateInternalArrays();
 
-    s32 getType() const;
-    hkSimpleShapePhantom* clone() const;
-    void setPositionAndLinearCast(const hkVector4& rParam1,
-                                  const hkLinearCastInput& rParam2,
-                                  hkCdPointCollector& rParam3,
-                                  hkCdPointCollector* pParam4);
-    void getClosestPoints(hkCdPointCollector& rParam1, const hkCollisionInput* pParam2);
-    void getPenetrations(hkCdBodyPairCollector& rParam1, const hkCollisionInput* pParam2);
-    u8 isOverlappingCollidableAdded(hkCollidable* pParam1);
-    void addOverlappingCollidable(hkCollidable* pParam1);
-    void removeOverlappingCollidable(hkCollidable* pParam1);
+    virtual s32 getType() const;
+    virtual hkSimpleShapePhantom* clone() const;
+    virtual void setPositionAndLinearCast(const hkVector4& rParam1,
+                                          const hkLinearCastInput& rParam2,
+                                          hkCdPointCollector& rParam3,
+                                          hkCdPointCollector* pParam4);
+    virtual void getClosestPoints(hkCdPointCollector& rParam1, const hkCollisionInput* pParam2);
+    virtual void getPenetrations(hkCdBodyPairCollector& rParam1, const hkCollisionInput* pParam2);
+    virtual hkBool isOverlappingCollidableAdded(hkCollidable* pParam1);
+    virtual void addOverlappingCollidable(hkCollidable* pParam1);
+    virtual void removeOverlappingCollidable(hkCollidable* pParam1);
 
     hkArray<hkCollisionDetail> m_collisionDetails; // offset 0x130, size 0xC
 };
@@ -2297,7 +2343,7 @@ public:
 // total size: 0x114
 class hkAllCdBodyPairCollector : public hkCdBodyPairCollector {
 public:
-    hkAllCdBodyPairCollector() {}
+    hkAllCdBodyPairCollector() { m_earlyOut.m_bool = 0; }
     virtual ~hkAllCdBodyPairCollector() {}
     virtual void addCdBodyPair(const hkCdBody& rParam1, const hkCdBody& rParam2);
 
@@ -2305,6 +2351,9 @@ public:
 
     hkInplaceArray<hkRootCdBodyPair, 16> m_hits; // offset 0x8, size 0x10C
 };
+
+template <>
+hkInplaceArray<hkRootCdBodyPair, 16>::~hkInplaceArray();
 
 // total size: 0x14
 class hkAgentNnTrack {
@@ -3111,7 +3160,7 @@ public:
     };
 
     static void calcBarycentricCoordinates(
-        const hkVector4&, const hkVector4&, const hkVector4&, const hkVector4&, hkPadSpu&);
+        const hkVector4&, const hkVector4&, const hkVector4&, const hkVector4&, hkPadSpu<f32>*);
     static void closestLineSegLineSeg(const hkVector4&,
                                       const hkVector4&,
                                       const hkVector4&,
@@ -4527,7 +4576,8 @@ public:
     struct GetClosesetPointInput {};
 
     void checkTriangleBoundaries(const hkVector4&, hkVector4*, SupportTypes);
-    void processEdgeTriangle(hkVector4*, hkVector4*, hkPadSpu&, hkPadSpu&, hkBool, SupportTypes);
+    void processEdgeTriangle(
+        hkVector4*, hkVector4*, hkPadSpu<s32>&, hkPadSpu<s32>&, hkBool, SupportTypes);
     void getClosestFeature(const hkConvexShape*,
                            const hkConvexShape*,
                            const hkTransform&,

@@ -10,25 +10,10 @@ class hkContactPoint;
 // total size: 0x14
 class clsContactControl {
 public:
-    // Note: enmMode collides with global Game.hpp enum; nested here for disambiguation.
     enum enmMode {
-        GAME_MODE___NONE = 0,
-        GAME_MODE___ADVERTISE = 1,
-        GAME_MODE___TITLE_DEMO = 2,
-        GAME_MODE___FREE_RACE = 3,
-        GAME_MODE___TIME_ATTACK = 4,
-        GAME_MODE___STORY = 5,
-        GAME_MODE___WORLD_GP = 6,
-        GAME_MODE___MISSION = 7,
-        GAME_MODE___TUTORIAL = 8,
-        GAME_MODE___SURVIVAL_RELAY = 9,
-        GAME_MODE___SURVIVAL_BALL = 10,
-        GAME_MODE___SURVIVAL_BATTLE = 11,
-        GAME_MODE___EVENT = 12,
-        GAME_MODE___CREDIT = 13,
-        GAME_MODE___EASY_MENU = 14,
-        GAME_MODE___MODEL_VIEWER = 15,
-        GAME_MODE___MAX = 16,
+        MODE_NONE = 0,
+        MODE_EXECUTE = 1,
+        MODE_BREAK = 2,
     };
 
     enum enmContactPlayerType {
@@ -47,6 +32,15 @@ public:
 
     clsContactControl() {}
     ~clsContactControl() {}
+
+    void reset()
+    {
+        m_eMode = MODE_NONE;
+        m_pcActiveContactStatus = 0;
+        m_s32ContactNum = 0;
+    }
+    u8 isBreak() const { return m_eMode == MODE_BREAK; }
+    u8 isExecute() const { return m_eMode == MODE_EXECUTE; }
 
     void setContactStatus(enmContactPlayerType eType,
                           enmContactAction ePlayer,

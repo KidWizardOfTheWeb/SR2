@@ -63,6 +63,14 @@ struct hkVector4 {
     f32 w; // offset 0xC, size 0x4
 } __attribute__((aligned(16)));
 
+inline void hkVector4::mul4(f32 f32Scale)
+{
+    x *= f32Scale;
+    y *= f32Scale;
+    z *= f32Scale;
+    w *= f32Scale;
+}
+
 // total size: 0x10
 struct stcInfo {
     u8 u8Effect;     // offset 0x0, size 0x1

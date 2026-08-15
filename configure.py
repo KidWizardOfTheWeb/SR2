@@ -248,6 +248,19 @@ config.asflags = [
 # Compiler version for MWCCPS2
 config.linker_version = f"PS2/mwcps2-{config.mwccps2_tag}"
 
+# The prototype carries a real MWCC PCH fingerprint named PS2_Release.pch.
+pch_source = "PS2_Release.pch"
+pch_output = config.out_path() / "include" / Path(pch_source).with_suffix(".mch")
+config.precompiled_headers = [
+    {
+        "source": pch_source,
+        "mw_version": config.linker_version,
+        "cflags": [*cflags_base],
+        "shift_jis": False,
+    }
+]
+cflags_game = [*cflags_base, f"-prefix {pch_output.as_posix()}"]
+
 Matching = True                   # Object matches and should be linked
 NonMatching = False               # Object does not match and should not be linked
 Equivalent = config.non_matching  # Object should be linked when configured with --non-matching
@@ -262,7 +275,7 @@ def GameSrc(subdir: str, objects: List[Object]) -> Dict[str, Any]:
     return {
         "lib": subdir,
         "mw_version": config.linker_version,
-        "cflags": cflags_base,
+        "cflags": cflags_game,
         "progress_category": "game",
         "objects": objects,
     }
@@ -273,7 +286,7 @@ def OOLib(subdir: str, objects: List[Object]) -> Dict[str, Any]:
     return {
         "lib": f"OO_{subdir}",
         "mw_version": config.linker_version,
-        "cflags": cflags_base,
+        "cflags": cflags_game,
         "progress_category": "game",
         "objects": objects,
     }
@@ -622,7 +635,11 @@ config.libs = [
         Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/PutGravityObj.cpp"),
         Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/PutGravityObj2.cpp"),
         Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/PutGravityObj3.cpp"),
-        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/RigidBodyGimmickObj.cpp"),
+        Object(
+            NonMatching,
+            "Develop/Projects/SR2/pgm/src/Object/Gimmick/RigidBodyGimmickObj.cpp",
+            shift_jis=False,
+        ),
         Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage01/BulletinBoard.cpp"),
         Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage01/Chair.cpp"),
         Object(NonMatching, "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage01/ChairB.cpp"),
@@ -930,7 +947,11 @@ config.libs = [
         Object(NonMatching, "Develop/Projects/SR2/pgm/src/Script/ScriptFrameTex.cpp"),
         Object(NonMatching, "Develop/Projects/SR2/pgm/src/Script/ScriptFrameTexCamera.cpp"),
         Object(NonMatching, "Develop/Projects/SR2/pgm/src/Script/ScriptFrameTexDraw.cpp"),
-        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Script/ScriptFunction.cpp"),
+        Object(
+            NonMatching,
+            "Develop/Projects/SR2/pgm/src/Script/ScriptFunction.cpp",
+            cflags=cflags_base,
+        ),
         Object(NonMatching, "Develop/Projects/SR2/pgm/src/Script/ScriptGravityWave.cpp"),
         Object(NonMatching, "Develop/Projects/SR2/pgm/src/Script/ScriptHeap.cpp"),
         Object(NonMatching, "Develop/Projects/SR2/pgm/src/Script/ScriptLight.cpp"),

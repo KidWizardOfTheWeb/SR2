@@ -26,6 +26,7 @@ if sys.platform == "cygwin":
     )
 
 Library = Dict[str, Any]
+PrecompiledHeader = Dict[str, Any]
 
 
 class BuildConfigUnit(TypedDict):
@@ -170,6 +171,7 @@ class ProjectConfig:
         self.asflags: Optional[List[str]] = None
         self.ldflags: Optional[List[str]] = None
         self.libs: Optional[List[Library]] = None
+        self.precompiled_headers: Optional[List[PrecompiledHeader]] = None
         self.linker_version: Optional[str] = None
         self.version: Optional[str] = None
         self.warn_missing_config: bool = False
@@ -280,7 +282,7 @@ def file_is_c(path: Path) -> bool:
 
 
 def file_is_cpp(path: Path) -> bool:
-    return path.suffix.lower() in (".cc", ".cp", ".cpp", ".cxx")
+    return path.suffix.lower() in (".cc", ".cp", ".cpp", ".cxx", ".pch++")
 
 
 def file_is_c_cpp(path: Path) -> bool:
@@ -291,6 +293,14 @@ def make_flags_str(flags: Optional[List[str]]) -> str:
     if flags is None:
         return ""
     return " ".join(flags)
+
+
+def get_pch_out_name(config: ProjectConfig, pch: PrecompiledHeader) -> str:
+    pch_rel_path = Path(pch["source"])
+    pch_out_name = pch_rel_path.with_suffix(".mch")
+    # Keep the Ninja output absolute so MWCC-generated depfiles refer to the
+    # same path as the PCH build edge.
+    return os.path.abspath(config.out_path() / "include" / pch_out_name)
 
 
 # Short loop workaround for MWCCPS2
@@ -591,6 +601,20 @@ def generate_build_ninja(
     mwcc_sjis_cmd = f"{wrapper_cmd}{sjiswrap} {mwcc} $cflags -c $in -o $out"
     mwcc_sjis_implicit: List[Optional[Path]] = [*mwcc_implicit, sjiswrap]
 
+    # MWCCPS2 for precompiled headers.  With -precompile, -o names the
+    # output directory and the .mch filename is supplied separately.
+    mwcc_pch_cmd = (
+        f"{wrapper_cmd}{mwcc} $cflags -c $in -o $basedir "
+        f"-precompile $basefilestem.mch"
+    )
+    mwcc_pch_implicit: List[Optional[Path]] = [*mwcc_implicit]
+
+    mwcc_pch_sjis_cmd = (
+        f"{wrapper_cmd}{sjiswrap} {mwcc} $cflags -c $in -o $basedir "
+        f"-precompile $basefilestem.mch"
+    )
+    mwcc_pch_sjis_implicit: List[Optional[Path]] = [*mwcc_implicit, sjiswrap]
+
     # Patch MWCCPS2 compiler DLLs (done after download)
     n.comment("Patch MWCCPS2 compiler DLLs")
 
@@ -630,8 +654,12 @@ def generate_build_ninja(
         transform_dep = config.tools_dir / "transform_dep.py"
         mwcc_cmd += f" -MMD && $python {transform_dep} $out.d $out.d"
         mwcc_sjis_cmd += f" -MMD && $python {transform_dep} $out.d $out.d"
+        mwcc_pch_cmd += f" -MMD && $python {transform_dep} $basefile.d $basefile.d"
+        mwcc_pch_sjis_cmd += f" -MMD && $python {transform_dep} $basefile.d $basefile.d"
         mwcc_implicit.append(transform_dep)
         mwcc_sjis_implicit.append(transform_dep)
+        mwcc_pch_implicit.append(transform_dep)
+        mwcc_pch_sjis_implicit.append(transform_dep)
 
     n.comment("Link ELF file")
     n.rule(
@@ -657,6 +685,26 @@ def generate_build_ninja(
         command=mwcc_sjis_cmd,
         description="MWCC $out",
         depfile="$out.d",
+        deps="gcc",
+    )
+    n.newline()
+
+    n.comment("Build precompiled header")
+    n.rule(
+        name="mwcc_pch",
+        command=mwcc_pch_cmd,
+        description="PCH $out",
+        depfile="$basefile.d",
+        deps="gcc",
+    )
+    n.newline()
+
+    n.comment("Build precompiled header (with UTF-8 to Shift JIS wrapper)")
+    n.rule(
+        name="mwcc_pch_sjis",
+        command=mwcc_pch_sjis_cmd,
+        description="PCH $out",
+        depfile="$basefile.d",
         deps="gcc",
     )
     n.newline()
@@ -732,7 +780,10 @@ def generate_build_ninja(
             implicit=extra_inputs,
         )
 
-    write_custom_step("pre-compile")
+    pch_out_names = [
+        get_pch_out_name(config, pch) for pch in config.precompiled_headers or []
+    ]
+    write_custom_step("pre-compile", extra_inputs=pch_out_names)
 
     ###
     # Source files
@@ -740,6 +791,30 @@ def generate_build_ninja(
     n.comment("Source files")
     source_inputs: List[Path] = []
     source_added: Set[Path] = set()
+
+    if config.precompiled_headers:
+        for pch in config.precompiled_headers:
+            src_path_rel = Path(pch["source"])
+            pch_out_abs_path = Path(get_pch_out_name(config, pch))
+            cflags = list(pch["cflags"])
+            if not any(flag.startswith("-lang") for flag in cflags):
+                cflags.insert(0, "-lang=c++" if file_is_cpp(src_path_rel) else "-lang=c")
+            shift_jis = pch.get("shift_jis", config.shift_jis)
+            n.comment(f"Precompiled header {src_path_rel.with_suffix('.mch')}")
+            n.build(
+                outputs=pch_out_abs_path,
+                rule="mwcc_pch_sjis" if shift_jis else "mwcc_pch",
+                inputs=Path("include") / src_path_rel,
+                variables={
+                    "mw_version": Path(pch["mw_version"]),
+                    "cflags": make_flags_str(cflags),
+                    "basedir": os.path.dirname(pch_out_abs_path),
+                    "basefile": pch_out_abs_path.with_suffix(""),
+                    "basefilestem": pch_out_abs_path.stem,
+                },
+                implicit=mwcc_pch_sjis_implicit if shift_jis else mwcc_pch_implicit,
+            )
+            n.newline()
 
     def c_build(obj: Object, src_path: Path) -> Optional[Path]:
         if obj.src_obj_path is None or obj.src_obj_path in source_added:

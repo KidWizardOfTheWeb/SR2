@@ -16,12 +16,12 @@ void clsDebrisControl::drawAlpha(NNS_OBJECT* psObject, f32 f32ClipSqDist, NNS_VE
 {
 }
 
-void clsDebrisControl::startBreak(const f32 (*psTrsMtx)[4][4],
+void clsDebrisControl::startBreak(const NNS_MATRIX* psTrsMtx,
                                   const NNS_VECTORFAST* psBoundVecFst,
                                   const NNS_VECTORFAST* opsContactPosVecFast)
 {
 }
 
-void clsDebrisControl::startBreak(const f32 (*psTrsMtx)[4][4], const NNS_VECTORFAST* psBoundVecFst)
+void clsDebrisControl::startBreak(const NNS_MATRIX* psTrsMtx, const NNS_VECTORFAST* psBoundVecFst)
 {
 }

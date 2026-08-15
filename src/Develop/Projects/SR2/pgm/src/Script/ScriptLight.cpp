@@ -1,6 +1,6 @@
 #include "Develop/Projects/SR2/pgm/src/Script/ScriptLight.hpp"
 
-namespace {
+namespace nspDefaultScriptLightData {
 struct stcRgbaF32 {
     f32 f32r;
     f32 f32g;
@@ -17,9 +17,7 @@ struct stcBinDataDetail {
     stcRgbaF32 sSpecularRgba;
     NNS_VECTOR sSpecularDir;
 };
-} // namespace
 
-namespace nspDefaultScriptLightData {
 static stcBinDataDetail otasDefaultDataDetail = {{1.0f, 1.0f, 1.0f},
                                                  {1.0f, 1.0f, 1.0f, 1.0f},
                                                  1.0f,

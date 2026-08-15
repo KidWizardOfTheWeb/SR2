@@ -143,10 +143,6 @@ void hkVector4::add4(const hkVector4& rParam1)
 {
 }
 
-void hkVector4::mul4(f32 f32Param1)
-{
-}
-
 void hkVector4::setNeg4(const hkVector4& rParam1)
 {
 }

@@ -1,6 +1,8 @@
 #ifndef NNSYSTEM_H
 #define NNSYSTEM_H
 
+typedef float NNS_MATRIX[4][4];
+
 enum NNE_BOOL {
     NNE_FALSE = 0,
     NNE_OFF = 0,
@@ -39,6 +41,10 @@ struct NNS_BINCNK_FILEHEADER {
     int Version;     // offset 0x1C, size 0x4
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern char* nngVersion;
 extern unsigned char* nngBuildAddr;
 extern double nngZMulPs2;
@@ -46,6 +52,10 @@ extern struct NNS_CONFIG_PS2 nngConfigPs2;
 
 void nnInitSystemPS2();
 void nnConfigureSystemPS2(struct NNS_CONFIG_PS2* pConfigPs2);
-void nnSetProjection(float (*mtx)[4][4], enum NNE_PROJECTION_TYPE type);
+void nnSetProjection(NNS_MATRIX* mtx, enum NNE_PROJECTION_TYPE type);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // NNSYSTEM_H

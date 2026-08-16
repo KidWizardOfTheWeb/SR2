@@ -3,8 +3,7 @@
 
 #include "types.h"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
-
-extern "C" s32 nnNormalizeQuaternion(NNS_QUATERNION* psDstQuat, const NNS_QUATERNION* psSrcQuat);
+#include "usr/local/sega/nn/src/Matrix/nnquaternion.h"
 
 // total size: 0x20
 class clsSurface {

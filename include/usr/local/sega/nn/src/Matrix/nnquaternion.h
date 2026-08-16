@@ -4,11 +4,15 @@
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 #include "usr/local/sega/nn/src/System/nnsystem.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void nnCopyQuaternion(struct NNS_QUATERNION* dst, struct NNS_QUATERNION* src);
 void nnMultiplyQuaternion(struct NNS_QUATERNION* dst,
                           struct NNS_QUATERNION* quat1,
                           struct NNS_QUATERNION* quat2);
-enum NNE_BOOL nnNormalizeQuaternion(struct NNS_QUATERNION* dst, struct NNS_QUATERNION* src);
+enum NNE_BOOL nnNormalizeQuaternion(struct NNS_QUATERNION* dst, const struct NNS_QUATERNION* src);
 enum NNE_BOOL nnInvertQuaternion(struct NNS_QUATERNION* dst, struct NNS_QUATERNION* src);
 void nnExpQuaternion(struct NNS_QUATERNION* dst, struct NNS_QUATERNION* src);
 void nnSplineQuaternion(struct NNS_QUATERNION* dst,
@@ -32,7 +36,7 @@ void nnSquadQuaternion(struct NNS_QUATERNION* dst,
 void nnMakeUnitQuaternion(struct NNS_QUATERNION* dst);
 void nnMakeRotateAxisQuaternion(
     struct NNS_QUATERNION* dst, float vx, float vy, float vz, signed int ang);
-void nnMakeRotateMatrixQuaternion(struct NNS_QUATERNION* dst, float (*mtx)[4][4]);
+void nnMakeRotateMatrixQuaternion(struct NNS_QUATERNION* dst, NNS_MATRIX* mtx);
 void nnMakeRotateXYZQuaternion(struct NNS_QUATERNION* dst,
                                signed int rx,
                                signed int ry,
@@ -45,5 +49,9 @@ void nnMakeRotateZXYQuaternion(struct NNS_QUATERNION* dst,
                                signed int rx,
                                signed int ry,
                                signed int rz);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // NNQUATERNION_H

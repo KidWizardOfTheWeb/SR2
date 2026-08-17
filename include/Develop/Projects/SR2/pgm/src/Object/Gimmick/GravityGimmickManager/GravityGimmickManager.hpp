@@ -24,7 +24,7 @@ public:
 class clsGravityGimmickManager : public clsSingleton<clsGravityGimmickManager> {
 public:
     enum enmBreakType {
-        BREAK_TYPE_0,
+        BREAK_TYPE_0 = 4,
         BREAK_TYPE_1,
         BREAK_TYPE_2,
     };

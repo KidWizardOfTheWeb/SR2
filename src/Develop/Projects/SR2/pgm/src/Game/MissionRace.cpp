@@ -1,6 +1,6 @@
 #include "Develop/Projects/SR2/pgm/src/Game/MissionRace.hpp"
 
-f32 clsMissionRace_Task::tof32MissionBreakFrame;
+const f32 clsMissionRace_Task::tof32MissionBreakFrame = 30.0f;
 s32 clsMissionRace_Task::sos32TrickPoint[7];
 stcMissionRingAgp clsMissionRace_Task::scosMissionRingAgp[20];
 f32 clsMissionRace_Task::scosAgpPointRate[17];

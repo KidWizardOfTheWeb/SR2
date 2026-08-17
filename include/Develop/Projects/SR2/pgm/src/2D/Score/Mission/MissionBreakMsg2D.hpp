@@ -8,6 +8,11 @@
 // total size: 0x5C
 class clsMissionBreakMsg2D_Task : public clsTask {
 public:
+    clsMissionBreakMsg2D_Task() : clsTask(0x3A598, 5) {}
+    clsMissionBreakMsg2D_Task(NNS_VECTORFAST* psParam1)
+        : clsTask(0x3A598, 5), m_psPosVecFast(psParam1), m_u32Count(0)
+    {
+    }
     ~clsMissionBreakMsg2D_Task();
 
     virtual void execute();

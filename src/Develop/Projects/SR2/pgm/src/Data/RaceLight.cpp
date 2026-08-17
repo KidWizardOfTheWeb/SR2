@@ -1,7 +1,7 @@
 #include "Develop/Projects/SR2/pgm/src/Data/RaceLight.hpp"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 
-namespace {
+namespace nspDefaultLightData {
 struct stcRgbF32 {
     f32 f32r;
     f32 f32g;
@@ -24,9 +24,7 @@ struct stcBinDataDetail {
     stcRgbaF32 sSpecularRgba;
     NNS_VECTOR sSpecularDir;
 };
-} // namespace
 
-namespace nspDefaultLightData {
 static stcBinDataDetail otasDefaultDataDetail = {{1.0f, 1.0f, 1.0f},
                                                  {1.0f, 1.0f, 1.0f, 1.0f},
                                                  1.0f,

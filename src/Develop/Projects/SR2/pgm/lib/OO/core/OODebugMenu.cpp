@@ -36,16 +36,16 @@ inline void clsOOMainMenu::addSubMenu(const c8* name, const s32 (*func)(s32, s32
 {
     tcOOSubMenu.m_opc8Name = name;
     tcOOSubMenu.m_oFunc = func;
-    m_cSubMenu.insert(m_cSubMenu._data + m_cSubMenu._size, 1, tcOOSubMenu);
+    m_cSubMenu.insert(m_cSubMenu.end_ptr(), 1, tcOOSubMenu);
     ++m_s8SubMenuNum;
 }
 
 const u32 clsOODebugMenu::tou32DetailDrawOffX;
 
-void clsOODebugMenu::addMainMenu(const c8* pc8Name)
+void clsOODebugMenu::addMainMenu(const c8* opc8NameI)
 {
-    tcOOMainMenu.m_opc8Name = pc8Name;
-    m_cMainMenu.insert(m_cMainMenu._data + m_cMainMenu._size, 1, tcOOMainMenu);
+    tcOOMainMenu.m_opc8Name = opc8NameI;
+    m_cMainMenu.insert(m_cMainMenu.end_ptr(), 1, tcOOMainMenu);
     m_s8MainMenuNum++;
 }
 
@@ -68,17 +68,17 @@ void clsOODebugMenu::removeAll()
     pcThis->m_bUrawaza = 0;
 }
 
-void clsOODebugMenu::addSubMenu(const c8* pc8Name,
-                                const c8* pc8Label,
-                                const s32 (*pFunc)(s32, s32, s32, s32))
+void clsOODebugMenu::addSubMenu(const c8* opc8MainMenuNameI,
+                                const c8* opc8SubMenuNameI,
+                                const s32 (*oFuncI)(s32, s32, s32, s32))
 {
-    tcOOMainMenu.m_opc8Name = pc8Name;
+    tcOOMainMenu.m_opc8Name = opc8MainMenuNameI;
 
     clsOOMainMenuVector::iterator iMain =
         std::find(m_cMainMenu.begin(), m_cMainMenu.end(), tcOOMainMenu);
 
     if (iMain != m_cMainMenu.end()) {
-        iMain->addSubMenu(pc8Label, pFunc);
+        iMain->addSubMenu(opc8SubMenuNameI, oFuncI);
     }
 }
 
@@ -168,7 +168,7 @@ void clsOODebugMenu::drawSystemMenu()
         .renderDp_Debug((f32)s32x, (f32)m_s8DrawDefY, 16.0f, (f32)(s32y - m_s8DrawDefY), u32BgCol);
 }
 
-u8 clsOODebugMenu::isDrawSubMenuName(const c8* pc8Name)
+u8 clsOODebugMenu::isDrawSubMenuName(const c8* opc8NameI)
 {
     if (m_s8MainMenuCursorNo == -1 || m_s8SubMenuCursorNo == -1) {
         return 0;
@@ -177,7 +177,7 @@ u8 clsOODebugMenu::isDrawSubMenuName(const c8* pc8Name)
     iMain += m_s8MainMenuCursorNo;
     clsOOSubMenuVector::iterator iSub = iMain.it_->m_cSubMenu.begin();
     iSub += m_s8SubMenuCursorNo;
-    return !strcmp(iSub.it_->getName(), pc8Name);
+    return !strcmp(iSub.it_->getName(), opc8NameI);
 }
 
 template <typename T, typename U>
@@ -540,5 +540,3 @@ void clsOODebugMenu::exec()
 
     nnSetPrintColor(0xFFFFFFFF);
 }
-
-#include "Develop/Projects/SR2/pgm/lib/OO/core/OODebugMenuVector.inl"

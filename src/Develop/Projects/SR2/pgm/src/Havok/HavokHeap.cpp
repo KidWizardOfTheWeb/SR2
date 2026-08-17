@@ -414,20 +414,6 @@ void hkRigidBody::setMass(f32 f32Param1)
 {
 }
 
-void hkRigidBody::setAngularVelocity(const hkVector4& rParam1)
-{
-}
-
-const hkVector4& hkRigidBody::getLinearVelocity() const
-{
-    static hkVector4 sVelocity;
-    return sVelocity;
-}
-
-void hkRigidBody::setLinearVelocity(const hkVector4& rParam1)
-{
-}
-
 const hkQuaternion& hkRigidBody::getRotation() const
 {
     static hkQuaternion sRotation;
@@ -510,9 +496,9 @@ void hkSimpleShapePhantom::getPenetrations(hkCdBodyPairCollector& rParam1,
 {
 }
 
-u8 hkSimpleShapePhantom::isOverlappingCollidableAdded(hkCollidable* pParam1)
+hkBool hkSimpleShapePhantom::isOverlappingCollidableAdded(hkCollidable* pParam1)
 {
-    return 0;
+    return hkBool();
 }
 
 void hkSimpleShapePhantom::addOverlappingCollidable(hkCollidable* pParam1)

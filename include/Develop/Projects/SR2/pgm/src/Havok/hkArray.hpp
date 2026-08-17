@@ -8,6 +8,10 @@ template <typename T>
 class hkArray {
 public:
     hkArray() : m_data(0), m_size(0), m_capacityAndFlags(0x80000000) {}
+    hkArray(T* pData, s32 s32Size, s32 s32Capacity)
+        : m_data(pData), m_size(s32Size), m_capacityAndFlags(0x80000000 | s32Capacity)
+    {
+    }
     ~hkArray() { releaseMemory(); }
 
     void releaseMemory()
@@ -96,6 +100,9 @@ public:
 template <typename T, s32 Capacity>
 class hkInplaceArray : public hkArray<T> {
 public:
+    hkInplaceArray() : hkArray<T>(m_storage, 0, Capacity) { this->m_size = 0; }
+    ~hkInplaceArray();
+
     T m_storage[Capacity];
 };
 

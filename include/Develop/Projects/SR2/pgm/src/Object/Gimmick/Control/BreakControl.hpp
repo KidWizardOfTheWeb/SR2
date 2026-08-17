@@ -4,28 +4,43 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/FrameControl.hpp"
 #include "types.h"
 
-#ifndef ENM_MODE_DECLARED
-#define ENM_MODE_DECLARED
-enum enmMode {
-    MODE_NONE = 0,
-    MODE_EXECUTE = 1,
-    MODE_BREAK = 2,
-};
-#endif
-
 // total size: 0x30
 class clsBreakControl {
 public:
+    enum enmMode {
+        MODE_NONE = 0,
+        MODE_EXECUTE = 1,
+        MODE_BREAK = 2,
+    };
+
     clsBreakControl() {}
     ~clsBreakControl() {}
 
+    void reset()
+    {
+        m_s32ContactNum = 0;
+        m_eMode = MODE_NONE;
+        m_bDraw = 1;
+        m_cBreakFrame.m_f32Frame = -2.0f;
+        m_cLimitFrame.m_f32Frame = -2.0f;
+        m_cRebirthFrame.m_f32Frame = -2.0f;
+    }
     u8 isDraw() const { return m_bDraw; }
-    void setBreak() {}
-    void startRebirth() {}
+    void setBreak()
+    {
+        m_eMode = MODE_BREAK;
+        m_bDraw = 0;
+    }
+    void startRebirth() { m_cRebirthFrame.m_f32Frame = m_cRebirthFrame.m_f32CountFrame; }
     f32 getLimitFrameRate() { return 0.0f; }
     u8 isBreak() const { return m_eMode == 2; }
     u8 isExecute() const { return m_eMode == 1; }
-    void setBreakInfo(s32 s32Param1, f32 f32Param1, f32 f32Param2, f32 f32Param3) {}
+    void setBreakInfo(s32 s32ContactNum,
+                      f32 f32ContactFrame,
+                      f32 f32LimitFrame,
+                      f32 f32RebirthFrame)
+    {
+    }
     void start() {}
     void update();
 

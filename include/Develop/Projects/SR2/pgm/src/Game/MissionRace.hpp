@@ -65,7 +65,7 @@ struct uMissionCount32 {
 // total size: 0xD3C
 class clsMissionRace_Task : public clsBaseRace_Task {
 public:
-    static f32 tof32MissionBreakFrame;
+    static const f32 tof32MissionBreakFrame;
     static s32 sos32TrickPoint[7];
     static stcMissionRingAgp scosMissionRingAgp[20];
     static f32 scosAgpPointRate[17];
@@ -99,7 +99,7 @@ public:
     void LoadTexture(clsGameMgr::enmMode eMode, s32 s32A);
 
     s32 getMissionNo() const { return m_s32MissionNo; }
-    u8 getRuleType() const { return m_sMissionParamTbl.u8RuleType; }
+    u8 getRuleType() const;
 
     stcRecord m_sMissionTime;              // offset 0xCB0, size 0x4
     u8 m_bPractice;                        // offset 0xCB4, size 0x1

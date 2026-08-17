@@ -5,6 +5,8 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/BreakControl.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/ContactControl.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickObj.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickRigidBody.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/DebrisControl.hpp"
 
 class clsPlayerTask;
 
@@ -81,9 +83,9 @@ public:
     virtual void requestDrawContactEffect(const hkContactPoint* pcContact);
     virtual void requestDrawCrashEffect(const hkContactPoint* pParam1);
     virtual void requestDrawBreakEffect();
-    virtual void requestPowerTypeSe(clsPlayerTask* param_1) {}
+    virtual void requestPowerTypeSe(clsPlayerTask* pcPlayer) {}
     virtual void contactInterraction(clsRigidBodyGimmickObj* pcObject);
-    virtual u8 checkRequestDrawDebris() { return 0; }
+    virtual u8 checkRequestDrawDebris() { return m_cBreakControl.m_s32ContactNum > 0; }
     virtual u8 checkContactInterraction(clsRigidBodyGimmickObj* param_1) { return 1; }
     virtual void callbackGravityEvent() {}
     virtual void callbackCrashEvent() {}
@@ -97,12 +99,39 @@ public:
     clsGravityActionControl* getGravityActionControlPtr() { return m_pcGravityGimmickControl; }
     enmControlMode getControlMode() const { return m_eControlMode; }
     void setControlMode(enmControlMode eMode);
-    void setControlFlag(u32 u32Param1, u32 u32Param2) {}
+    void setControlFlag(u32 u32Flag, u32 u32Mask)
+    {
+        m_eControlFlag =
+            static_cast<enmControlFlag>((u32Flag & u32Mask) | (m_eControlFlag & ~u32Mask));
+    }
     u8 contactGravityActionRangeEvent(clsPlayerTask* pcPlayer);
     void execute();
     void resetBaseControl();
-    void startCrash(enmBreakType param_1) {}
-    void startBreak(enmBreakType param_1) {}
+    void startCrash(enmBreakType eBreakType)
+    {
+        m_cBreakControl.m_eMode = clsBreakControl::MODE_EXECUTE;
+        m_cBreakControl.m_cLimitFrame.m_f32Frame = m_cBreakControl.m_cLimitFrame.m_f32CountFrame;
+        setControlMode(CTRL_MODE_CRASH);
+        m_eBreakType = eBreakType;
+        m_u8PortalNo = 0x3F;
+    }
+    void startBreak(enmBreakType eBreakType)
+    {
+        setControlMode(CTRL_MODE_BREAKING);
+        m_eBreakType = eBreakType;
+        m_cBreakControl.startRebirth();
+        m_cBreakControl.setBreak();
+        if (m_pcDebrisControl != 0 && (m_eControlFlag & CTRL_FLAG_UPDATE_DEBRIS) != 0) {
+            m_pcDebrisControl->setVelocity(getRigidBody()->getLinearVelocity());
+        }
+        m_pcRigidBody->setCollisionFilterLight(0, static_cast<u32>(-1));
+        m_pcRigidBody->setMotionType(hkMotion::MOTION_CHARACTER,
+                                     HK_ENTITY_ACTIVATION_DO_ACTIVATE,
+                                     HK_UPDATE_FILTER_ON_ENTITY_FULL_CHECK);
+        if ((m_eControlFlag & CTRL_FLAG_DRAW_BREAK_EFFECT) != 0) {
+            requestDrawBreakEffect();
+        }
+    }
 
     static stcInfo oasGroundInfo[4];
 };

@@ -12,7 +12,17 @@ public:
 // Template stub for function-signature mangling only (namespace-qualified form).
 namespace oostd {
 template <class T>
-class clsOOStlAllocator {};
+class clsOOStlAllocator {
+public:
+    clsOOHeapFragment* m_pcHeap; // offset 0x0, size 0x4
+
+    clsOOStlAllocator(clsOOHeapFragment& rcHeap) : m_pcHeap(&rcHeap) {}
+
+    template <class U>
+    clsOOStlAllocator(const clsOOStlAllocator<U>& rhs) : m_pcHeap(rhs.m_pcHeap)
+    {
+    }
+};
 } // namespace oostd
 
 #endif // OOSTLALLOCATOR_HPP

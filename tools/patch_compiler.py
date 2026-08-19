@@ -8,9 +8,28 @@
 #   python3 tools/patch_compiler.py <gc_dll_path> <ps2_compiler_path> <marker_file>
 ###
 
-import sys
+import filecmp
+import os
 import shutil
+import sys
 from pathlib import Path
+
+
+def copy_if_needed(src: Path, dst: Path) -> None:
+    if dst.exists():
+        try:
+            if os.path.samefile(src, dst):
+                print(f"Already patched: {dst} points to {src}")
+                return
+        except OSError:
+            pass
+
+        if filecmp.cmp(src, dst, shallow=False):
+            print(f"Already patched: {dst}")
+            return
+
+    print(f"Copying {src} to {dst.parent}")
+    shutil.copy(src, dst)
 
 
 def main():
@@ -36,12 +55,9 @@ def main():
     # Create PS2 compiler directory if it doesn't exist
     ps2_compiler_path.mkdir(parents=True, exist_ok=True)
 
-    # Copy DLLs
-    print(f"Copying {lmgr8c} to {ps2_compiler_path}")
-    shutil.copy(lmgr8c, ps2_compiler_path / "lmgr8c.dll")
-
-    print(f"Copying {lmgr326b} to {ps2_compiler_path}")
-    shutil.copy(lmgr326b, ps2_compiler_path / "lmgr326b.dll")
+    # Copy DLLs only when needed.
+    copy_if_needed(lmgr8c, ps2_compiler_path / "lmgr8c.dll")
+    copy_if_needed(lmgr326b, ps2_compiler_path / "lmgr326b.dll")
 
     # Create marker file
     marker_file.parent.mkdir(parents=True, exist_ok=True)

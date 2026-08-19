@@ -594,23 +594,23 @@ def generate_build_ninja(
 
     # MWCCPS2
     mwcc = compiler_path / "mwccps2.exe"
-    mwcc_cmd = f"{wrapper_cmd}{mwcc} $cflags -c $in -o $out"
+    mwcc_cmd = f"{wrapper_cmd}{mwcc} $cflags -gccdep -MMD -c $in -o $out"
     mwcc_implicit: List[Optional[Path]] = [compilers_implicit or mwcc, wrapper_implicit]
 
     # MWCCPS2 with UTF-8 to Shift JIS wrapper
-    mwcc_sjis_cmd = f"{wrapper_cmd}{sjiswrap} {mwcc} $cflags -c $in -o $out"
+    mwcc_sjis_cmd = f"{wrapper_cmd}{sjiswrap} {mwcc} $cflags -gccdep -MMD -c $in -o $out"
     mwcc_sjis_implicit: List[Optional[Path]] = [*mwcc_implicit, sjiswrap]
 
     # MWCCPS2 for precompiled headers.  With -precompile, -o names the
     # output directory and the .mch filename is supplied separately.
     mwcc_pch_cmd = (
-        f"{wrapper_cmd}{mwcc} $cflags -c $in -o $basedir "
+        f"{wrapper_cmd}{mwcc} $cflags -gccdep -MMD -c $in -o $basedir "
         f"-precompile $basefilestem.mch"
     )
     mwcc_pch_implicit: List[Optional[Path]] = [*mwcc_implicit]
 
     mwcc_pch_sjis_cmd = (
-        f"{wrapper_cmd}{sjiswrap} {mwcc} $cflags -c $in -o $basedir "
+        f"{wrapper_cmd}{sjiswrap} {mwcc} $cflags -gccdep -MMD -c $in -o $basedir "
         f"-precompile $basefilestem.mch"
     )
     mwcc_pch_sjis_implicit: List[Optional[Path]] = [*mwcc_implicit, sjiswrap]
@@ -636,13 +636,21 @@ def generate_build_ninja(
             "ps2_compiler_path": ps2_compiler_path,
         },
     )
+    # Ensure all MWCC rules wait for compiler patching.
     mwcc_implicit.append(patch_marker)
+    mwcc_sjis_implicit.append(patch_marker)
+    mwcc_pch_implicit.append(patch_marker)
+    mwcc_pch_sjis_implicit.append(patch_marker)
     n.newline()
 
     # MWLD (linker)
     mwld = compiler_path / "mwldps2.exe"
     mwld_cmd = f"{wrapper_cmd}{mwld} $ldflags -o $out $in"
-    mwld_implicit: List[Optional[Path]] = [compilers_implicit or mwld, wrapper_implicit]
+    mwld_implicit: List[Optional[Path]] = [
+        compilers_implicit or mwld,
+        wrapper_implicit,
+        patch_marker,
+    ]
 
     # GNU as (MIPS assembler)
     gnu_as = binutils / f"mips-linux-gnu-as{EXE}"
@@ -652,10 +660,10 @@ def generate_build_ninja(
     # Transform dependency files on non-Windows
     if os.name != "nt":
         transform_dep = config.tools_dir / "transform_dep.py"
-        mwcc_cmd += f" -MMD && $python {transform_dep} $out.d $out.d"
-        mwcc_sjis_cmd += f" -MMD && $python {transform_dep} $out.d $out.d"
-        mwcc_pch_cmd += f" -MMD && $python {transform_dep} $basefile.d $basefile.d"
-        mwcc_pch_sjis_cmd += f" -MMD && $python {transform_dep} $basefile.d $basefile.d"
+        mwcc_cmd += f" && $python {transform_dep} $basefile.d $basefile.d"
+        mwcc_sjis_cmd += f" && $python {transform_dep} $basefile.d $basefile.d"
+        mwcc_pch_cmd += f" && $python {transform_dep} $basefile.d $basefile.d"
+        mwcc_pch_sjis_cmd += f" && $python {transform_dep} $basefile.d $basefile.d"
         mwcc_implicit.append(transform_dep)
         mwcc_sjis_implicit.append(transform_dep)
         mwcc_pch_implicit.append(transform_dep)
@@ -674,7 +682,7 @@ def generate_build_ninja(
         name="mwcc",
         command=mwcc_cmd,
         description="MWCC $out",
-        depfile="$out.d",
+        depfile="$basefile.d",
         deps="gcc",
     )
     n.newline()
@@ -684,7 +692,7 @@ def generate_build_ninja(
         name="mwcc_sjis",
         command=mwcc_sjis_cmd,
         description="MWCC $out",
-        depfile="$out.d",
+        depfile="$basefile.d",
         deps="gcc",
     )
     n.newline()
@@ -837,6 +845,7 @@ def generate_build_ninja(
             variables={
                 "mw_version": Path(obj.options["mw_version"]),
                 "cflags": cflags_str,
+                "basefile": obj.src_obj_path.with_suffix(""),
             },
             implicit=build_implicit,
             order_only="pre-compile",

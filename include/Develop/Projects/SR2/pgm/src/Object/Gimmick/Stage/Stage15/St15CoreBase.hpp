@@ -16,7 +16,7 @@ public:
     static f32 t_of32DefaultAngularDamping;
     static f32 t_of32DefaultMaxLinear;
 
-    clsRigidBody(const hkRigidBodyCinfo& rParam1) : hkRigidBody(rParam1) {}
+    clsRigidBody(const hkRigidBodyCinfo& rParam1) : hkRigidBody(rParam1), m_pvCollisionInfo(0) {}
     virtual ~clsRigidBody() {}
 
     void* m_pvCollisionInfo; // offset 0x200, size 0x4

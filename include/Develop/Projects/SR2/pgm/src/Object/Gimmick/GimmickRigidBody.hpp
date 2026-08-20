@@ -10,9 +10,11 @@ class clsObject;
 // total size: 0x220
 class clsGimmickRigidBody : public clsRigidBody {
 public:
-    clsGimmickRigidBody(const hkRigidBodyCinfo& rcParam1, clsObject* pcParam2)
-        : clsRigidBody(rcParam1)
+    clsGimmickRigidBody(const hkRigidBodyCinfo& rcInfo, clsObject* pcObject)
+        : clsRigidBody(rcInfo), m_pcUnaryAction(0), m_eFlag(0)
     {
+        m_userData = pcObject;
+        addCollisionListener(clsHavok::GS()->m_pcRigidListener);
     }
     virtual ~clsGimmickRigidBody() {}
 

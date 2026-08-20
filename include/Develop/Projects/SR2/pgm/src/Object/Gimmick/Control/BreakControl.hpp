@@ -13,8 +13,22 @@ public:
         MODE_BREAK = 2,
     };
 
-    clsBreakControl() {}
-    ~clsBreakControl() {}
+    clsBreakControl()
+    {
+        m_cBreakFrame.m_f32Frame = -2.0f;
+        m_cBreakFrame.m_f32CountFrame = 30.0f;
+        m_cLimitFrame.m_f32Frame = -2.0f;
+        m_cLimitFrame.m_f32CountFrame = 600.0f;
+        m_cRebirthFrame.m_f32Frame = -2.0f;
+        m_cRebirthFrame.m_f32CountFrame = 300.0f;
+        m_eMode = MODE_NONE;
+        m_s32ContactNum = 0;
+        m_s32BreakContactNum = 1;
+        m_bDraw = 1;
+        m_s32BlinkFrame = 300;
+        m_s32BlinkInterval = 4;
+    }
+    ~clsBreakControl();
 
     void reset()
     {

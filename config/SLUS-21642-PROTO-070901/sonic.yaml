@@ -3345,11 +3345,12 @@ segments:
       # - [0x3DAB00, h, Develop/Projects/SR2/pgm/src/Object/Gimmick/BaseGimmick] # vram: 0x004DAA80
       - [0x3DADA0, asmtu, Develop/Projects/SR2/pgm/lib/OO/core/Flash/OOFlashMgr] # vram: 0x004DAD20
       # - [0x3DAFF0, asmtu, unk_block_3DAFF0] # vram: 0x004DAF70
-      - [0x3DB0E0, asmtu, Develop/Projects/SR2/pgm/lib/OO/PS2_nn/Flash/PS2NnFlash] # vram: 0x004DB060
-      # - [0x3DB680, asmtu, unk_block_3DB680] # vram: 0x004DB600
+      # PS2NnFlash owns PS2 shape-symbol and sprite drawing/mask implementations.
+      - [0x3DB080, asmtu, Develop/Projects/SR2/pgm/lib/OO/PS2_nn/Flash/PS2NnFlash] # vram: 0x004DB000
+      # MapPartsObject owns common map-parts construction and lifecycle methods.
       - [0x3DB700, asmtu, Develop/Projects/SR2/pgm/src/Object/Gimmick/MapPartsObject] # vram: 0x004DB680
-      # - [0x3DBAD0, h, Develop/Projects/SR2/pgm/src/2D/Score/SurvivalBall/SurvivalBallMap2D] # vram: 0x004DBA50
-      - [0x3DBB30, asmtu, Develop/Projects/SR2/pgm/src/2D/Score/SurvivalBall/SurvivalBallMap2D] # vram: 0x004DBAB0
+      # SurvivalBallMap2D owns survival-ball map drawing, projection, and lifecycle methods.
+      - [0x3DBAD0, asmtu, Develop/Projects/SR2/pgm/src/2D/Score/SurvivalBall/SurvivalBallMap2D] # vram: 0x004DBA50
       # - [0x3DC480, h, Develop/Projects/SR2/pgm/src/Game/SurvivalRelayRace] # vram: 0x004DC400
       - [0x3DC4E0, asmtu, Develop/Projects/SR2/pgm/src/Game/SurvivalRelayRace] # vram: 0x004DC460
       # - [0x3DED60, h, Develop/Projects/SR2/pgm/src/Object/Gimmick/SurvivalBall/SurvivalStart] # vram: 0x004DECE0

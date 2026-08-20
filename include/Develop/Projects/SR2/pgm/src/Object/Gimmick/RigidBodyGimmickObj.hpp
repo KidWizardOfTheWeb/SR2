@@ -7,6 +7,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickObj.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickRigidBody.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/DebrisControl.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/Gravity/GravityActionControl.hpp"
 
 class clsPlayerTask;
 
@@ -63,8 +64,22 @@ public:
     s32 m_s32ContactBurnOutInterval;                    // offset 0xC8, size 0x4
     s8 m_s8ContactBurnOutRequestNum;                    // offset 0xCC, size 0x1
 
-    clsRigidBodyGimmickObj() : clsGimmickObj(), clsHaveGimmickRigidBody() {}
-    virtual ~clsRigidBodyGimmickObj() {}
+    clsRigidBodyGimmickObj()
+        : clsGimmickObj(), clsHaveGimmickRigidBody(), m_cContactControl(), m_cBreakControl(),
+          m_pcDebrisControl(0), m_pcGravityGimmickControl(0), m_pcContactPlayer(0),
+          m_pcContactObject(0), m_eControlMode(CTRL_MODE_MAIN), m_eControlFlag(CTRL_FLAG_DEFAULT),
+          m_eBreakType(BREAK_TYPE_OTHER), m_f32ContactBurnOutEffectFrame(0.0f),
+          m_f32MissionBreakFrame(0.0f), m_f32ContactBurnOutFrame(90.0f),
+          m_s32ContactBurnOutInterval(1), m_s8ContactBurnOutRequestNum(-1)
+    {
+    }
+    virtual ~clsRigidBodyGimmickObj()
+    {
+        delete m_pcDebrisControl;
+        m_pcDebrisControl = 0;
+        delete m_pcGravityGimmickControl;
+        m_pcGravityGimmickControl = 0;
+    }
     virtual enmType getObjectType() const { return TYPE_GIMMICK_RIGID; }
     virtual void contactTriggerEvent(hkContactPoint* pcContact, clsObject* pcObject);
     virtual void contactTriggerCallback(hkContactPointConfirmedEvent& cEvent);

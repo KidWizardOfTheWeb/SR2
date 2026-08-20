@@ -8,7 +8,7 @@
 // total size: 0x20
 class clsDebrisControl {
 public:
-    ~clsDebrisControl() {}
+    ~clsDebrisControl();
     u8 isBreak() const { return m_bBreak; }
     void reset()
     {

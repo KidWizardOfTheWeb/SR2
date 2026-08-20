@@ -1315,34 +1315,13 @@ segments:
       # - [0x2638E0, asmtu, unk_block_2638E0] # vram: 0x00363860
       # - [0x263940, asmtu, Develop/Projects/SR2/pgm/src/Script/Script] # vram: 0x003638C0
       - [0x263950, asmtu, Develop/Projects/SR2/pgm/src/Script/ScriptCamera] # vram: 0x003638D0
-      # - [0x264200, asmtu, unk_block_264200] # vram: 0x00364180
-      - [0x264250, asmtu, Develop/Projects/SR2/pgm/src/Object/Player/Key/ReplayKey] # vram: 0x003641D0
-      # - [0x2644C0, asmtu, unk_block_2644C0] # vram: 0x00364440
+      - [0x264200, asmtu, Develop/Projects/SR2/pgm/src/Object/Player/Key/ReplayKey] # vram: 0x00364180
+      # BaseThroughCollision owns the base phantom draw, contact, and lifecycle methods.
       - [0x264900, asmtu, Develop/Projects/SR2/pgm/src/Object/Collision/BaseThroughCollision] # vram: 0x00364880
-      # - [0x264AF0, h, Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage02/St02Bee] # vram: 0x00364A70
-      # - [0x264B80, h, Develop/Projects/SR2/pgm/src/Object/Gimmick/BaseGimmick] # vram: 0x00364B00
-      # - [0x264CE0, h, Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage02/St02Bee] # vram: 0x00364C60
-      - [0x264D90, asmtu, Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage02/St02Bee] # vram: 0x00364D10
-      # - [0x265090, asmtu, unk_block_265090] # vram: 0x00365010
-      # - [0x265560, h, Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickObj] # vram: 0x003654E0
-      # - [0x265570, asmtu, unk_block_265570] # vram: 0x003654F0
-      # - [0x265580, asmtu, Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage02/St02Bee] # vram: 0x00365500
-      # - [0x265A00, h, Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage02/St02BeeBase] # vram: 0x00365980
-      # - [0x265A70, asmtu, Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage02/St02Bee] # vram: 0x003659F0
-      # - [0x2661B0, h, Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage02/St02BeeBase] # vram: 0x00366130
-      # - [0x266340, asmtu, Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage02/St02Bee] # vram: 0x003662C0
-      # - [0x266430, h, Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage02/St02Bee] # vram: 0x003663B0
-      # - [0x266440, asmtu, Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage02/St02Bee] # vram: 0x003663C0
-      # - [0x266640, h, Develop/Projects/SR2/pgm/src/Object/Gimmick/BaseGimmick] # vram: 0x003665C0
-      # - [0x266710, asmtu, unk_block_266710] # vram: 0x00366690
-      # - [0x2667E0, h, Develop/Projects/SR2/pgm/src/Object/Gimmick/BaseGimmick] # vram: 0x00366760
-      # - [0x2669A0, h, Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage02/St02Bee] # vram: 0x00366920
-      # - [0x266AA0, h, Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage02/St02BeeBase] # vram: 0x00366A20
-      # - [0x266AF0, h, Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage02/St02Bee] # vram: 0x00366A70
-      # - [0x266B00, h, Develop/Projects/SR2/pgm/src/Object/Gimmick/BaseGimmick] # vram: 0x00366A80
-      # - [0x266D50, h, Develop/Projects/SR2/pgm/src/Object/Gimmick/GmkBurnLight] # vram: 0x00366CD0
-      # - [0x266D90, h, Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/DashPanel] # vram: 0x00366D10
-      - [0x266E20, asmtu, Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/DashPanel] # vram: 0x00366DA0
+      # St02Bee owns BeeRobo lifecycle/behavior plus selected gimmick, clipper, portal, and template helpers.
+      - [0x264AF0, asmtu, Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage02/St02Bee] # vram: 0x00364A70
+      # DashPanel owns its task/object lifecycle, contact behavior, drawing, and selected effect helpers.
+      - [0x266D90, asmtu, Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/DashPanel] # vram: 0x00366D10
       # - [0x2675E0, asmtu, unk_block_2675E0] # vram: 0x00367560
       # - [0x2675F0, h, Develop/Projects/SR2/pgm/src/Effect/Dash/Dash] # vram: 0x00367570
       # - [0x267660, asmtu, unk_block_267660] # vram: 0x003675E0

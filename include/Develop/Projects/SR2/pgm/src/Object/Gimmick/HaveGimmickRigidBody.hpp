@@ -9,7 +9,7 @@ public:
     clsGimmickRigidBody* m_pcRigidBody; // offset 0x0, size 0x4
 
     clsHaveGimmickRigidBody() : m_pcRigidBody(0) {}
-    virtual ~clsHaveGimmickRigidBody() {}
+    virtual ~clsHaveGimmickRigidBody();
     clsGimmickRigidBody* getRigidBody() { return m_pcRigidBody; }
 };
 

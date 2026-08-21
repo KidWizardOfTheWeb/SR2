@@ -39,7 +39,7 @@ class clsGravityActionControl;
 class clsGimmickObj : public clsObject {
 public:
     clsGimmickObj() {}
-    virtual ~clsGimmickObj() {}
+    virtual ~clsGimmickObj();
 
     NNS_VECTORFAST m_sPosVecFast;        // offset 0x10, size 0x10
     NNS_QUATERNION m_sRotQuat;           // offset 0x20, size 0x10

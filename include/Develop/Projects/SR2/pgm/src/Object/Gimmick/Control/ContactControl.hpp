@@ -30,8 +30,18 @@ public:
         u8 eRigid;  // offset 0x1, size 0x1
     };
 
-    clsContactControl() {}
-    ~clsContactControl() {}
+    clsContactControl() : m_pcActiveContactStatus(0), m_eMode(MODE_NONE), m_s32ContactNum(0)
+    {
+        m_sContactStatus[0].ePlayer = 2;
+        m_sContactStatus[0].eRigid = 0;
+        m_sContactStatus[1].ePlayer = 3;
+        m_sContactStatus[1].eRigid = 1;
+        m_sContactStatus[2].ePlayer = 2;
+        m_sContactStatus[2].eRigid = 1;
+        m_sContactStatus[3].ePlayer = 2;
+        m_sContactStatus[3].eRigid = 1;
+    }
+    ~clsContactControl();
 
     void reset()
     {

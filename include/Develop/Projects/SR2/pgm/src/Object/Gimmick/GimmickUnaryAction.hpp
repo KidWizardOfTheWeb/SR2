@@ -6,6 +6,7 @@
 // total size: 0x1C
 class clsGimmickUnaryAction : public hkUnaryAction {
 public:
+    clsGimmickUnaryAction(hkEntity* pcEntity) : hkUnaryAction(pcEntity, 0) {}
     virtual ~clsGimmickUnaryAction() {}
 
     virtual void applyAction(const hkStepInfo& stepInfo);

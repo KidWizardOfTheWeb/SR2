@@ -14,6 +14,9 @@ struct NNS_VECTORFAST;
 // total size: 0x150
 class clsSimpleShapePhantom : public hkSimpleShapePhantom {
 public:
+    clsSimpleShapePhantom(const hkShape* pcShape,
+                          const hkTransform& rcTransform,
+                          u32 u32FilterInfo);
     virtual ~clsSimpleShapePhantom() {}
 
     void setPositionVecFast(const NNS_VECTORFAST* psPosVecFast) {}

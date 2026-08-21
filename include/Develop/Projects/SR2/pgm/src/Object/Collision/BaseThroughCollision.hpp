@@ -12,15 +12,15 @@ class hkShape;
 // total size: 0x8
 class clsBaseThroughCollision : public clsCollision {
 public:
-    virtual ~clsBaseThroughCollision() {}
-    virtual void contactTriggerEvent(hkContactPoint* pcPoint, clsObject* pcObj);
-    virtual void contactAlwaysEvent(hkContactPoint* pcPoint, clsObject* pcObj);
-    virtual void contactRemoveEvent(hkContactPoint* pcPoint, clsObject* pcObj);
+    virtual ~clsBaseThroughCollision() { destroy(); }
+    virtual void contactTriggerEvent(hkContactPoint* pcContact, clsObject* pcObject);
+    virtual void contactAlwaysEvent(hkContactPoint* pcContact, clsObject* pcObject);
+    virtual void contactRemoveEvent(hkContactPoint* pcContact, clsObject* pcObject);
     virtual void contactTriggerEvent(clsPlayerTask* pcPlayer) {}
     virtual void contactAlwaysEvent(clsPlayerTask* pcPlayer) {}
     virtual void contactRemoveEvent(clsPlayerTask* pcPlayer) {}
 
-    void create(const NNS_VECTOR* pcPos, const NNS_QUATERNION* pcQuat, hkShape* pcShape);
+    void create(const NNS_VECTOR* psPosVec, const NNS_QUATERNION* psQuat, hkShape* pcShape);
     void destroy();
     void draw();
 

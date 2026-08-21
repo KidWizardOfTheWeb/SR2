@@ -2579,7 +2579,7 @@ segments:
       # - [0x354BC0, h, Develop/Projects/SR2/pgm/src/Object/Gimmick/BaseGimmick] # vram: 0x00454B40
       # - [0x354C40, h, Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage15/St15MeteoriteS] # vram: 0x00454BC0
       # - [0x354CD0, h, Develop/Projects/SR2/pgm/src/Object/Gimmick/BaseGimmick] # vram: 0x00454C50
-      - [0x354E30, asmtu, Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage15/St15MeteoriteS] # vram: 0x00454DB0
+      - [0x354BC0, asmtu, Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage15/St15MeteoriteS] # vram: 0x00454B40
       # - [0x354E30, h, Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage15/St15MeteoriteS] # vram: 0x00454DB0
       # - [0x354F30, asmtu, Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage15/St15MeteoriteS] # vram: 0x00454EB0
       # - [0x355440, asmtu, unk_block_355440] # vram: 0x004553C0

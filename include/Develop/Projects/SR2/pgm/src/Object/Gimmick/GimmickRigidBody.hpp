@@ -3,7 +3,7 @@
 
 #include "types.h"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickUnaryAction.hpp"
-#include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage15/St15CoreBase.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/RigidBody.hpp"
 
 class clsObject;
 

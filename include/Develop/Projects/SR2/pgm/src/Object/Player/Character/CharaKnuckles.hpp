@@ -22,7 +22,7 @@ public:
     virtual void actionAttack01();
     virtual void loadAdditionalData(stcBinInfo& rsBinInfo);
 
-    static stcParam sKnucklesLineParam;
+    static clsBackLineEffectTask::stcParam sKnucklesLineParam;
     static f32 tof32CollisionRadius;
 
     clsBackLineEffectTask* m_pcLineTask; // offset 0x60, size 0x4

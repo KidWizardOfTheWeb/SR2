@@ -43,5 +43,5 @@ void clsCharaWave::loadAdditionalData(stcBinInfo& rsBinInfo)
 {
 }
 
-stcParam clsCharaWave::sWaveLineParam = {};
+clsBackLineEffectTask::stcParam clsCharaWave::sWaveLineParam = {};
 f32 clsCharaWave::tof32CollisionRadius = 0.6f;

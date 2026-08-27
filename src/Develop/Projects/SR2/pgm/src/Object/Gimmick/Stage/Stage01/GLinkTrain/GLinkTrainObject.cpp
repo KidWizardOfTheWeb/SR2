@@ -2,7 +2,7 @@
 #include "Develop/Projects/SR2/pgm/src/Effect/FollowLine/FollowLine.hpp"
 
 namespace {
-static stcParam asTrainLineParam[2] = {
+static clsBackLineEffectTask::stcParam asTrainLineParam[2] = {
     {2,
      0,
      0xFF,

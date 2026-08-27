@@ -3,7 +3,7 @@
 
 namespace {
 static f32 tof32FollowMargin[2] = {-15.0f, -8.0f};
-static stcParam asRoboBallLineParam[2] = {
+static clsBackLineEffectTask::stcParam asRoboBallLineParam[2] = {
     {2,
      0,
      0xFF,
@@ -27,7 +27,7 @@ static stcParam asRoboBallLineParam[2] = {
      {-0.06f, 0.15f, -0.02f, 0.0f},
      {-0.26f, 0.02f, 0.1f, 0.0f}},
 };
-static stcParam asRoboStandLineParam[2] = {
+static clsBackLineEffectTask::stcParam asRoboStandLineParam[2] = {
     {2,
      0,
      0xFF,

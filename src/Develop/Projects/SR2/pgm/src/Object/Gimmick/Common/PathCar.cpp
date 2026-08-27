@@ -1,7 +1,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/PathCar.hpp"
 #include "Develop/Projects/SR2/pgm/src/Effect/FollowLine/FollowLine.hpp"
 
-static stcParam asPathCurLineParam[2];
+static clsBackLineEffectTask::stcParam asPathCurLineParam[2];
 static stcGimickSubParam asPathCurLineSubParam[2];
 static u8 chk__asPathCurLineParam_SizeCheck_[1];
 static u8 chk__asPathCurLineSubParam_SizeCheck_[1];

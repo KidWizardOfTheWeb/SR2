@@ -2,7 +2,7 @@
 #include "Develop/Projects/SR2/pgm/src/Effect/FollowLine/FollowLine.hpp"
 
 namespace {
-static stcParam asTaxiLineParam[2];
+static clsBackLineEffectTask::stcParam asTaxiLineParam[2];
 static stcGimickSubParam asTaxiLineSubParam[2];
 static u8 chk__asTaxiLineParam_SizeCheck_[1];
 static u8 chk__asTaxiLineSubParam_SizeCheck_[1];

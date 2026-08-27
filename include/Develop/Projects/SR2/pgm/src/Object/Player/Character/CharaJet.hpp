@@ -17,7 +17,7 @@ public:
     f32 m_f32behaviorTailCnt;            // offset 0x60, size 0x4
     clsBackLineEffectTask* m_pcLineTask; // offset 0x64, size 0x4
 
-    static stcParam sJetLineParam;
+    static clsBackLineEffectTask::stcParam sJetLineParam;
     static f32 tof32CollisionRadius;
 
     virtual void behavior();

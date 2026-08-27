@@ -3,17 +3,17 @@
 #include "Develop/Projects/SR2/pgm/src/Effect/FollowLine/FollowLine.hpp"
 
 namespace {
-static stcParam oasGCtrlLineParam = {2,
-                                     1,
-                                     0xFF,
-                                     0xFF,
-                                     37,
-                                     16,
-                                     0xFFFFFFFF,
-                                     0.0f,
-                                     1.0f,
-                                     {0.15f, 0.15f, 0.0f, 0.0f},
-                                     {0.0f, 0.05f, 0.0f, 0.0f}};
+static clsBackLineEffectTask::stcParam oasGCtrlLineParam = {2,
+                                                            1,
+                                                            0xFF,
+                                                            0xFF,
+                                                            37,
+                                                            16,
+                                                            0xFFFFFFFF,
+                                                            0.0f,
+                                                            1.0f,
+                                                            {0.15f, 0.15f, 0.0f, 0.0f},
+                                                            {0.0f, 0.05f, 0.0f, 0.0f}};
 } // namespace
 
 stcCommonSetting clsGravityControl::t_sCommonSetting;

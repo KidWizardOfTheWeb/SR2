@@ -3,7 +3,7 @@
 
 namespace {
 static NNS_VECTOR tosLightOffsetVec = {0.0f, 0.0f, 12.0f};
-static stcParam asTrainLineParam[2] = {
+static clsBackLineEffectTask::stcParam asTrainLineParam[2] = {
     {1,
      0,
      0xFF,

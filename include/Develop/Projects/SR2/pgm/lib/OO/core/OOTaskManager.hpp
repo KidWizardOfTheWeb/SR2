@@ -19,20 +19,20 @@ public:
 
     static clsOOTaskManager* t_pcInstance;
 
-    clsOOTaskManager(clsOOHeapFragment& rParam1);
+    clsOOTaskManager(clsOOHeapFragment& rcWorkHeap);
     virtual ~clsOOTaskManager();
-    virtual void beginTaskExecuteGroup(u32 u32Param1, u32 u32Param2) {}
-    virtual u8 endTaskExecuteGroup(u32 u32Param1, u32 u32Param2) { return 0; }
+    virtual void beginTaskExecuteGroup(u32 u32GroupId, u32 u32LoopNum) {}
+    virtual u8 endTaskExecuteGroup(u32 u32GroupId, u32 u32LoopNum) { return 0; }
 
     u8 execute();
     void deadTaskWithChildTask(clsOOTask* pcTask) {}
     void insertList(clsOOTask* pcTask) {}
-    void deadTaskWithChildTaskLoop(clsOOTask* pParam1);
+    void deadTaskWithChildTaskLoop(clsOOTask* pcTask);
     void deleteAllTask();
-    void deleteTask(clsOOTask* pParam1);
-    void registTask(clsOOTask* pParam1, clsOOTask* pParam2);
-    void registTask(clsOOTask* pParam1);
-    void registExecFunc(u32 u32Param1, ExecFunc pFunc);
+    void deleteTask(clsOOTask* pcTask);
+    void registTask(clsOOTask* pcTask, clsOOTask* pcParent);
+    void registTask(clsOOTask* pcTask);
+    void registExecFunc(u32 u32Id, ExecFunc pfExecFunc);
 
     clsOOHeapFragment& m_rcMainWorkHeap;  // offset 0x4, size 0x4
     clsOOHeapFragment m_cHeapStlList_4;   // offset 0x8, size 0x34

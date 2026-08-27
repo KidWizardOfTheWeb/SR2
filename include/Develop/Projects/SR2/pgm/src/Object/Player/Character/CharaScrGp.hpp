@@ -21,7 +21,7 @@ public:
 
     void loadAdditionalData(stcBinInfo& rParam1);
 
-    static stcParam asScrGpLineParam[2];
+    static clsBackLineEffectTask::stcParam asScrGpLineParam[2];
 
     // Members (offset 0x80+)
     clsBackLineEffectTask* m_apcLineTask[2]; // offset 0x80, size 0x8

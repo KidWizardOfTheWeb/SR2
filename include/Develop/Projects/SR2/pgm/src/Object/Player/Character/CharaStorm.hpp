@@ -22,7 +22,7 @@ public:
     void actionAttack01();
     void loadAdditionalData(stcBinInfo& rsBinInfo);
 
-    static stcParam sStormLineParam;
+    static clsBackLineEffectTask::stcParam sStormLineParam;
     static f32 tof32CollisionRadius;
 
     clsBackLineEffectTask* m_pcLineTask; // offset 0x60, size 0x4

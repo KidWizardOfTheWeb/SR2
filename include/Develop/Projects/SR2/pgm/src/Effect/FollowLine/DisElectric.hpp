@@ -9,6 +9,14 @@
 // total size: 0x10C
 class clsDisElectric_Task : public clsTask {
 public:
+    // total size: 0x10
+    struct stcParam {
+        f32 f32LifeFrame; // offset 0x0, size 0x4
+        f32 f32Length;    // offset 0x4, size 0x4
+        f32 f32StTu;      // offset 0x8, size 0x4
+        s32 s32RotA32;    // offset 0xC, size 0x4
+    };
+
     clsDisElectric_Task(u32 u32View, u32 u32PlayerNo);
     virtual ~clsDisElectric_Task() {}
 

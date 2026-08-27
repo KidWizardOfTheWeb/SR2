@@ -1,14 +1,14 @@
 #include "Develop/Projects/SR2/pgm/src/Effect/IonMist/IonMist.hpp"
 
 namespace nspIonMist {
-static stcParam StageParam[5];
+static clsIonMist_Task::stcParam StageParam[5];
 } // namespace nspIonMist
 
 _NNS_TEXLIST* clsIonMist_Task::m_psTex;
 u8 clsIonMist_Task::m_tu8DrawFlg;
 u8 clsIonMist_Task::m_tbSpFlg;
-stcParam clsIonMist_Task::m_tsDebugFullParam;
-stcDebugParam clsIonMist_Task::m_tsDebugParam;
+clsIonMist_Task::stcParam clsIonMist_Task::m_tsDebugFullParam;
+clsIonMist_Task::stcDebugParam clsIonMist_Task::m_tsDebugParam;
 
 clsIonMist_Task::clsIonMist_Task(u8 u8StageNo) : clsTask(0, 0)
 {

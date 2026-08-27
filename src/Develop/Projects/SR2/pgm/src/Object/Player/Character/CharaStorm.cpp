@@ -1,6 +1,6 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Player/Character/CharaStorm.hpp"
 
-stcParam clsCharaStorm::sStormLineParam = {};
+clsBackLineEffectTask::stcParam clsCharaStorm::sStormLineParam = {};
 
 f32 clsCharaStorm::tof32CollisionRadius = 0.6f;
 

@@ -1,6 +1,5 @@
 #include "Develop/Projects/SR2/pgm/lib/OO/CRI/OOCri.hpp"
-
-extern "C" s32 scePrintf(const c8* pc8Fmt, const c8* pc8Msg);
+#include "usr/local/sce/ee/lib/libkernl/kprintf2.h"
 
 namespace {
 

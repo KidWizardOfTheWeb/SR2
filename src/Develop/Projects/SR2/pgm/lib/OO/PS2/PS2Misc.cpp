@@ -1,7 +1,6 @@
 #include "Develop/Projects/SR2/pgm/lib/OO/PS2/PS2Misc.hpp"
-
-extern "C" s32 scePrintf(const c8* pc8Fmt);
-extern "C" s32 vsprintf(c8* pc8Dst, const c8* pc8Fmt, c8* sVlist);
+#include "usr/local/sce/ee/gcc/ee/lib/libc/vsprintfr.h"
+#include "usr/local/sce/ee/lib/libkernl/kprintf2.h"
 
 static c8 tac8UnionVargBuff[256];
 

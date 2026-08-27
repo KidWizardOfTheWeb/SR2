@@ -2,8 +2,7 @@
 #include "Develop/Projects/SR2/pgm/lib/OO/PS2/PS2System.hpp"
 #include "Develop/Projects/SR2/pgm/lib/OO/PS2_nn/PS2NnCamera.hpp"
 #include "Develop/Projects/SR2/pgm/lib/OO/PS2_nn/PS2NnCameraMgr.hpp"
-
-extern "C" s32 scePrintf(const c8* pc8Fmt, ...);
+#include "usr/local/sce/ee/lib/libkernl/kprintf2.h"
 
 #define TASK_MANAGER_ASSERT()                                                                      \
     do {                                                                                           \

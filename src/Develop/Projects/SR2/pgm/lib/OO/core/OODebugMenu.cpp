@@ -5,8 +5,7 @@
 #include "Develop/Projects/SR2/pgm/lib/OO/PS2/PS2Timer.hpp"
 #include "Develop/Projects/SR2/pgm/lib/OO/PS2_nn/PS2NnDraw2d.hpp"
 #include "usr/local/sega/nn/src/Print/nnprint.h"
-
-extern "C" s32 strcmp(const c8*, const c8*);
+#include "usr/local/sce/ee/gcc/ee/lib/libc/strcmp.h"
 
 template <typename T, typename U, typename V>
 inline void OOUpLimit(T& value, const U& limit, const V& replacement)

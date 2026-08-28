@@ -3,6 +3,14 @@
 
 #include "types.h"
 
+enum enmRet {
+    VISIBLE_CLIP = 0,
+    VISIBLE = 1,
+    OUT_VISIBLE = 2,
+    OUT_PORTAL = 3,
+    OUT_FAR = 4,
+};
+
 // Havok physics forward declarations (hk prefix excluded from scaffold)
 class hkContactPoint;
 class hkContactPointConfirmedEvent;

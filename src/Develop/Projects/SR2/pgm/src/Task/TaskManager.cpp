@@ -21,9 +21,9 @@
 clsTaskManager::clsTaskManager(clsOOHeapFragment& rcWorkHeap)
     : clsOOTaskManager(rcWorkHeap), m_u32CurViewNo(0)
 {
-    registExecFunc(4, (ExecFunc)&clsTask::execute);
-    registExecFunc(1, (ExecFunc)&clsTask::draw);
-    registExecFunc(2, (ExecFunc)&clsTask::reset);
+    registExecFunc(4, &clsOOTask::execute);
+    registExecFunc(1, &clsOOTask::draw);
+    registExecFunc(2, static_cast<ExecFunc>(&clsTask::reset));
 }
 
 clsTaskManager::~clsTaskManager()
@@ -34,15 +34,14 @@ void clsTaskManager::beginTaskExecuteGroup(u32 u32GroupId, u32 u32LoopNum)
 {
     switch (u32GroupId) {
     case 4:
-        m_u32PauseFlags = (m_u32PauseFlags & ~4) |
-                          ((clsSingleton<clsPfSystem>::m_tpcSingleton->m_bPause ? 4 : 0) & 4);
+        m_u32PauseFlags = (m_u32PauseFlags & ~4) | ((clsPfSystem::GS()->m_bPause ? 4 : 0) & 4);
         break;
     case 1:
         m_u32CurViewNo = u32LoopNum;
-        clsSingleton<clsPfSystem>::m_tpcSingleton->setViewPort(u32LoopNum);
+        clsPfSystem::GS()->setViewPort(u32LoopNum);
         break;
     case 2:
-        clsSingleton<clsPfSystem>::m_tpcSingleton->setViewPort(4);
+        clsPfSystem::GS()->setViewPort(4);
         break;
     default:
 #line 112
@@ -57,12 +56,12 @@ u8 clsTaskManager::endTaskExecuteGroup(u32 u32GroupId, u32 u32LoopNum)
 
     switch (u32GroupId) {
     case 4:
-        clsSingleton<clsPfCameraMgr>::m_tpcSingleton->updateAllCamera();
+        clsPfCameraMgr::GS()->updateAllCamera();
         bRet = 0;
         break;
     case 1:
-        clsSingleton<clsPfCameraMgr>::m_tpcSingleton->getCamera(u32LoopNum)->m_cCamDebug.draw();
-        if (u32LoopNum + 1 >= clsSingleton<clsPfSystem>::m_tpcSingleton->getViewportNum()) {
+        clsPfCameraMgr::GS()->getCamera(u32LoopNum)->m_cCamDebug.draw();
+        if (u32LoopNum + 1 >= clsPfSystem::GS()->getViewportNum()) {
             m_u32CurViewNo = 0;
         } else {
             bRet = 1;

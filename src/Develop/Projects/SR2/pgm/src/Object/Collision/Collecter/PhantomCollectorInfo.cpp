@@ -3,7 +3,7 @@
 
 u8 clsPhantomCollectorInfo::isAddCollector(const hkCollidable* pcCollidable)
 {
-    const hkWorldObject* p =
-        pcCollidable->m_broadPhaseHandle.m_type == 2 ? pcCollidable->getOwner() : 0;
-    return p != 0;
+    const hkWorldObject* pcWorldObject =
+        pcCollidable->m_broadPhaseHandle.m_type == 2 ? pcCollidable->getOwner() : NULL;
+    return pcWorldObject != NULL;
 }

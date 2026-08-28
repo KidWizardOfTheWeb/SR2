@@ -27,7 +27,7 @@ class clsOOMainMenu {
 public:
     ~clsOOMainMenu() {}
     const c8* getName() const { return m_opc8Name; }
-    void addSubMenu(const c8* name, const s32 (*func)(s32, s32, s32, s32));
+    void addSubMenu(const c8* opc8NameI, const s32 (*oFuncI)(s32, s32, s32, s32));
     bool operator==(const clsOOMainMenu& rhs) const;
 
     const c8* m_opc8Name;                                                // offset 0x0, size 0x4
@@ -57,7 +57,7 @@ public:
     {
         s32 s32Cursor = s32CursorI;
         if (m_iUrawaza != iSubI) {
-            if (m_bUrawaza != 0) {
+            if (m_bUrawaza) {
                 m_iUrawaza.it_->m_oFunc(s32xI, s32yI, 0x7f, 0);
             }
             s32Cursor = -0x80;

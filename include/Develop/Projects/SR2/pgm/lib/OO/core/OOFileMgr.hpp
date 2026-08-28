@@ -8,10 +8,6 @@
 
 // enmRet: file operation return code.
 // MWCC mangles this as nspOOFileMgr::enmRet — declared inside the namespace.
-// Note: do NOT guard with ENMRET_DECLARED — that macro is already used by GimmickObj.hpp,
-// Gear.hpp and CharaData.hpp for a completely different global enum enmRet {VISIBLE_CLIP,...}.
-// Sharing that guard would silently skip this namespace definition when those headers are
-// included first. The file-level include guard (LIB_OO_CORE_OOFILEMGR_HPP) is sufficient.
 namespace nspOOFileMgr {
 enum enmRet {
     RET___UN_USE = 0,

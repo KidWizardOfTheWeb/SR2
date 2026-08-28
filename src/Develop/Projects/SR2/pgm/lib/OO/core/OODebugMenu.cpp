@@ -31,10 +31,10 @@ inline bool clsOOMainMenu::operator==(const clsOOMainMenu& rhs) const
     return !strcmp(m_opc8Name, rhs.m_opc8Name);
 }
 
-inline void clsOOMainMenu::addSubMenu(const c8* name, const s32 (*func)(s32, s32, s32, s32))
+inline void clsOOMainMenu::addSubMenu(const c8* opc8NameI, const s32 (*oFuncI)(s32, s32, s32, s32))
 {
-    tcOOSubMenu.m_opc8Name = name;
-    tcOOSubMenu.m_oFunc = func;
+    tcOOSubMenu.m_opc8Name = opc8NameI;
+    tcOOSubMenu.m_oFunc = oFuncI;
     m_cSubMenu.insert(m_cSubMenu.end_ptr(), 1, tcOOSubMenu);
     ++m_s8SubMenuNum;
 }
@@ -50,21 +50,20 @@ void clsOODebugMenu::addMainMenu(const c8* opc8NameI)
 
 void clsOODebugMenu::removeAll()
 {
-    clsOODebugMenu* pcThis = this;
     clsOOMainMenuVector::iterator iMain;
 
-    for (iMain = pcThis->m_cMainMenu.begin(); iMain != pcThis->m_cMainMenu.end(); ++iMain) {
+    for (iMain = m_cMainMenu.begin(); iMain != m_cMainMenu.end(); ++iMain) {
         iMain->m_cSubMenu.clear();
     }
 
-    pcThis->m_cMainMenu.clear();
-    pcThis->m_s8MainMenuNum = 0;
-    pcThis->m_s8SystemMenuNo = 0;
-    pcThis->m_s8SystemMenuMoveX = -0x14;
-    pcThis->m_s8MainMenuMoveX = -0x14;
-    pcThis->m_s8MainMenuCursorNo = -1;
-    pcThis->m_s8SubMenuCursorNo = -1;
-    pcThis->m_bUrawaza = 0;
+    m_cMainMenu.clear();
+    m_s8MainMenuNum = 0;
+    m_s8SystemMenuNo = 0;
+    m_s8SystemMenuMoveX = -20;
+    m_s8MainMenuMoveX = -20;
+    m_s8MainMenuCursorNo = -1;
+    m_s8SubMenuCursorNo = -1;
+    m_bUrawaza = 0;
 }
 
 void clsOODebugMenu::addSubMenu(const c8* opc8MainMenuNameI,
@@ -83,7 +82,7 @@ void clsOODebugMenu::addSubMenu(const c8* opc8MainMenuNameI,
 
 clsOODebugMenu::clsOODebugMenu()
     : m_s8DrawDefX(0), m_s8DrawDefY(0), m_u32ChangeTrig(0), m_u32ChangeBeta(0),
-      m_u32ChangeOneTimeTrig(0), m_u32SpeedUpBeta(0x100), m_s8SystemMenuNo(0),
+      m_u32ChangeOneTimeTrig(0), m_u32SpeedUpBeta(clsOOPeripheral::BUTTON_R3), m_s8SystemMenuNo(0),
       m_s8MainMenuCursorNo(-1), m_s8MainMenuNum(0)
 {
     m_cMainMenu.reserve(10);
@@ -111,11 +110,11 @@ void clsOODebugMenu::drawSystemMenu()
                     s32y++,
                     "CNT: %d:%dHz",
                     pcSystem->getGameCnt(),
-                    (s32)pcSystem->getFrameRate());
+                    static_cast<s32>(pcSystem->getFrameRate()));
 
             nnSetPrintColor(0x00D0D0FF);
             s32 s32RestSize = clsPfMainHeap::GS()->m_s32AllRestSize;
-            nnPrint(s32x, s32y++, "HEP: %2.3f MB", (f32)s32RestSize / 1048576.0f);
+            nnPrint(s32x, s32y++, "HEP: %2.3f MB", s32RestSize / 1048576.0f);
         }
     } else {
         nnSetPrintColor(0xFFA0A0FF);
@@ -126,12 +125,12 @@ void clsOODebugMenu::drawSystemMenu()
     }
 
     u32 u32Cpu = pcTimer->m_s32CpuMicroSec;
-    clsOOTimer& rcTimer = static_cast<clsOOTimer&>(*pcTimer);
+    clsOOTimer& rcTimer = *pcTimer;
     u32 u32Gpu = pcTimer->m_s32GpuMicroSec =
         rcTimer.TickDiff2MicroSec(pcTimer->m_s32EndGpuDiffTick);
-    f32 f32FrameMSec = 100.0f / (f32)clsPfSystem::GS()->m_s32FrameRateMaxMicroSec;
+    f32 f32FrameMSec = 100.0f / clsPfSystem::GS()->m_s32FrameRateMaxMicroSec;
     u32 u32BgCol = 0x87;
-    u32 u32CpuPer = (u32)((f32)u32Cpu * f32FrameMSec);
+    u32 u32CpuPer = u32Cpu * f32FrameMSec;
 
     nnSetPrintColor(0xFFFFFFFF);
     if (u32CpuPer >= 100) {
@@ -145,7 +144,7 @@ void clsOODebugMenu::drawSystemMenu()
 
     nnPrint(s32x, s32y++, "CPU: %d:%d%%", u32Cpu, u32CpuPer);
 
-    u32 u32GpuPer = (u32)((f32)u32Gpu * f32FrameMSec);
+    u32 u32GpuPer = u32Gpu * f32FrameMSec;
     if (u32GpuPer >= 100) {
         nnSetPrintColor(0xFFA0A0FF);
         if (u32BgCol == 0x370000FF) {
@@ -163,8 +162,7 @@ void clsOODebugMenu::drawSystemMenu()
 
     nnPrint(s32x, s32y++, "GPU: %d:%d%%", u32Gpu, u32GpuPer);
 
-    static_cast<clsOODraw2d&>(*clsPfDraw2d::GS())
-        .renderDp_Debug((f32)s32x, (f32)m_s8DrawDefY, 16.0f, (f32)(s32y - m_s8DrawDefY), u32BgCol);
+    clsPfDraw2d::GS()->renderDp_Debug(s32x, m_s8DrawDefY, 16.0f, s32y - m_s8DrawDefY, u32BgCol);
 }
 
 u8 clsOODebugMenu::isDrawSubMenuName(const c8* opc8NameI)
@@ -233,21 +231,22 @@ inline void clsOODebugMenu::execMainSubMenu()
     clsOOMainMenuVector::iterator iMain = m_cMainMenu.begin();
     iMain += m_s8MainMenuCursorNo;
     if (m_s8SubMenuCursorNo == -1) {
-        if (pcPeripheral->getActiveRep(0x20)) {
+        if (pcPeripheral->getActiveRep(clsOOPeripheral::BUTTON_CROSS)) {
             s32 s32Max = m_s8MainMenuNum - 1;
             ++m_s8MainMenuCursorNo;
             OOUpLimit(m_s8MainMenuCursorNo, s32Max, 0);
             m_s8SubMenuMoveX = -(m_s8DrawDefX + 20);
             m_s8SubMenuCursorNo = -1;
         }
-        if (pcPeripheral->getActiveRep(0x10)) {
+        if (pcPeripheral->getActiveRep(clsOOPeripheral::BUTTON_TRIANGLE)) {
             s32 s32Max = m_s8MainMenuNum - 1;
             --m_s8MainMenuCursorNo;
             OODownLimit(m_s8MainMenuCursorNo, 0, s32Max);
             m_s8SubMenuMoveX = -(m_s8DrawDefX + 20);
             m_s8SubMenuCursorNo = -1;
         }
-        if (m_s8MainMenuCursorNo != -1 && pcPeripheral->getActiveRep(0x80) &&
+        if (m_s8MainMenuCursorNo != -1 &&
+            pcPeripheral->getActiveRep(clsOOPeripheral::BUTTON_CIRCLE) &&
             iMain->m_s8SubMenuNum != 0)
         {
             m_s8SubMenuCursorNo = 0;
@@ -255,24 +254,24 @@ inline void clsOODebugMenu::execMainSubMenu()
             m_s8DetailMoveY = 5;
         }
     } else {
-        if (pcPeripheral->getActiveRep(0x20)) {
+        if (pcPeripheral->getActiveRep(clsOOPeripheral::BUTTON_CROSS)) {
             s32 s32Max = iMain->m_s8SubMenuNum - 1;
             ++m_s8SubMenuCursorNo;
             OOUpLimit(m_s8SubMenuCursorNo, s32Max, 0);
             m_s8DetailMoveX = 80;
         }
-        if (pcPeripheral->getActiveRep(0x10)) {
+        if (pcPeripheral->getActiveRep(clsOOPeripheral::BUTTON_TRIANGLE)) {
             s32 s32Max = iMain->m_s8SubMenuNum - 1;
             --m_s8SubMenuCursorNo;
             OODownLimit(m_s8SubMenuCursorNo, 0, s32Max);
             m_s8DetailMoveX = 80;
         }
-        if (pcPeripheral->getActiveRep(0x40)) {
+        if (pcPeripheral->getActiveRep(clsOOPeripheral::BUTTON_SQUARE)) {
             if (m_bUrawaza) {
                 m_iUrawaza->m_oFunc(-100, -100, 0x7F, 0);
             }
             m_s8SubMenuCursorNo = -1;
-        } else if (pcPeripheral->getActiveTrig(0x80)) {
+        } else if (pcPeripheral->getActiveTrig(clsOOPeripheral::BUTTON_CIRCLE)) {
             m_s8SystemMenuNo = 4;
             m_s8DetailCursorNo = 0;
             m_bDisableExecDetail = 0;
@@ -287,7 +286,7 @@ inline void clsOODebugMenu::drawMainSubMenu()
     OOUpLimit(m_s8MainMenuMoveX, 0);
 
     nnSetPrintColor(0xFF7828FF);
-    if (static_cast<clsOOSystem&>(*clsPfSystem::GS()).getTonTon_V()) {
+    if (clsPfSystem::GS()->getTonTon_V()) {
         s32 s32CursorX = s32x;
         s32 s32CursorY = m_s8DrawDefY + 6;
         if (m_s8SubMenuCursorNo == -1) {
@@ -351,7 +350,7 @@ inline void clsOODebugMenu::drawDetailOnly()
     iSub += m_s8SubMenuCursorNo;
 
     nnSetPrintColor(0xFF7828FF);
-    if (static_cast<clsOOSystem&>(*clsPfSystem::GS()).getTonTon_V()) {
+    if (clsPfSystem::GS()->getTonTon_V()) {
         nnPrint(m_s8DrawDefX, m_s8DrawDefY + 3 + m_s8DetailCursorNo, ">");
     }
 
@@ -363,7 +362,7 @@ inline void clsOODebugMenu::drawDetailOnly()
         OOUpLimit(m_s8DetailMoveX, 0);
     }
 
-    m_s8DetailMoveY -= ((u8)((m_s8DetailMoveY < 5) ^ 1)) << 1;
+    m_s8DetailMoveY -= (m_s8DetailMoveY >= 5) << 1;
     OODownLimit(m_s8DetailMoveY, 5);
 
     nnPrint(m_s8DrawDefX + 1, m_s8DrawDefY + 2, "DETAIL MENU");
@@ -396,11 +395,13 @@ inline void clsOODebugMenu::drawDetailOnly()
                                 m_s8DrawDefX + m_s8DetailMoveX,
                                 m_s8DrawDefY + m_s8DetailMoveY + 1,
                                 m_s8DetailCursorNo - 1,
-                                (s32)f32Speed);
+                                f32Speed);
 
     pcPeripheral = clsPfPeripheral::GS();
     if (!m_bDisableExecDetail && m_s8DetailMoveX == 0) {
-        if (m_s8DetailCursorNo == -1 && pcPeripheral->getActiveTrig(0xC0)) {
+        if (m_s8DetailCursorNo == -1 && pcPeripheral->getActiveTrig(clsOOPeripheral::BUTTON_SQUARE |
+                                                                    clsOOPeripheral::BUTTON_CIRCLE))
+        {
             m_s8SystemMenuNo = 0;
             m_s8MainMenuCursorNo = -1;
             if (m_bUrawaza) {
@@ -411,7 +412,7 @@ inline void clsOODebugMenu::drawDetailOnly()
 
         if (m_s8DetailCursorNo == 0) {
             clsOOMainMenuVector::iterator iMoveMain = m_cMainMenu.begin();
-            if (pcPeripheral->getActiveRep(0x80)) {
+            if (pcPeripheral->getActiveRep(clsOOPeripheral::BUTTON_CIRCLE)) {
                 m_s8DetailMoveX = (m_s8DrawDefX + 16) * 8;
                 iMoveMain += m_s8MainMenuCursorNo;
                 clsOOSubMenuVector::iterator iMoveSub = iMoveMain->m_cSubMenu.begin();
@@ -428,10 +429,10 @@ inline void clsOODebugMenu::drawDetailOnly()
                         }
                         m_s8SubMenuCursorNo = 0;
                         iMoveSub = iMoveMain->m_cSubMenu.begin();
-                        u32NoSubMenu = ((u32)0 < (u32)iMoveMain->m_s8SubMenuNum) ^ 1;
-                    } while (u32NoSubMenu);
+                        u32NoSubMenu = (iMoveMain->m_s8SubMenuNum != 0) ^ 1;
+                    } while (u32NoSubMenu != 0);
                 }
-            } else if (pcPeripheral->getActiveRep(0x40)) {
+            } else if (pcPeripheral->getActiveRep(clsOOPeripheral::BUTTON_SQUARE)) {
                 m_s8DetailMoveX = (m_s8DrawDefX + 16) * -8;
                 iMoveMain += m_s8MainMenuCursorNo;
                 clsOOSubMenuVector::iterator iMoveSub = iMoveMain->m_cSubMenu.begin();
@@ -448,17 +449,17 @@ inline void clsOODebugMenu::drawDetailOnly()
                         }
                         m_s8SubMenuCursorNo = iMoveMain->m_s8SubMenuNum - 1;
                         iMoveSub = iMoveMain->m_cSubMenu.end() - 1;
-                        u32NoSubMenu = ((u32)0 < (u32)iMoveMain->m_s8SubMenuNum) ^ 1;
-                    } while (u32NoSubMenu);
+                        u32NoSubMenu = (iMoveMain->m_s8SubMenuNum != 0) ^ 1;
+                    } while (u32NoSubMenu != 0);
                 }
             }
         }
 
-        if (pcPeripheral->getActiveRep(0x20)) {
+        if (pcPeripheral->getActiveRep(clsOOPeripheral::BUTTON_CROSS)) {
             ++m_s8DetailCursorNo;
             OOUpLimit(m_s8DetailCursorNo, m_s8DetailNum, 0);
         }
-        if (pcPeripheral->getActiveRep(0x10)) {
+        if (pcPeripheral->getActiveRep(clsOOPeripheral::BUTTON_TRIANGLE)) {
             --m_s8DetailCursorNo;
             OODownLimit(m_s8DetailCursorNo, 0, m_s8DetailNum);
         }
@@ -503,7 +504,7 @@ void clsOODebugMenu::exec()
     if (m_s8SystemMenuNo < 3) {
         pcPeripheral = clsPfPeripheral::GS();
         if (m_s8MainMenuCursorNo == -1) {
-            if (pcPeripheral->m_sActivePeripheral.m_u32Trig & 0x80) {
+            if (pcPeripheral->m_sActivePeripheral.m_u32Trig & clsOOPeripheral::BUTTON_CIRCLE) {
                 ++m_s8SystemMenuNo;
                 OOUpLimitBranch(m_s8SystemMenuNo, 2, 1);
                 if (m_s8SystemMenuNo == 1) {
@@ -514,7 +515,7 @@ void clsOODebugMenu::exec()
                 m_s8SubMenuCursorNo = -1;
                 m_bUrawaza = 0;
             }
-            if (pcPeripheral->m_sActivePeripheral.m_u32Trig & 0x40) {
+            if (pcPeripheral->m_sActivePeripheral.m_u32Trig & clsOOPeripheral::BUTTON_SQUARE) {
                 --m_s8SystemMenuNo;
                 OODownLimitBranch(m_s8SystemMenuNo, 1, 2);
                 if (m_s8SystemMenuNo == 2) {

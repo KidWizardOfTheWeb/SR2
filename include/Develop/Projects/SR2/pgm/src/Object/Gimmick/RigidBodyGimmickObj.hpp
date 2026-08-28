@@ -2,6 +2,7 @@
 #define RIGIDBODYGIMMICKOBJ_HPP
 
 #include "types.h"
+#include "Develop/Projects/SR2/pgm/src/Object/Collision/CollisionFilter.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/BreakControl.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/ContactControl.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickObj.hpp"
@@ -22,7 +23,6 @@ public:
         CTRL_MODE_DEAD = 4,
     };
 
-    // Note: enmControlFlag "no Q2 mangling" – likely global, nested here to avoid collision
     enum enmControlFlag {
         CTRL_FLAG_UPDATE_BREAK = 1,
         CTRL_FLAG_UPDATE_CONTACT = 2,
@@ -38,7 +38,11 @@ public:
         CTRL_FLAG_GCANCEL_BREAK = 4096,
         MASK_CTRL_FLAG_ALL = -1,
         MASK_CTRL_FLAG_CLEAR = 0,
-        CTRL_FLAG_DEFAULT = 115,
+        // Equivalent recovered value: 115 (0x73).
+        CTRL_FLAG_DEFAULT = CTRL_FLAG_UPDATE_BREAK | CTRL_FLAG_UPDATE_CONTACT |
+                            CTRL_FLAG_DRAW_CRASH_EFFECT | CTRL_FLAG_DRAW_CONTACT_EFFECT |
+                            CTRL_FLAG_DRAW_BREAK_EFFECT,
+        CTRL_FLAG_GROUND = 113,
     };
 
     enum enmBreakType {
@@ -66,19 +70,20 @@ public:
 
     clsRigidBodyGimmickObj()
         : clsGimmickObj(), clsHaveGimmickRigidBody(), m_cContactControl(), m_cBreakControl(),
-          m_pcDebrisControl(0), m_pcGravityGimmickControl(0), m_pcContactPlayer(0),
-          m_pcContactObject(0), m_eControlMode(CTRL_MODE_MAIN), m_eControlFlag(CTRL_FLAG_DEFAULT),
-          m_eBreakType(BREAK_TYPE_OTHER), m_f32ContactBurnOutEffectFrame(0.0f),
-          m_f32MissionBreakFrame(0.0f), m_f32ContactBurnOutFrame(90.0f),
-          m_s32ContactBurnOutInterval(1), m_s8ContactBurnOutRequestNum(-1)
+          m_pcDebrisControl(NULL), m_pcGravityGimmickControl(NULL), m_pcContactPlayer(NULL),
+          m_pcContactObject(NULL), m_eControlMode(CTRL_MODE_MAIN),
+          m_eControlFlag(CTRL_FLAG_DEFAULT), m_eBreakType(BREAK_TYPE_OTHER),
+          m_f32ContactBurnOutEffectFrame(0.0f), m_f32MissionBreakFrame(0.0f),
+          m_f32ContactBurnOutFrame(90.0f), m_s32ContactBurnOutInterval(1),
+          m_s8ContactBurnOutRequestNum(-1)
     {
     }
     virtual ~clsRigidBodyGimmickObj()
     {
         delete m_pcDebrisControl;
-        m_pcDebrisControl = 0;
+        m_pcDebrisControl = NULL;
         delete m_pcGravityGimmickControl;
-        m_pcGravityGimmickControl = 0;
+        m_pcGravityGimmickControl = NULL;
     }
     virtual enmType getObjectType() const { return TYPE_GIMMICK_RIGID; }
     virtual void contactTriggerEvent(hkContactPoint* pcContact, clsObject* pcObject);
@@ -96,17 +101,17 @@ public:
     virtual void mainBreaking() {}
     virtual void mainDead() {}
     virtual void requestDrawContactEffect(const hkContactPoint* pcContact);
-    virtual void requestDrawCrashEffect(const hkContactPoint* pParam1);
+    virtual void requestDrawCrashEffect(const hkContactPoint* pcContact);
     virtual void requestDrawBreakEffect();
     virtual void requestPowerTypeSe(clsPlayerTask* pcPlayer) {}
     virtual void contactInterraction(clsRigidBodyGimmickObj* pcObject);
     virtual u8 checkRequestDrawDebris() { return m_cBreakControl.m_s32ContactNum > 0; }
-    virtual u8 checkContactInterraction(clsRigidBodyGimmickObj* param_1) { return 1; }
+    virtual u8 checkContactInterraction(clsRigidBodyGimmickObj* pcObject) { return 1; }
     virtual void callbackGravityEvent() {}
     virtual void callbackCrashEvent() {}
     virtual void callbackBreakEvent() {}
     virtual void callbackDeadEvent() {}
-    virtual void callbackContactTriggerRigidBody(const hkContactPointConfirmedEvent& param_1) {}
+    virtual void callbackContactTriggerRigidBody(const hkContactPointConfirmedEvent& cEvent) {}
     virtual void boundAction(clsPlayerTask* pcPlayerTask);
     virtual void updateSetEditorCollision();
     virtual void checkSetEditorCollision();
@@ -136,14 +141,15 @@ public:
         m_eBreakType = eBreakType;
         m_cBreakControl.startRebirth();
         m_cBreakControl.setBreak();
-        if (m_pcDebrisControl != 0 && (m_eControlFlag & CTRL_FLAG_UPDATE_DEBRIS) != 0) {
+        if (m_pcDebrisControl != NULL && (m_eControlFlag & CTRL_FLAG_UPDATE_DEBRIS)) {
             m_pcDebrisControl->setVelocity(getRigidBody()->getLinearVelocity());
         }
-        m_pcRigidBody->setCollisionFilterLight(0, static_cast<u32>(-1));
+        m_pcRigidBody->setCollisionFilterLight(clsCollisionFilter::CLEAR_MASK,
+                                               clsCollisionFilter::FULL_MASK);
         m_pcRigidBody->setMotionType(hkMotion::MOTION_CHARACTER,
                                      HK_ENTITY_ACTIVATION_DO_ACTIVATE,
                                      HK_UPDATE_FILTER_ON_ENTITY_FULL_CHECK);
-        if ((m_eControlFlag & CTRL_FLAG_DRAW_BREAK_EFFECT) != 0) {
+        if (m_eControlFlag & CTRL_FLAG_DRAW_BREAK_EFFECT) {
             requestDrawBreakEffect();
         }
     }

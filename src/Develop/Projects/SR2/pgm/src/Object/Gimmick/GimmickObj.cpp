@@ -2,7 +2,7 @@
 
 void clsGimmickObj::setSetData(const stcSetDataDetail& orsSetDataDetailI)
 {
-    m_psSetDataDetail = const_cast<stcSetDataDetail*>(&orsSetDataDetailI);
+    m_psSetDataDetail = &orsSetDataDetailI;
     setSetData();
     setData();
     createData();
@@ -11,13 +11,9 @@ void clsGimmickObj::setSetData(const stcSetDataDetail& orsSetDataDetailI)
 void clsGimmickObj::setSetData()
 {
     setPosition(
-        m_psSetDataDetail->sPosVec.x,
-        m_psSetDataDetail->sPosVec.y,
-        m_psSetDataDetail->sPosVec.z);
+        m_psSetDataDetail->sPosVec.x, m_psSetDataDetail->sPosVec.y, m_psSetDataDetail->sPosVec.z);
     setRotate(
-        m_psSetDataDetail->sRotVec.x,
-        m_psSetDataDetail->sRotVec.y,
-        m_psSetDataDetail->sRotVec.z);
+        m_psSetDataDetail->sRotVec.x, m_psSetDataDetail->sRotVec.y, m_psSetDataDetail->sRotVec.z);
     nnCopyVector(&m_sScaleVec, &m_psSetDataDetail->sScaleVec);
     m_u32Attr = m_psSetDataDetail->u32Attr;
     setPortalNo(m_psSetDataDetail->u8PortalType);

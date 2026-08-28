@@ -28,17 +28,18 @@ public:
     virtual void draw() {}
     virtual void reset() {}
 
+    // Target behavior: low three bits select task groups; bit 0x8 disables pause execution.
     clsTask(u32 u32Priority, s32 s32Flags)
         : clsOOTask(u32Priority,
-                    (u32)s32Flags & 0x7,
-                    ((u32)s32Flags & 0x8) != 0 ? 0 : ((u32)s32Flags & 0x4))
+                    static_cast<u32>(s32Flags) & 0x7,
+                    (static_cast<u32>(s32Flags) & 0x8) ? 0 : (static_cast<u32>(s32Flags) & 0x4))
     {
     }
     clsTask(u32 u32Priority, s32 s32Flags, clsTask* pcParent)
         : clsOOTask(u32Priority,
-                    (clsOOTask*)pcParent,
-                    (u32)s32Flags & 0x7,
-                    ((u32)s32Flags & 0x8) != 0 ? 0 : ((u32)s32Flags & 0x4))
+                    pcParent,
+                    static_cast<u32>(s32Flags) & 0x7,
+                    (static_cast<u32>(s32Flags) & 0x8) ? 0 : (static_cast<u32>(s32Flags) & 0x4))
     {
     }
 };

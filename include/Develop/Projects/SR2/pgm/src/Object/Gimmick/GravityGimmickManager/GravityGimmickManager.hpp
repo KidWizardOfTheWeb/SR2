@@ -23,6 +23,7 @@ public:
 // total size: 0x24
 class clsGravityGimmickManager : public clsSingleton<clsGravityGimmickManager> {
 public:
+    // Nested enum type is recovered from mangling; enumerator names are reconstructed.
     enum enmBreakType {
         BREAK_TYPE_0 = 4,
         BREAK_TYPE_1,
@@ -32,8 +33,8 @@ public:
     clsGravityGimmickManager() {}
     virtual ~clsGravityGimmickManager() {}
 
-    virtual void requestCrash(clsRigidBodyGimmickObj* pParam1, enmBreakType sParam2);
-    virtual void regist(clsRigidBodyGimmickObj* pParam1);
+    virtual void requestCrash(clsRigidBodyGimmickObj* pcParam1, enmBreakType eBreakType);
+    virtual void regist(clsRigidBodyGimmickObj* pcParam1);
     virtual void execute();
 
     s32 m_s32MaxNum;         // offset 0x4, size 0x4

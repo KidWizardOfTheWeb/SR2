@@ -1,5 +1,3 @@
 // Reconstructed minimal PS2 release-PCH slice.
 #include "Develop/Projects/SR2/pgm/lib/OO/PS2/PS2System.hpp"
-#include "Develop/Projects/SR2/pgm/src/Object/RigidBody.hpp"
-#include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickUnaryAction.hpp"
 #include "Develop/Projects/SR2/pgm/src/Script/Script.hpp"

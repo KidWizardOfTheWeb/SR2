@@ -25,6 +25,14 @@ enum enmWalkType {
     MAX_WALK_PRFM_NUM = 4,
 };
 
+// Reconstructed ability flags from nspGear::oasGearData; names are not present in DWARF.
+enum enmAbility {
+    ABILITY_GP_INFINITY = 8,
+    ABILITY_AUTO_WALL_RUN = 16,
+    ABILITY_GHOST = 32,
+    ABILITY_MAG_BARRIER = 64,
+};
+
 // Structs
 
 // total size: 0x2C
@@ -121,9 +129,5 @@ public:
     f32 m_f32AdjustSpeedRate;  // offset 0x108, size 0x4
     f32 m_f32AdjustAcceleRate; // offset 0x10C, size 0x4
 }; // total size: 0x110
-
-namespace nspAgp {
-extern const f32 toaf32GpUsedRate[5]; // address: 0x664D80
-}
 
 #endif // PERFORMANCE_HPP

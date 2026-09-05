@@ -11,28 +11,6 @@
 #include "usr/local/sega/nn/src/Matrix/nnmatrix.h"
 #include "usr/local/sega/nn/src/Matrix/nnquaternion.h"
 
-// Enum used by clsGimmickObj for clip visibility state (owned by nspOOFileMgr)
-#ifndef ENMRET_DECLARED
-#define ENMRET_DECLARED
-enum enmRet {
-    VISIBLE_CLIP = 0,
-    VISIBLE = 1,
-    OUT_VISIBLE = 2,
-    OUT_PORTAL = 3,
-    OUT_FAR = 4,
-};
-#endif
-
-// Enum used by clsBreakControl (global, MWCC scoping — verify during implementation)
-#ifndef ENM_MODE_DECLARED
-#define ENM_MODE_DECLARED
-enum enmMode {
-    MODE_NONE = 0,
-    MODE_EXECUTE = 1,
-    MODE_BREAK = 2,
-};
-#endif
-
 class clsDebrisControl;
 class clsGravityActionControl;
 // total size: 0x50
@@ -41,16 +19,16 @@ public:
     clsGimmickObj() {}
     virtual ~clsGimmickObj();
 
-    NNS_VECTORFAST m_sPosVecFast;        // offset 0x10, size 0x10
-    NNS_QUATERNION m_sRotQuat;           // offset 0x20, size 0x10
-    NNS_VECTOR m_sScaleVec;              // offset 0x30, size 0xC
-    stcSetDataDetail* m_psSetDataDetail; // offset 0x3C, size 0x4
-    u32 m_u32Attr;                       // offset 0x40, size 0x4
-    enmRet m_enClipRet;                  // offset 0x44, size 0x4
-    u32 m_u32State;                      // offset 0x48, size 0x4
-    u8 m_u8PortalNo;                     // offset 0x4C, size 0x1
-    u8 m_u8DrawFlg;                      // offset 0x4D, size 0x1
-    u8 m_bEffective;                     // offset 0x4E, size 0x1
+    NNS_VECTORFAST m_sPosVecFast;              // offset 0x10, size 0x10
+    NNS_QUATERNION m_sRotQuat;                 // offset 0x20, size 0x10
+    NNS_VECTOR m_sScaleVec;                    // offset 0x30, size 0xC
+    const stcSetDataDetail* m_psSetDataDetail; // offset 0x3C, size 0x4
+    u32 m_u32Attr;                             // offset 0x40, size 0x4
+    enmRet m_enClipRet;                        // offset 0x44, size 0x4
+    u32 m_u32State;                            // offset 0x48, size 0x4
+    u8 m_u8PortalNo;                           // offset 0x4C, size 0x1
+    u8 m_u8DrawFlg;                            // offset 0x4D, size 0x1
+    u8 m_bEffective;                           // offset 0x4E, size 0x1
 
     virtual enmType getObjectType() const { return TYPE_GIMMICK; }
     virtual void setData() {}
@@ -67,7 +45,7 @@ public:
     void setAttribute(u32 ou32Attr);
     void setSetData();
     void setSetData(const stcSetDataDetail& orsSetDataDetailI);
-    stcSetDataDetail* getSetDataDetail() const { return m_psSetDataDetail; }
+    const stcSetDataDetail* getSetDataDetail() const { return m_psSetDataDetail; }
     void setPortalNo(u8 ou8PortalNo) { m_u8PortalNo = ou8PortalNo; }
     NNS_VECTORFAST& getPositionRef() const { return const_cast<NNS_VECTORFAST&>(m_sPosVecFast); }
     NNS_QUATERNION& getRotQuatRef() const { return const_cast<NNS_QUATERNION&>(m_sRotQuat); }

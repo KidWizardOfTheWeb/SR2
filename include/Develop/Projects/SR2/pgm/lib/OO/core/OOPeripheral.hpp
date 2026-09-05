@@ -14,6 +14,26 @@ struct stcActivePeripheral {
 // total size: 0x1C
 class clsOOPeripheral {
 public:
+    // Reconstructed button constants from the PS2 pad remap; names are not present in DWARF.
+    enum enmButton {
+        BUTTON_RIGHT = 0x00000001,
+        BUTTON_DOWN = 0x00000002,
+        BUTTON_TRIANGLE = 0x00000010,
+        BUTTON_CROSS = 0x00000020,
+        BUTTON_SQUARE = 0x00000040,
+        BUTTON_CIRCLE = 0x00000080,
+        BUTTON_R3 = 0x00000100,
+        BUTTON_START = 0x00000200,
+        BUTTON_R1 = 0x00000400,
+        BUTTON_L2 = 0x00000800,
+        BUTTON_UP = 0x00010000,
+        BUTTON_LEFT = 0x00020000,
+        BUTTON_SELECT = 0x00100000,
+        BUTTON_L3 = 0x00200000,
+        BUTTON_R2 = 0x00400000,
+        BUTTON_L1 = 0x00800000,
+    };
+
     // total size: 0x20
     struct stcPeripheral {
         u32 m_u32Beta;         // offset 0x0, size 0x4

@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include "Develop/Projects/SR2/pgm/src/System/NewDelete.hpp"
+#include "Develop/Projects/SR2/pgm/lib/OO/core/OOCompressedPair.hpp"
 #include "usr/local/sce/ee/gcc/ee/lib/libc/abort.h"
 #include "usr/local/sce/ee/gcc/ee/lib/libc/fprintf.h"
 #include "usr/local/sce/ee/gcc/ee/lib/libc/stdio.h"
@@ -63,44 +64,6 @@ inline T* __vector_allocate_signed_distance(u32 count)
     }
     return data;
 }
-
-namespace Metrowerks {
-namespace details {
-
-template <class First, class Second, int EBO>
-class compressed_pair_imp;
-
-template <class First, class Second>
-class compressed_pair_imp<First, Second, 1> : private First {
-public:
-    Second second_; // offset 0x0, size sizeof(Second)
-
-    compressed_pair_imp() : First() {}
-    explicit compressed_pair_imp(const First& first) : First(first), second_() {}
-    compressed_pair_imp(const First& first, const Second& second) : First(first), second_(second) {}
-
-    First& first() { return *this; }
-    const First& first() const { return *this; }
-    Second& second() { return second_; }
-    const Second& second() const { return second_; }
-};
-
-} // namespace details
-
-template <class First, class Second>
-class compressed_pair : private details::compressed_pair_imp<First, Second, 1> {
-    typedef details::compressed_pair_imp<First, Second, 1> Base;
-
-public:
-    compressed_pair() : Base() {}
-    explicit compressed_pair(const First& first) : Base(first) {}
-    compressed_pair(const First& first, const Second& second) : Base(first, second) {}
-
-    using Base::first;
-    using Base::second;
-};
-
-} // namespace Metrowerks
 
 // total size: 0x4
 template <class Vector, class Pointer>
@@ -163,7 +126,7 @@ inline bool operator!=(const __wrap_iterator<V, P>& lhs, const __wrap_iterator<V
 template <class T, class A>
 class __vector_deleter {
 public:
-    typedef Metrowerks::compressed_pair<A, u32> capacity_pair;
+    typedef ::Metrowerks::compressed_pair<A, u32> capacity_pair;
     capacity_pair capacity_; // offset 0x0, size 0x4
     u32 size_;               // offset 0x4, size 0x4
     T* data_;                // offset 0x8, size 0x4

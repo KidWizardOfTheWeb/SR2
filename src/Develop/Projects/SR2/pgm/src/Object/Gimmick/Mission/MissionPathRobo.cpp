@@ -1,7 +1,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Mission/MissionPathRobo.hpp"
 #include "Develop/Projects/SR2/pgm/src/Effect/FollowLine/FollowLine.hpp"
 
-static stcParam asRoboLineParam[2];
+static clsBackLineEffectTask::stcParam asRoboLineParam[2];
 static stcGimickSubParam asRoboLineAddParam[2];
 static u8 chk__asRoboLineAddParam_SizeCheck_[1];
 static u8 chk__asRoboLineParam_SizeCheck_[1];

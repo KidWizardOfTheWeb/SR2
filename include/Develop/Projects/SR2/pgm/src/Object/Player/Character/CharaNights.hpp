@@ -26,7 +26,7 @@ public:
 
     void loadAdditionalData(stcBinInfo& rParam1);
 
-    static stcParam asNightsLineParam[2];
+    static clsBackLineEffectTask::stcParam asNightsLineParam[2];
     static f32 tof32CollisionRadius;
 
     f32 m_sLMtx[4][4];                       // offset 0x60, size 0x40

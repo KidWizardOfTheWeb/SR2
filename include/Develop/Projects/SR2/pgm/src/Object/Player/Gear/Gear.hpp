@@ -6,18 +6,6 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Player/Performance.hpp"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 
-// For now, we assume this to be the correctly associated enum
-#ifndef ENMRET_DECLARED
-#define ENMRET_DECLARED
-enum enmRet {
-    VISIBLE_CLIP = 0,
-    VISIBLE = 1,
-    OUT_VISIBLE = 2,
-    OUT_PORTAL = 3,
-    OUT_FAR = 4,
-};
-#endif
-
 enum enmGearType {
     GEAR_TYPE_BOARD = 0,
     GEAR_TYPE_BIKE = 1,

@@ -19,7 +19,7 @@ public:
     clsBackLineEffectTask* m_pcLineTask; // offset 0x64, size 0x4
     u8 m_u8IsBallVisible;                // offset 0x68, size 0x1
 
-    static stcParam sShadowLineParam;
+    static clsBackLineEffectTask::stcParam sShadowLineParam;
     static f32 tof32CollisionRadius;
 
     virtual f32 getCollisionRadius() const;

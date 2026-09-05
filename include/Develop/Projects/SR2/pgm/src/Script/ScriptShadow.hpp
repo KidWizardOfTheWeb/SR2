@@ -19,6 +19,16 @@ public:
 // total size: 0x90
 class clsScriptShadowObj {
 public:
+    // total size: 0x1C
+    struct stcParam {
+        u32 u32Shadow;      // offset 0x0, size 0x4
+        u16 u16Model;       // offset 0x4, size 0x2
+        u16 u16Node;        // offset 0x6, size 0x2
+        f32 f32ScaleX;      // offset 0x8, size 0x4
+        f32 f32ScaleZ;      // offset 0xC, size 0x4
+        NNS_VECTOR sOffset; // offset 0x10, size 0xC
+    };
+
     clsScriptShadowObj(u16 u16TaskNo,
                        u32 u32Shadow,
                        u32 u32MdlNo,

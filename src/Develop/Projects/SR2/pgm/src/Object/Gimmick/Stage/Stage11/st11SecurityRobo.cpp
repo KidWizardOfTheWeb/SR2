@@ -2,7 +2,7 @@
 #include "Develop/Projects/SR2/pgm/src/Effect/FollowLine/FollowLine.hpp"
 
 namespace {
-static stcParam asRoboBallLineParam[2] = {
+static clsBackLineEffectTask::stcParam asRoboBallLineParam[2] = {
     {2,
      0,
      0xFF,
@@ -26,7 +26,7 @@ static stcParam asRoboBallLineParam[2] = {
      {-0.06f, 0.15f, -0.02f, 0.0f},
      {-0.26f, 0.02f, 0.1f, 0.0f}},
 };
-static stcParam asRoboStandLineParam[2] = {
+static clsBackLineEffectTask::stcParam asRoboStandLineParam[2] = {
     {2,
      0,
      0xFF,

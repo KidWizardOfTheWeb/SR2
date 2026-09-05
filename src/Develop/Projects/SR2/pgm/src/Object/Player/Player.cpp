@@ -5,17 +5,17 @@ namespace {
 static f32 NODE_VIB__ADD_CYCLE_A32 = 728.0f;
 }
 
-static stcParam oasPlayerLineParam = {1,
-                                      1,
-                                      0xFF,
-                                      0,
-                                      0x25,
-                                      0x10,
-                                      0xFFFFFFFF,
-                                      0.0f,
-                                      1.0f,
-                                      {0.0f, 0.0f, 0.0f, 0.0f},
-                                      {0.0f, 0.0f, 0.0f, 0.0f}};
+static clsBackLineEffectTask::stcParam oasPlayerLineParam = {1,
+                                                             1,
+                                                             0xFF,
+                                                             0,
+                                                             0x25,
+                                                             0x10,
+                                                             0xFFFFFFFF,
+                                                             0.0f,
+                                                             1.0f,
+                                                             {0.0f, 0.0f, 0.0f, 0.0f},
+                                                             {0.0f, 0.0f, 0.0f, 0.0f}};
 static stcTrickSubParam oasPlayerLineTrickParam = {0x18, 0.1f, 0.2f};
 
 static f32 toaf32StageMinimumHeightTable[17] = {-100.0f,

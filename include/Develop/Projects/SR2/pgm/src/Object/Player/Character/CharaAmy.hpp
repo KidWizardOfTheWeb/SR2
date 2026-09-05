@@ -25,7 +25,7 @@ public:
     f32 getCollisionRadius() const { return 0.0f; }
     f32 getDrawOffset() const { return 0.0f; }
 
-    static stcParam sAmyLineParam;
+    static clsBackLineEffectTask::stcParam sAmyLineParam;
     static f32 tof32CollisionRadius;
 
     // Members

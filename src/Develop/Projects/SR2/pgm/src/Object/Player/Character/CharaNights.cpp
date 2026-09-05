@@ -1,6 +1,6 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Player/Character/CharaNights.hpp"
 
-stcParam clsCharaNights::asNightsLineParam[2] = {
+clsBackLineEffectTask::stcParam clsCharaNights::asNightsLineParam[2] = {
     {
         0,
         5,

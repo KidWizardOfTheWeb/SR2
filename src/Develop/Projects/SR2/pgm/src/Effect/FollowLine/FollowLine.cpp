@@ -78,17 +78,17 @@ static stcParameter Untouchable[7];
 stcParameter* GearLineData[63];
 } // namespace nspFollowGearLine
 
-static stcParam oasLineParamTest = {0,
-                                    1,
-                                    0xFF,
-                                    0,
-                                    19,
-                                    16,
-                                    0xFFFFFFFF,
-                                    0.0f,
-                                    1.0f,
-                                    {0.0f, 0.5f, 0.0f, 0.0f},
-                                    {0.0f, 0.0f, 0.0f, 0.0f}};
+static clsBackLineEffectTask::stcParam oasLineParamTest = {0,
+                                                           1,
+                                                           0xFF,
+                                                           0,
+                                                           19,
+                                                           16,
+                                                           0xFFFFFFFF,
+                                                           0.0f,
+                                                           1.0f,
+                                                           {0.0f, 0.5f, 0.0f, 0.0f},
+                                                           {0.0f, 0.0f, 0.0f, 0.0f}};
 
 NNS_VECTORFAST clsBackLineEffectTask::m_asLastViewPosFast[5];
 

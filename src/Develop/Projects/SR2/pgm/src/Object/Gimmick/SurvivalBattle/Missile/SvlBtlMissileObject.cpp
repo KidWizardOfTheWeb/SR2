@@ -1,7 +1,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/SurvivalBattle/Missile/SvlBtlMissileObject.hpp"
 #include "Develop/Projects/SR2/pgm/src/Effect/FollowLine/FollowLine.hpp"
 
-static stcParam sSvlBtlMissileLineParam[20];
+static clsBackLineEffectTask::stcParam sSvlBtlMissileLineParam[20];
 static stcGimickSubParam sSvlBtlMissileLineSubParam;
 
 NNS_VECTOR clsSvlBtlMissile_Object::tosCollisionHalfSizeVec = {0.08f, 0.08f, 0.95f};

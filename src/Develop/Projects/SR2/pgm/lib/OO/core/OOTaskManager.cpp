@@ -2,7 +2,7 @@
 
 clsOOTaskManager* clsOOTaskManager::t_pcInstance;
 
-clsOOTaskManager::clsOOTaskManager(clsOOHeapFragment& heap) : m_rcMainWorkHeap(heap)
+clsOOTaskManager::clsOOTaskManager(clsOOHeapFragment& rcWorkHeap) : m_rcMainWorkHeap(rcWorkHeap)
 {
 }
 
@@ -10,19 +10,19 @@ clsOOTaskManager::~clsOOTaskManager()
 {
 }
 
-void clsOOTaskManager::registExecFunc(u32 u32Param1, ExecFunc pFunc)
+void clsOOTaskManager::registExecFunc(u32 u32Id, ExecFunc pfExecFunc)
 {
 }
 
-void clsOOTaskManager::registTask(clsOOTask* pParam1, clsOOTask* pParam2)
+void clsOOTaskManager::registTask(clsOOTask* pcTask, clsOOTask* pcParent)
 {
 }
 
-void clsOOTaskManager::registTask(clsOOTask* pParam1)
+void clsOOTaskManager::registTask(clsOOTask* pcTask)
 {
 }
 
-void clsOOTaskManager::deleteTask(clsOOTask* pParam1)
+void clsOOTaskManager::deleteTask(clsOOTask* pcTask)
 {
 }
 
@@ -30,7 +30,7 @@ void clsOOTaskManager::deleteAllTask()
 {
 }
 
-void clsOOTaskManager::deadTaskWithChildTaskLoop(clsOOTask* pParam1)
+void clsOOTaskManager::deadTaskWithChildTaskLoop(clsOOTask* pcTask)
 {
 }
 

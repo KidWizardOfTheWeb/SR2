@@ -1,7 +1,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage08/St08UfoCatcher.hpp"
 #include "Develop/Projects/SR2/pgm/src/Effect/FollowLine/FollowLine.hpp"
 
-static stcParam asUfoBallLineParam[2];
+static clsBackLineEffectTask::stcParam asUfoBallLineParam[2];
 static stcGimickSubParam asUfoBallLineSubParam[1];
 static u8 chk__asUfoBallLineParam_SizeCheck_[1];
 

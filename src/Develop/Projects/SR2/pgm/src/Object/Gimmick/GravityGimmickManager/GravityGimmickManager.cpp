@@ -4,10 +4,11 @@ void clsGravityGimmickManager::execute()
 {
 }
 
-void clsGravityGimmickManager::regist(clsRigidBodyGimmickObj* pParam1)
+void clsGravityGimmickManager::regist(clsRigidBodyGimmickObj* pcParam1)
 {
 }
 
-void clsGravityGimmickManager::requestCrash(clsRigidBodyGimmickObj* pParam1, enmBreakType sParam2)
+void clsGravityGimmickManager::requestCrash(clsRigidBodyGimmickObj* pcParam1,
+                                            enmBreakType eBreakType)
 {
 }

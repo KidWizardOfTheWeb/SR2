@@ -23,16 +23,6 @@ struct stcMotionFlgs {
 };
 } // namespace nspChara
 typedef nspChara::stcMotionFlgs stcMotionFlgs;
-#ifndef ENMRET_DECLARED
-#define ENMRET_DECLARED
-enum enmRet {
-    VISIBLE_CLIP = 0,
-    VISIBLE = 1,
-    OUT_VISIBLE = 2,
-    OUT_PORTAL = 3,
-    OUT_FAR = 4,
-};
-#endif
 enum enmModelType {
     MODEL_TYPE_DEF = 0,
     MODEL_TYPE_SKATE_START = 1,

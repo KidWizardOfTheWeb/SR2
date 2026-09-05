@@ -14,21 +14,6 @@ extern _NNS_TEXLIST* psTexList_Union;
 extern _NNS_TEXLIST* psTexList_Gimick;
 } // namespace nspFollowLine
 
-// total size: 0x40
-struct stcParam {
-    s8 s8Interval;              // offset 0x0
-    u8 u8TexNo;                 // offset 0x1
-    u8 u8StAlpha;               // offset 0x2
-    u8 u8EdAlpha;               // offset 0x3
-    s16 s16NodeNo;              // offset 0x4
-    s16 s16DataNum;             // offset 0x6
-    u32 u32Color;               // offset 0x8
-    f32 f32StTu;                // offset 0xC
-    f32 f32EdTu;                // offset 0x10
-    NNS_VECTORFAST sSizeFast;   // offset 0x20
-    NNS_VECTORFAST sOffsetFast; // offset 0x30
-};
-
 // total size: 0xB0
 struct stcParameter {
     s32 s32LineNum;                // offset 0x0, size 0x4
@@ -60,6 +45,21 @@ struct stcGimickSubParam {
 
 class clsBackLineEffectTask : public clsTask {
 public:
+    // total size: 0x40
+    struct stcParam {
+        s8 s8Interval;              // offset 0x0
+        u8 u8TexNo;                 // offset 0x1
+        u8 u8StAlpha;               // offset 0x2
+        u8 u8EdAlpha;               // offset 0x3
+        s16 s16NodeNo;              // offset 0x4
+        s16 s16DataNum;             // offset 0x6
+        u32 u32Color;               // offset 0x8
+        f32 f32StTu;                // offset 0xC
+        f32 f32EdTu;                // offset 0x10
+        NNS_VECTORFAST sSizeFast;   // offset 0x20
+        NNS_VECTORFAST sOffsetFast; // offset 0x30
+    };
+
     virtual ~clsBackLineEffectTask();
 
     clsBackLineEffectTask(u8 u8Type, const stcParam* opsParam, s32 s32SubNo) : clsTask(0, 0) {}

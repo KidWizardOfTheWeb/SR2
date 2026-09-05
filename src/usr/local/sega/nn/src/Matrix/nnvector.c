@@ -8,7 +8,7 @@ void nnCrossProductVector(struct NNS_VECTOR* dst, struct NNS_VECTOR* vec1, struc
 {
 }
 
-void nnCopyVector(struct NNS_VECTOR* dst, struct NNS_VECTOR* src)
+void nnCopyVector(struct NNS_VECTOR* dst, const struct NNS_VECTOR* src)
 {
 }
 

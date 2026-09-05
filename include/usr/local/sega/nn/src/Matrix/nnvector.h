@@ -74,7 +74,7 @@ extern "C" {
 
 void nnAddVector(struct NNS_VECTOR* dst, struct NNS_VECTOR* vec1, struct NNS_VECTOR* vec2);
 void nnCrossProductVector(struct NNS_VECTOR* dst, struct NNS_VECTOR* vec1, struct NNS_VECTOR* vec2);
-void nnCopyVector(struct NNS_VECTOR* dst, struct NNS_VECTOR* src);
+void nnCopyVector(struct NNS_VECTOR* dst, const struct NNS_VECTOR* src);
 float nnDotProductVector(struct NNS_VECTOR* vec1, struct NNS_VECTOR* vec2);
 float nnLengthVector(struct NNS_VECTOR* vec);
 float nnDistanceVector(struct NNS_VECTOR* vec1, struct NNS_VECTOR* vec2);

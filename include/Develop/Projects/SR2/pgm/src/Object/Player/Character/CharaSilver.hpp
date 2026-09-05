@@ -25,7 +25,7 @@ public:
 
     void loadAdditionalData(stcBinInfo& rsBinInfo);
 
-    static stcParam sSilverLineParam;
+    static clsBackLineEffectTask::stcParam sSilverLineParam;
     static f32 tof32CollisionRadius;
 
     clsBackLineEffectTask* m_pcLineTask;  // offset 0x60, size 0x4

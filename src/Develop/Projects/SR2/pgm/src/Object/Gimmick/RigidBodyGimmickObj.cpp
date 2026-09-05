@@ -1,4 +1,5 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/RigidBodyGimmickObj.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Collision/CollisionFilter.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickRigidBody.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/Gravity/GravityActionControl.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/DebrisControl.hpp"
@@ -30,7 +31,7 @@ static inline void updateMissionBreak(clsRigidBodyGimmickObj* pcObj)
             if ((pcObj->m_f32MissionBreakFrame += 1.0f) >=
                 clsMissionRace_Task::tof32MissionBreakFrame)
             {
-                if (pcObj->m_pcGravityGimmickControl == 0) {
+                if (pcObj->m_pcGravityGimmickControl == NULL) {
                     pcObj->startBreak(clsRigidBodyGimmickObj::BREAK_TYPE_PLAYER);
                 } else {
                     pcObj->startBreak(clsRigidBodyGimmickObj::BREAK_TYPE_GRAVITY);
@@ -46,17 +47,17 @@ void clsRigidBodyGimmickObj::resetBaseControl()
 {
     m_cBreakControl.reset();
     m_cContactControl.reset();
-    if (m_pcGravityGimmickControl != 0) {
+    if (m_pcGravityGimmickControl != NULL) {
         m_pcGravityGimmickControl->reset();
     }
     clsDebrisControl* pcDebrisControl = m_pcDebrisControl;
-    if (pcDebrisControl != 0) {
+    if (pcDebrisControl != NULL) {
         pcDebrisControl->reset();
     }
     m_eBreakType = BREAK_TYPE_OTHER;
     m_eControlMode = CTRL_MODE_MAIN;
-    m_pcContactPlayer = 0;
-    m_pcContactObject = 0;
+    m_pcContactPlayer = NULL;
+    m_pcContactObject = NULL;
 }
 
 void clsRigidBodyGimmickObj::reset()
@@ -85,8 +86,8 @@ void clsRigidBodyGimmickObj::reset()
 
 void clsRigidBodyGimmickObj::execute()
 {
-    if (m_pcDebrisControl != 0) {
-        if ((m_eControlFlag & CTRL_FLAG_UPDATE_DEBRIS) != 0) {
+    if (m_pcDebrisControl != NULL) {
+        if (m_eControlFlag & CTRL_FLAG_UPDATE_DEBRIS) {
             m_pcDebrisControl->update();
             clsGimmickRigidBody* pcRigidBody = m_pcRigidBody;
             clsDebrisControl* pcDebrisControl = m_pcDebrisControl;
@@ -138,12 +139,12 @@ void clsRigidBodyGimmickObj::execute()
 
     case CTRL_MODE_GRAVITY:
         mainGravity();
-        if (m_pcGravityGimmickControl != 0) {
+        if (m_pcGravityGimmickControl != NULL) {
             m_pcGravityGimmickControl->actionGravity();
             m_pcGravityGimmickControl->manageDestroy();
             switch (m_pcGravityGimmickControl->m_eStatus) {
             case 0:
-                if ((m_eControlFlag & CTRL_FLAG_GCANCEL_BREAK) != 0) {
+                if (m_eControlFlag & CTRL_FLAG_GCANCEL_BREAK) {
                     startBreak(BREAK_TYPE_GRAVITY);
                     clsGravityGimmickManager::GS()->clsGravityGimmickManager::requestCrash(
                         this, clsGravityGimmickManager::BREAK_TYPE_0);
@@ -206,7 +207,7 @@ void clsRigidBodyGimmickObj::execute()
         case BREAK_TYPE_INTERRACTION:
             break;
         case BREAK_TYPE_GRAVITY:
-            if (m_pcGravityGimmickControl->m_pcPlayer != 0) {
+            if (m_pcGravityGimmickControl->m_pcPlayer != NULL) {
                 if (clsGameMgr::GS()->m_eMode == clsGameMgr::GAME_MODE___MISSION) {
                     clsMissionRace_Task* pcMission =
                         static_cast<clsMissionRace_Task*>(nspGlobal::sTask.pcBaseRace);
@@ -217,7 +218,7 @@ void clsRigidBodyGimmickObj::execute()
                 ++m_pcGravityGimmickControl->m_pcPlayer->m_cGravityActionManager.m_s32BreakNum;
                 clsPrfm::stcData* psData =
                     m_pcGravityGimmickControl->m_pcPlayer->m_cPrfm.getDataPtr();
-                if ((psData->u32Ability & 0x2000) != 0 &&
+                if ((psData->u32Ability & 0x2000) &&
                     m_pcGravityGimmickControl->m_eType == clsGravityActionControl::TYPE_CTRL)
                 {
                     clsPlayerTask* pcPlayer = m_pcGravityGimmickControl->m_pcPlayer;
@@ -260,7 +261,7 @@ void clsRigidBodyGimmickObj::execute()
                 b32NotRest = true;
                 break;
             case 4:
-                if ((pcPlayer->m_cPrfm.m_sData.u32Ability & 4) != 0) {
+                if (pcPlayer->m_cPrfm.m_sData.u32Ability & 4) {
                     b32NotRest = true;
                 }
                 break;
@@ -283,7 +284,7 @@ void clsRigidBodyGimmickObj::execute()
 
 u8 clsRigidBodyGimmickObj::contactGravityActionRangeEvent(clsPlayerTask* pcPlayer)
 {
-    if (m_pcGravityGimmickControl != 0 && (m_eControlFlag & CTRL_FLAG_UPDATE_GRAVITY) != 0 &&
+    if (m_pcGravityGimmickControl != NULL && (m_eControlFlag & CTRL_FLAG_UPDATE_GRAVITY) &&
         m_pcGravityGimmickControl->m_pcPlayer != pcPlayer)
     {
         m_pcGravityGimmickControl->contactGravityActionRangeEvent(pcPlayer);
@@ -335,13 +336,13 @@ void clsRigidBodyGimmickObj::requestDrawContactEffect(const hkContactPoint* pcCo
                                            sContactVec.y,
                                            0.75f,
                                            0.4f,
-                                           static_cast<u32>(LIFE_FRAME),
+                                           LIFE_FRAME,
                                            -0.6f,
                                            0.0f);
     }
 }
 
-void clsRigidBodyGimmickObj::requestDrawCrashEffect(const hkContactPoint* pcParam1)
+void clsRigidBodyGimmickObj::requestDrawCrashEffect(const hkContactPoint* pcContact)
 {
 }
 
@@ -355,7 +356,8 @@ void clsRigidBodyGimmickObj::contactInterraction(clsRigidBodyGimmickObj* pcObjec
 
     clsGimmickRigidBody* pcRigidBody = m_pcRigidBody;
     clsGimmickRigidBody* pcOtherRigidBody = pcObject->m_pcRigidBody;
-    pcRigidBody->m_collidable.m_broadPhaseHandle.m_collisionFilterInfo = 0x10004;
+    pcRigidBody->m_collidable.m_broadPhaseHandle.m_collisionFilterInfo =
+        clsCollisionFilter::TYPE_PLAYER | clsCollisionFilter::FILTER_GROUND;
     clsHavok::GS()->m_pcWorld->updateCollisionFilterOnEntity(
         pcRigidBody,
         HK_UPDATE_FILTER_ON_ENTITY_FULL_CHECK,
@@ -364,7 +366,7 @@ void clsRigidBodyGimmickObj::contactInterraction(clsRigidBodyGimmickObj* pcObjec
                                HK_ENTITY_ACTIVATION_DO_ACTIVATE,
                                HK_UPDATE_FILTER_ON_ENTITY_FULL_CHECK);
 
-    if ((m_eControlFlag & CTRL_FLAG_INTERRACTION_PHYSIC) == 0) {
+    if (!(m_eControlFlag & CTRL_FLAG_INTERRACTION_PHYSIC)) {
         pcRigidBody->activate();
         pcRigidBody->m_motion.setLinearVelocity(pcOtherRigidBody->m_motion.m_linearVelocity);
 
@@ -391,7 +393,7 @@ void clsRigidBodyGimmickObj::createData()
 void clsRigidBodyGimmickObj::destroyData()
 {
     delete m_pcRigidBody;
-    m_pcRigidBody = 0;
+    m_pcRigidBody = NULL;
 }
 
 void clsRigidBodyGimmickObj::contactTriggerEvent(hkContactPoint* pcContact, clsObject* pcObject)
@@ -405,11 +407,11 @@ void clsRigidBodyGimmickObj::contactTriggerEvent(hkContactPoint* pcContact, clsO
     if (m_cContactControl.isExecute()) {
         return;
     }
-    if ((m_eControlFlag & CTRL_FLAG_UPDATE_CONTACT) == 0) {
+    if (!(m_eControlFlag & CTRL_FLAG_UPDATE_CONTACT)) {
         return;
     }
 
-    if (m_pcGravityGimmickControl != 0 &&
+    if (m_pcGravityGimmickControl != NULL &&
         pcPlayer->m_cGravityActionManager.m_eType == clsGravityActionManager::TYPE_FRONT &&
         m_pcGravityGimmickControl->m_pcPlayer == pcPlayer &&
         clsGameMgr::GS()->m_eMode != clsGameMgr::GAME_MODE___SURVIVAL_BALL)
@@ -424,7 +426,7 @@ void clsRigidBodyGimmickObj::contactTriggerEvent(hkContactPoint* pcContact, clsO
         startCrash(BREAK_TYPE_PLAYER);
         requestPowerTypeSe(pcPlayer);
 
-        if ((m_eControlFlag & CTRL_FLAG_DRAW_CRASH_EFFECT) != 0) {
+        if (m_eControlFlag & CTRL_FLAG_DRAW_CRASH_EFFECT) {
             requestDrawCrashEffect(pcContact);
         }
         return;
@@ -446,17 +448,17 @@ void clsRigidBodyGimmickObj::contactTriggerCallback(hkContactPointConfirmedEvent
 
     const hkCollidable* pcCollidable = cEvent.m_collidableB;
     const hkWorldObject* pcOwner =
-        pcCollidable->m_broadPhaseHandle.m_type == 1 ? pcCollidable->getOwner() : 0;
+        pcCollidable->m_broadPhaseHandle.m_type == 1 ? pcCollidable->getOwner() : NULL;
     m_pcContactObject = static_cast<clsObject*>(pcOwner->getUserData());
 
-    if ((m_eControlFlag & CTRL_FLAG_UPDATE_INTERRACTION) != 0) {
-        if (m_pcContactObject != 0 && m_pcContactObject->getObjectType() == TYPE_GIMMICK_RIGID) {
+    if (m_eControlFlag & CTRL_FLAG_UPDATE_INTERRACTION) {
+        if (m_pcContactObject != NULL && m_pcContactObject->getObjectType() == TYPE_GIMMICK_RIGID) {
             u8 u8MotionType = m_pcRigidBody->m_motion.m_type.m_storage;
             clsRigidBodyGimmickObj* pcRigidObject =
                 static_cast<clsRigidBodyGimmickObj*>(m_pcContactObject);
             if (u8MotionType != hkMotion::MOTION_THIN_BOX_INERTIA &&
                 u8MotionType != hkMotion::MOTION_CHARACTER &&
-                (m_eControlFlag & CTRL_FLAG_INTERRACTION) != 0 &&
+                (m_eControlFlag & CTRL_FLAG_INTERRACTION) &&
                 checkContactInterraction(pcRigidObject))
             {
                 pcRigidObject->contactInterraction(this);
@@ -464,15 +466,13 @@ void clsRigidBodyGimmickObj::contactTriggerCallback(hkContactPointConfirmedEvent
         }
     }
 
-    if ((m_eControlFlag & CTRL_FLAG_UPDATE_BREAK) != 0) {
+    if (m_eControlFlag & CTRL_FLAG_UPDATE_BREAK) {
         if (m_cBreakControl.m_eMode == clsBreakControl::MODE_EXECUTE) {
             ++m_cBreakControl.m_s32ContactNum;
         }
     }
 
-    if ((m_eControlFlag & CTRL_FLAG_DRAW_CONTACT_EFFECT) != 0 &&
-        m_cContactControl.m_s32ContactNum < 2)
-    {
+    if ((m_eControlFlag & CTRL_FLAG_DRAW_CONTACT_EFFECT) && m_cContactControl.m_s32ContactNum < 2) {
         requestDrawContactEffect(cEvent.m_contactPoint);
         m_f32ContactBurnOutEffectFrame = m_f32ContactBurnOutFrame;
         m_s32ContactBurnOutCount = m_s8ContactBurnOutRequestNum;
@@ -505,7 +505,8 @@ void clsRigidBodyGimmickObj::boundAction(clsPlayerTask* pcPlayerTask)
     hkVector4 cZero;
     hkVector4 cForce;
 
-    pcRigidBody->m_collidable.m_broadPhaseHandle.m_collisionFilterInfo = 0x00410000;
+    pcRigidBody->m_collidable.m_broadPhaseHandle.m_collisionFilterInfo =
+        clsCollisionFilter::FILTER_GROUND | clsCollisionFilter::FILTER_GIMMICK_WALL;
     clsHavok::GS()->m_pcWorld->updateCollisionFilterOnEntity(
         pcRigidBody,
         HK_UPDATE_FILTER_ON_ENTITY_DISABLE_ENTITY_ENTITY_COLLISIONS_ONLY,
@@ -514,7 +515,7 @@ void clsRigidBodyGimmickObj::boundAction(clsPlayerTask* pcPlayerTask)
                                HK_ENTITY_ACTIVATION_DO_ACTIVATE,
                                HK_UPDATE_FILTER_ON_ENTITY_FULL_CHECK);
 
-    if ((pcPlayerTask->m_cPrfm.getDataPtr()->u32Ability & 4) != 0) {
+    if (pcPlayerTask->m_cPrfm.getDataPtr()->u32Ability & 4) {
         nnScaleAddVectorFast(&sSpeedVecFast,
                              &pcPlayerTask->m_cVelocity.m_sDirVecFast,
                              &pcPlayerTask->m_sUpVecFast,
@@ -527,12 +528,9 @@ void clsRigidBodyGimmickObj::boundAction(clsPlayerTask* pcPlayerTask)
                   clsPfSystem::GS()->getFrameRateAdd());
         pcRigidBody->setLinearVelocity(cPos);
 
-        const f32 f32RandX =
-            static_cast<f32>(clsOORandom::GS()->rand_DependGame()) * 2.3283064e-10f;
-        const f32 f32RandY =
-            static_cast<f32>(clsOORandom::GS()->rand_DependGame()) * 2.3283064e-10f;
-        const f32 f32RandZ =
-            static_cast<f32>(clsOORandom::GS()->rand_DependGame()) * 2.3283064e-10f;
+        const f32 f32RandX = clsOORandom::GS()->rand_DependGame() * 2.3283064e-10f;
+        const f32 f32RandY = clsOORandom::GS()->rand_DependGame() * 2.3283064e-10f;
+        const f32 f32RandZ = clsOORandom::GS()->rand_DependGame() * 2.3283064e-10f;
         cRot.set((0.34906584f - 0.69813168f * f32RandZ) * 60.0f,
                  (0.34906584f - 0.69813168f * f32RandY) * 60.0f,
                  (0.34906584f - 0.69813168f * f32RandX) * 60.0f,
@@ -556,12 +554,9 @@ void clsRigidBodyGimmickObj::boundAction(clsPlayerTask* pcPlayerTask)
         pcRigidBody->activate();
         pcRigidBody->m_motion.applyForce(f32DeltaTime, cForce);
 
-        const f32 f32RandX =
-            static_cast<f32>(clsOORandom::GS()->rand_DependGame()) * 2.3283064e-10f;
-        const f32 f32RandY =
-            static_cast<f32>(clsOORandom::GS()->rand_DependGame()) * 2.3283064e-10f;
-        const f32 f32RandZ =
-            static_cast<f32>(clsOORandom::GS()->rand_DependGame()) * 2.3283064e-10f;
+        const f32 f32RandX = clsOORandom::GS()->rand_DependGame() * 2.3283064e-10f;
+        const f32 f32RandY = clsOORandom::GS()->rand_DependGame() * 2.3283064e-10f;
+        const f32 f32RandZ = clsOORandom::GS()->rand_DependGame() * 2.3283064e-10f;
         cRot.set((0.034906585f - 0.06981317f * f32RandZ) * 60.0f,
                  (0.05235988f - 0.10471976f * f32RandY) * 60.0f,
                  (0.06981317f - 0.13962634f * f32RandX) * 60.0f,
@@ -597,7 +592,7 @@ void clsRigidBodyGimmickObj::setControlMode(enmControlMode eMode)
 
 void clsRigidBodyGimmickObj::updateSetEditorCollision()
 {
-    if (m_pcRigidBody != 0) {
+    if (m_pcRigidBody != NULL) {
         hkVector4 position(m_sPosVecFast.x, m_sPosVecFast.y, m_sPosVecFast.z, 0.0f);
         hkQuaternion rotation(m_sRotQuat.x, m_sRotQuat.y, m_sRotQuat.z, m_sRotQuat.w);
         m_pcRigidBody->setPositionAndRotation(position, rotation);
@@ -606,13 +601,13 @@ void clsRigidBodyGimmickObj::updateSetEditorCollision()
 
 void clsRigidBodyGimmickObj::checkSetEditorCollision()
 {
-    if (m_pcRigidBody != 0) {
+    if (m_pcRigidBody != NULL) {
         hkAllCdBodyPairCollector cCollecter;
 
         hkSimpleShapePhantom* pcPhantom = new (HK_MEMORY_CLASS_PHANTOM)
             hkSimpleShapePhantom(m_pcRigidBody->m_collidable.m_shape,
                                  m_pcRigidBody->m_motion.m_motionState.m_transform,
-                                 0x00e10020);
+                                 clsCollisionFilter::DEFAULT_GIMMICK);
 
         clsHavok::GS()->m_pcWorld->addPhantom(pcPhantom);
         pcPhantom->getPenetrations(cCollecter, 0);
@@ -630,7 +625,7 @@ void clsRigidBodyGimmickObj::checkSetEditorCollision()
 
 void clsRigidBodyGimmickObj::drawCollision()
 {
-    if (clsDebug::GS()->m_sDrawCollision.u8DrawGimmick != 0 && m_pcRigidBody != 0) {
+    if (clsDebug::GS()->m_sDrawCollision.u8DrawGimmick != 0 && m_pcRigidBody != NULL) {
         hkRigidBodyCinfo cInfo;
         m_pcRigidBody->getCinfo(cInfo);
         clsHavok::GS()->drawShape(clsTaskManager::GS()->getCurViewNo(),

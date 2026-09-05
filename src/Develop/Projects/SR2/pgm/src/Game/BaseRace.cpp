@@ -5,17 +5,17 @@
 namespace {
 static f32 tof32StartCamFrame[4] = {120.0f, 120.0f, 140.0f, 140.0f};
 static f32 tof32StartCamFrame4[4] = {120.0f, 120.0f, 180.0f, 180.0f};
-static stcParam oasGCtrlLineParam = {2,
-                                     1,
-                                     0xFF,
-                                     0xFF,
-                                     37,
-                                     16,
-                                     0xFFFFFFFF,
-                                     0.0f,
-                                     1.0f,
-                                     {0.15f, 0.15f, 0.0f, 0.0f},
-                                     {0.0f, 0.05f, 0.0f, 0.0f}};
+static clsBackLineEffectTask::stcParam oasGCtrlLineParam = {2,
+                                                            1,
+                                                            0xFF,
+                                                            0xFF,
+                                                            37,
+                                                            16,
+                                                            0xFFFFFFFF,
+                                                            0.0f,
+                                                            1.0f,
+                                                            {0.15f, 0.15f, 0.0f, 0.0f},
+                                                            {0.0f, 0.05f, 0.0f, 0.0f}};
 } // namespace
 
 c8* clsBaseRace_Task::m_toac8StageName_Debug[17];

@@ -49,7 +49,7 @@ void clsCatapult_Obj::setCollisionFilter(bool bFlag)
 
 clsCatapult_Task::clsCatapult_Task(u32 u32ObjectAreaNum)
     : clsSingleModelGimmick_Task<clsCatapult_Task, clsCatapult_Obj, clsModelType_OB_TX_MO_MA>(
-          u32ObjectAreaNum, 0)
+          u32ObjectAreaNum, 101000)
 {
 }
 

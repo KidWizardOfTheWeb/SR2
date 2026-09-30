@@ -10,8 +10,6 @@
 
 #include "Develop/Projects/SR2/pgm/src/Data/Pack.hpp"
 
-#ifndef ENM_MODE_DECLARED
-#define ENM_MODE_DECLARED
 enum enmMode {
     GAME_MODE___NONE = 0,
     GAME_MODE___ADVERTISE = 1,
@@ -31,9 +29,7 @@ enum enmMode {
     GAME_MODE___MODEL_VIEWER = 15,
     GAME_MODE___MAX = 16,
 };
-#endif
 
-// class clsGameMgr
 class clsGameMgr : public clsSingleton<clsGameMgr> {
 public:
     enum enmMode {

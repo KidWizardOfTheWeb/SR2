@@ -1,6 +1,7 @@
 #ifndef GLINKTRAINMANAGER_HPP
 #define GLINKTRAINMANAGER_HPP
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 #include "types.h"
 #include "Develop/Projects/SR2/pgm/src/Data/Pack.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickObj.hpp"
@@ -15,8 +16,12 @@ struct NNS_OBJECT;
 // total size: 0xB0
 class clsGLinkTrainManager_Object : public clsGimmickObj {
 public:
-    inline clsGLinkTrainManager_Object() : clsGimmickObj() {}
-    virtual ~clsGLinkTrainManager_Object() {}
+    inline clsGLinkTrainManager_Object()
+        : clsGimmickObj(), m_cThroughCollision(this), m_cThroughStartCol(this), m_pcTrains(NULL),
+          m_psSetData(NULL), m_eMode(static_cast<enmMode>(2)), m_s32TrainNum(0), m_s32PathNo(0)
+    {
+    }
+    virtual ~clsGLinkTrainManager_Object();
 
     clsGLinkTrainThroughCollision m_cThroughCollision; // offset 0x50, size 0xC
     clsGLinkTrainStartThroughCol m_cThroughStartCol;   // offset 0x60, size 0x30
@@ -33,19 +38,24 @@ public:
     virtual void setData();
     virtual void createData();
     virtual void destroyData();
-    virtual nspPackId::enm getPackId() const;
-    virtual u32 getMultiDrawNum() const;
+    virtual nspPackId::enm getPackId() const { return nspPackId::ST01_GLINK_TRAIN_11200; }
+    virtual u32 getMultiDrawNum() const { return m_s32TrainNum; }
     virtual void drawCollision();
     virtual void draw(NNS_OBJECT* psObject,
-                      f32 (*psMtxPal)[4][4],
+                      NNS_MATRIX* psMtxPal,
                       u32* psNodeStat,
-                      const f32 (*opaNnViewMtx)[4][4],
-                      f32 (*psMtxWork)[4][4],
+                      const NNS_MATRIX* opaNnViewMtx,
+                      NNS_MATRIX* psMtxWork,
                       u32 u32ViewNo);
     virtual void execute();
     virtual void reset();
     virtual void startGravityAction(clsPlayerTask* pcPlayer);
     virtual void start();
 };
+
+inline clsGLinkTrainManager_Object::~clsGLinkTrainManager_Object()
+{
+    destroyData();
+}
 
 #endif // GLINKTRAINMANAGER_HPP

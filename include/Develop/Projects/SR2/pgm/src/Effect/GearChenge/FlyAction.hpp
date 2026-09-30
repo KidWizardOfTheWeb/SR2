@@ -2,12 +2,17 @@
 #define FLYACTION_HPP
 
 #include "types.h"
+#include "usr/local/sega/nn/src/Matrix/nnquaternion.h"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 
 // total size: 0x1C
 class clsFlyAction {
 public:
-    clsFlyAction();
+    clsFlyAction()
+        : m_A32FlyPitchAngle(0), m_A32FlyRollAngle(0), m_s16OldRingNo(-1), m_s16InitType(0)
+    {
+        nnMakeUnitQuaternion(&m_sFlyQuat);
+    }
     void setFlyPitchAngle(s32 s32FlyPitchAngle) { m_A32FlyPitchAngle = s32FlyPitchAngle; }
 
     static f32 t_of32DefaultSpeed;

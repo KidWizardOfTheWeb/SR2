@@ -22,8 +22,8 @@ public:
     void codeViewport(u8* pcParam1, clsScript_Task* pParam2);
     void playCamera(u8* pcParam1, clsScript_Task* pParam2);
     void setupCamera();
-    void initData();
-    void addData(u8* pu8BinTopAddr, u32* pu32OffsetNo, u16 u16BinNum, u32 u32LoopNum);
+    static void initData();
+    static void addData(u8* pu8BinTopAddr, u32* pu32OffsetNo, u16 u16BinNum, u32 u32LoopNum);
     u8 update();
     u8 setCamera();
 

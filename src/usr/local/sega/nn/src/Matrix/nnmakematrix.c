@@ -4,7 +4,7 @@ void nnMakeUnitMatrix(float (*dst)[4][4])
 {
 }
 
-void nnMakeQuaternionMatrix(float (*dst)[4][4], struct NNS_QUATERNION* quat)
+void nnMakeQuaternionMatrix(NNS_MATRIX* dst, const struct NNS_QUATERNION* quat)
 {
 }
 

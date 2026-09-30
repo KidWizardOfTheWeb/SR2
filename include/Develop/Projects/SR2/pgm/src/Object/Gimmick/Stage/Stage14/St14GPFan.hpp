@@ -11,7 +11,6 @@
 #include "usr/local/sega/nn/src/Texture/nntexture.h"
 
 class clsGPFan_Obj;
-class clsGPFanModel;
 
 // total size: 0x28
 class clsGPFanModel {
@@ -42,14 +41,14 @@ public:
     u32 m_u32DrawTexNo;                                                // offset 0xC8, size 0x4
 };
 
-enum enmGPFanMode {
-    MODE_INIT = 0,
-    MODE_MAIN = 1,
-};
-
 // total size: 0x140
 class clsGPFan_Obj : public clsRigidBodyGimmickObj {
 public:
+    enum enmGPFanMode {
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
+    };
+
     inline clsGPFan_Obj() : clsRigidBodyGimmickObj() {}
     virtual ~clsGPFan_Obj() {}
 
@@ -59,7 +58,7 @@ public:
     f32 m_f32Scale;                  // offset 0xDC, size 0x4
     f32 m_f32FanSpeed;               // offset 0xE0, size 0x4
     clsSe3DControl* m_pcSe3DControl; // offset 0xE4, size 0x4
-    f32 m_sEffectMatrix[4][4];       // offset 0xF0, size 0x40
+    NNS_MATRIX m_sEffectMatrix;      // offset 0xF0, size 0x40
     clsTask* m_pcEffectTask;         // offset 0x130, size 0x4
 
     static f32 tof32ClipSqDist;

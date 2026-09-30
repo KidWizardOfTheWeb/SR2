@@ -21,10 +21,10 @@ void clsSnowBall_Obj::main()
 }
 
 void clsSnowBall_Obj::draw(clsModelType_OB_TX& rcModel,
-                           f32 (*psMtxPal)[4][4],
+                           NNS_MATRIX* psMtxPal,
                            u32* psNodeStat,
-                           const f32 (*opaNnViewMtx)[4][4],
-                           f32 (*psMtxWork)[4][4],
+                           const NNS_MATRIX* opaNnViewMtx,
+                           NNS_MATRIX* psMtxWork,
                            u32 u32ViewNo)
 {
 }
@@ -58,7 +58,7 @@ void clsSnowBall_Obj::requestDrawBreakEffect()
 }
 
 clsSnowBall_Task::clsSnowBall_Task(u32 u32ObjectAreaNum)
-    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 0)
+    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 100098)
 {
 }
 

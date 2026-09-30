@@ -1,6 +1,7 @@
 #ifndef PUTMATMOTGOBJ_HPP
 #define PUTMATMOTGOBJ_HPP
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 #include "types.h"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/RigidBodyGimmickObj.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickPath.hpp"
@@ -8,18 +9,19 @@
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 
 class clsSe3DControl;
+class clsPutMatMotGObj_Task;
 
 // total size: 0xE0
 class clsPutMatMotGObj_Obj : public clsRigidBodyGimmickObj {
 public:
     enum enmPutMatMotGObjMode {
-        // Note: name collision with enmPutGravityObjMode (same values, different type)
+        // RECONSTRUCTED: enum scope.
         MODE_INIT = 0,
         MODE_MAIN = 1,
     };
 
-    clsPutMatMotGObj_Obj() {}
-    virtual ~clsPutMatMotGObj_Obj() {}
+    clsPutMatMotGObj_Obj() : m_ePutMatMotGObjMode(MODE_INIT), m_pcSe3DControl(NULL) {}
+    virtual ~clsPutMatMotGObj_Obj() { destroyData(); }
 
     virtual void setData();
     virtual void createData();
@@ -33,10 +35,10 @@ public:
     virtual void callbackContactTriggerRigidBody(const hkContactPointConfirmedEvent& rEvent) {}
 
     void draw(clsModelType_OB_TX_MO_MA* pcModels,
-              f32 (*psMtxPal)[4][4],
+              NNS_MATRIX* psMtxPal,
               u32* psNodeStat,
-              const f32 (*opaNnViewMtx)[4][4],
-              f32 (*psMtxWork)[4][4],
+              const NNS_MATRIX* opaNnViewMtx,
+              NNS_MATRIX* psMtxWork,
               u32 u32ViewNo);
 
     static f32 m_tof32CLIP_DISTx2;
@@ -53,11 +55,21 @@ class clsPutMatMotGObj_Task : public clsMultiShape,
                                                                clsPutMatMotGObj_Obj,
                                                                clsMultiObjTxMaModels> {
 public:
-    clsPutMatMotGObj_Task(u32 u32Param1) : clsMultiModelGimmick_Task(0, 0) {}
-    virtual ~clsPutMatMotGObj_Task() {}
+    clsPutMatMotGObj_Task(u32 u32Param1)
+        : clsMultiShape(u32Param1),
+          clsMultiModelGimmick_Task<clsPutMatMotGObj_Task,
+                                    clsPutMatMotGObj_Obj,
+                                    clsMultiObjTxMaModels>(u32Param1, 101000)
+    {
+    }
+    virtual ~clsPutMatMotGObj_Task();
     virtual void reset();
     virtual void execute();
     virtual void draw();
 };
+
+inline clsPutMatMotGObj_Task::~clsPutMatMotGObj_Task()
+{
+}
 
 #endif // PUTMATMOTGOBJ_HPP

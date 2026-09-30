@@ -7,15 +7,15 @@
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 
-enum enmButterflyMode {
-    MODE_INIT = 0,
-    MODE_MAIN = 1,
-    MODE_WAIT = 2,
-};
-
 // total size: 0x90
 class clsButterfly_Obj : public clsGimmickObj {
 public:
+    enum enmButterflyMode {
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
+        MODE_WAIT = 2,
+    };
+
     clsButterfly_Obj() {}
     virtual ~clsButterfly_Obj() {}
 

@@ -29,12 +29,8 @@ clsSvlBtlMissile_Object::~clsSvlBtlMissile_Object()
 {
 }
 
-void clsSvlBtlMissile_Object::draw(NNS_OBJECT* pParam1,
-                                   f32 (*)[4][4],
-                                   u32* pParam3,
-                                   const f32 (*)[4][4],
-                                   f32 (*)[4][4],
-                                   u32 u32Param6)
+void clsSvlBtlMissile_Object::draw(
+    NNS_OBJECT* pParam1, NNS_MATRIX*, u32* pParam3, const NNS_MATRIX*, NNS_MATRIX*, u32 u32Param6)
 {
 }
 

@@ -1,9 +1,12 @@
 #ifndef OOCRI_HPP
 #define OOCRI_HPP
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 #include "Develop/Projects/SR2/pgm/lib/OO/core/OOHeapFragment.hpp"
 #include "types.h"
 #include "usr/local/cri/mwlib/ee/lib/cri_libs.h"
+
+#include "usr/local/sega/nn/src/Matrix/nnvector.h"
 
 // total size: 0x180
 class SNDF_PSPRM {
@@ -81,12 +84,49 @@ public:
 
 // total size: 0x314
 class clsOOCri {
-    // Members
 public:
     enum enmAllocate {
         ALLOCATE_NONE = 0,
         ALLOCATE_POOL = 1,
     };
+
+    clsOOCri();
+
+    virtual ~clsOOCri() = 0 {}
+    virtual void setParameterSfSe_3D(s32 s32IdI,
+                                     u32 u32vI,
+                                     const NNS_MATRIX* opsViewMtxI,
+                                     const NNS_VECTORFAST* opsPosFastI,
+                                     f32 f32DistDownKI) = 0;
+    virtual s32 getSfFreeId(s32 s32RequestCodeI);
+    virtual void loadSeSf(const c8* opc8FileNameI, u32 u32PackedSizeI, u32 u32PcmI);
+    virtual s32 loadSeSf_ASync(const c8* opc8FileNameI, u32 u32PackedSizeI, u32 u32PcmI);
+    virtual u8 isLoadedSeSf_ASync(s32 s32PortNoI);
+    virtual void stopSfSe_All() = 0;
+    virtual void pauseSfSe_All() = 0;
+    virtual void continueSfSe_All() = 0;
+    virtual void playSfSe_3D(s32 s32IdI) = 0;
+    virtual void stopSfSe_3D(s32 s32IdI) = 0;
+    virtual void createSofdec_Movie(s32 s32WorkAlignI,
+                                    s32 s32MaxBpsI,
+                                    s32 s32WidthI,
+                                    s32 s32HeightI,
+                                    clsOOHeapFragment* pcAllocatorI,
+                                    enmAllocate eAllocateI,
+                                    s32 s32MaxPoolWorkI,
+                                    s32 s32MaxStreamNumI);
+    virtual void destroySofdec_Movie();
+    virtual void initAdx(u32 u32AdxMaxChNum_BgmI,
+                         u32 u32AdxWorkSize_BgmI,
+                         u32 u32AdxMaxChNum_VoiceI,
+                         u32 u32AdxWorkSize_VoiceI,
+                         u32 u32AdxMaxChNum_JingleI,
+                         u32 u32AdxWorkSize_JingleI) = 0;
+    virtual void initSf(u8* pu8SfWorkI, u32 u32SfWorkSizeI) = 0;
+    virtual void setThreadParam() = 0;
+    virtual void setThreadParamEx() = 0;
+    virtual void destroy() = 0;
+
     SNDF_PSPRM m_sSfPsprm;                  // offset 0x4, size 0x180
     _adx_talk* m_pasAdxtHandle_Bgm[4];      // offset 0x184, size 0x10
     _adx_talk* m_psAdxtHandle_Voice;        // offset 0x194, size 0x4
@@ -110,24 +150,6 @@ public:
     s16 m_s16Volume_Voice;                  // offset 0x30C, size 0x2
     s16 m_s16Volume_Jingle;                 // offset 0x30E, size 0x2
     s16 m_s16PauseMinus;                    // offset 0x310, size 0x2
-
-    // Virtual functions
-public:
-    clsOOCri();
-
-    virtual s32 getSfFreeId(s32 s32RequestCodeI);
-    virtual void loadSeSf(const c8* opc8FileNameI, u32 u32PackedSizeI, u32 u32PcmI);
-    virtual s32 loadSeSf_ASync(const c8* opc8FileNameI, u32 u32PackedSizeI, u32 u32PcmI);
-    virtual u8 isLoadedSeSf_ASync(s32 s32PortNoI);
-    virtual void createSofdec_Movie(s32 s32WorkAlignI,
-                                    s32 s32MaxBpsI,
-                                    s32 s32WidthI,
-                                    s32 s32HeightI,
-                                    clsOOHeapFragment* pcAllocatorI,
-                                    enmAllocate eAllocateI,
-                                    s32 s32MaxPoolWorkI,
-                                    s32 s32MaxStreamNumI);
-    virtual void destroySofdec_Movie();
 
     void reset();
     void init(u32 u32AdxUseBgmStreamNumI,

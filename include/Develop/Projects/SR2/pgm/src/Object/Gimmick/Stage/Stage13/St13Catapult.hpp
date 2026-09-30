@@ -13,13 +13,6 @@ class hkContactPoint;
 class clsObject;
 class clsSe3DControl;
 
-enum enmIvyMode {
-    MODE_INIT = 0,
-    MODE_MAIN = 1,
-    MODE_MOVE = 2,
-    MODE_WAIT = 3,
-};
-
 enum enmMoveMode {
     MOVEMODE_WAIT = 0,
     MOVEMODE_APPROACH = 1,
@@ -31,6 +24,13 @@ enum enmMoveMode {
 // total size: 0xC0
 class clsSt13Catapult_Obj : public clsPhantomGimmickObject {
 public:
+    enum enmIvyMode {
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
+        MODE_MOVE = 2,
+        MODE_WAIT = 3,
+    };
+
     clsSt13Catapult_Obj();
     virtual ~clsSt13Catapult_Obj();
 

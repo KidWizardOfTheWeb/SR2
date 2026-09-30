@@ -66,7 +66,7 @@ static u32 toau32PointNumTable[12] = {4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4};
 
 clsButterfly_Task::clsButterfly_Task(u32 u32ObjectAreaNum)
     : clsSingleModelGimmick_Task<clsButterfly_Task, clsButterfly_Obj, clsModelType_OB_TX_MO>(
-          u32ObjectAreaNum, 0)
+          u32ObjectAreaNum, 101000)
 {
 }
 

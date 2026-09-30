@@ -1,7 +1,9 @@
 #ifndef MISSIONMARK_HPP
 #define MISSIONMARK_HPP
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 #include "types.h"
+#include "Develop/Projects/SR2/pgm/src/Havok/HavokHeap.hpp"
 #include "Develop/Projects/SR2/pgm/src/Data/Pack.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/PhantomGimmickObject.hpp"
@@ -21,28 +23,32 @@ class clsMissionMark_Obj : public clsPhantomGimmickObject {
 public:
     clsMissionMark_Obj();
 
-    virtual ~clsMissionMark_Obj() {}
+    virtual ~clsMissionMark_Obj() { destroyData(); }
     virtual nspPackId::enm getPackId() const { return nspPackId::MISSION_MARK_27011; }
 
     virtual void createData();
     virtual void destroyData();
     virtual void contactTriggerEvent(hkContactPoint* pcObject, clsObject* pParam2);
     void draw(clsModelType_OB_TX_MO_MA& rcObj,
-              f32 (*psMtxPal)[4][4],
+              NNS_MATRIX* psMtxPal,
               u32* psNodeStat,
-              const f32 (*opaNnViewMtx)[4][4],
-              f32 (*psMtxWork)[4][4]);
+              const NNS_MATRIX* opaNnViewMtx,
+              NNS_MATRIX* psMtxWork);
 
     enum enmMissionMarkMode m_enMissionMarkMode; // offset 0x60, size 0x4
 };
 
 // total size: 0xB8
+
 class clsMissionMark_Task : public clsSingleModelGimmick_Task<clsMissionMark_Task,
                                                               clsMissionMark_Obj,
                                                               clsModelType_OB_TX_MO_MA>,
                             private clsMissionTarget {
 public:
-    clsMissionMark_Task(u32 u32ObjectAreaNum);
+    clsMissionMark_Task(u32 u32ObjectAreaNum) : clsSingleModelGimmick_Task(u32ObjectAreaNum, 101000)
+    {
+        m_pcPhantomShape = new hkSphereShape(5.0f);
+    }
     virtual ~clsMissionMark_Task();
 
     virtual void execute();
@@ -60,9 +66,7 @@ public:
     void setSetData(const stcSetDataDetail& rsDetail);
 
     s32 getPathPoint() { return 0; }
-    NNS_VECTORFAST* getPosVecFastPtr() { return 0; }
-
-    // Members
+    NNS_VECTORFAST* getPosVecFastPtr() { return NULL; }
 };
 
 #endif // MISSIONMARK_HPP

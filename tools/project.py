@@ -10,6 +10,7 @@ import io
 import json
 import os
 import platform
+import shlex
 import sys
 import re
 from pathlib import Path
@@ -65,6 +66,9 @@ class Object:
             "asflags": None,
             "asm_dir": None,
             "cflags": None,
+            "compiler_wrapper": None,
+            "compiler_wrapper_args": [],
+            "depfile_cwd": None,
             "extra_asflags": [],
             "extra_cflags": [],
             "extra_clang_flags": [],
@@ -303,6 +307,45 @@ def get_pch_out_name(config: ProjectConfig, pch: PrecompiledHeader) -> str:
     return os.path.abspath(config.out_path() / "include" / pch_out_name)
 
 
+def get_pch_source_for_prefix(config: ProjectConfig, flag: str) -> Optional[Path]:
+    """Map a configured binary PCH argument to the source expanded in context."""
+    if not flag.startswith("-prefix "):
+        return None
+    prefix = flag[len("-prefix "):].strip().strip('"')
+    normalized = os.path.normcase(str(Path(prefix).resolve()))
+    for pch in config.precompiled_headers or []:
+        output = os.path.normcase(str(Path(get_pch_out_name(config, pch)).resolve()))
+        if normalized == output:
+            return Path("include") / pch["source"]
+    return None
+
+
+def context_flags(config: ProjectConfig, cflags: List[str]) -> str:
+    """Carry each object's include order, defines and PCH source into its context."""
+    tokens = iter(shlex.split(make_flags_str(cflags)))
+    result = []
+    include_dirs = set()
+    for token in tokens:
+        if token == "-i":
+            directory = next(tokens)
+            result.extend(["-I", directory])
+            include_dirs.add(directory)
+        elif token == "-D":
+            result.extend(["-D", next(tokens)])
+        elif token.startswith("-D"):
+            result.extend(["-D", token[2:]])
+        elif token == "-prefix":
+            prefix = next(tokens)
+            source = get_pch_source_for_prefix(config, "-prefix " + prefix)
+            if source is None:
+                raise ValueError(f"No PCH source configured for {prefix}")
+            result.extend(["--prefix", str(source)])
+    for directory in config.ctx_include_dirs:
+        if str(directory) not in include_dirs:
+            result.extend(["-I", str(directory)])
+    return " ".join(shlex.quote(argument) for argument in result)
+
+
 # Short loop workaround for MWCCPS2
 COMMENT_PART = r"\/\* (.+) ([0-9A-Z]{2})([0-9A-Z]{2})([0-9A-Z]{2})([0-9A-Z]{2}) \*\/"
 INSTRUCTION_PART = r"(\b(bne|bnel|beq|beql|bnez|bnezl|beqzl|bgez|bgezl|bgtz|bgtzl|blez|blezl|bltz|bltzl|b)\b.*)"
@@ -505,7 +548,7 @@ def generate_build_ninja(
 
     # wibo or wine wrapper
     wrapper = config.compiler_wrapper()
-    wrapper_implicit: Optional[Path] = None
+    wrapper_implicit: Optional[Path] = wrapper if wrapper and wrapper.is_file() else None
     if wrapper is not None and config.use_wibo():
         n.build(
             outputs=wrapper,
@@ -540,17 +583,20 @@ def generate_build_ninja(
     mwccps2_implicit: Optional[Path] = None
     if config.mwccps2_tag is not None:
         mwccps2_dir = compilers / "PS2" / f"mwcps2-{config.mwccps2_tag}"
-        mwccps2_implicit = mwccps2_dir / ".downloaded"
-        n.build(
-            outputs=mwccps2_implicit,
-            rule="download_tool_dir",
-            implicit=download_tool,
-            variables={
-                "tool": "mwccps2",
-                "tag": config.mwccps2_tag,
-                "output_dir": mwccps2_dir,
-            },
-        )
+        if config.compilers_path is None:
+            mwccps2_implicit = mwccps2_dir / ".downloaded"
+            n.build(
+                outputs=mwccps2_implicit,
+                rule="download_tool_dir",
+                implicit=download_tool,
+                variables={
+                    "tool": "mwccps2",
+                    "tag": config.mwccps2_tag,
+                    "output_dir": mwccps2_dir,
+                },
+            )
+        elif not (mwccps2_dir / "mwccps2.exe").is_file():
+            sys.exit(f"Bundled MWCCPS2 compiler missing: {mwccps2_dir}")
     else:
         sys.exit("ProjectConfig.mwccps2_tag missing")
 
@@ -594,11 +640,11 @@ def generate_build_ninja(
 
     # MWCCPS2
     mwcc = compiler_path / "mwccps2.exe"
-    mwcc_cmd = f"{wrapper_cmd}{mwcc} $cflags -gccdep -MMD -c $in -o $out"
+    mwcc_cmd = f"$mwcc_wrapper {mwcc} $cflags -gccdep -MMD -c $in -o $out"
     mwcc_implicit: List[Optional[Path]] = [compilers_implicit or mwcc, wrapper_implicit]
 
     # MWCCPS2 with UTF-8 to Shift JIS wrapper
-    mwcc_sjis_cmd = f"{wrapper_cmd}{sjiswrap} {mwcc} $cflags -gccdep -MMD -c $in -o $out"
+    mwcc_sjis_cmd = f"$mwcc_wrapper {sjiswrap} {mwcc} $cflags -gccdep -MMD -c $in -o $out"
     mwcc_sjis_implicit: List[Optional[Path]] = [*mwcc_implicit, sjiswrap]
 
     # MWCCPS2 for precompiled headers.  With -precompile, -o names the
@@ -619,24 +665,26 @@ def generate_build_ninja(
     n.comment("Patch MWCCPS2 compiler DLLs")
 
     patch_script = config.tools_dir / "patch_compiler.py"
-    n.rule(
-        name="patch_compiler",
-        command=f"$python {patch_script} $gc_dll_path $ps2_compiler_path $out",
-        description="PATCH $ps2_compiler_path",
-    )
     gc_dll_path = compilers / "GC" / "3.0a5"
     ps2_compiler_path = mwccps2_dir
     patch_marker = ps2_compiler_path / ".patched"
-    n.build(
-        outputs=patch_marker,
-        rule="patch_compiler",
-        implicit=[compilers_implicit, mwccps2_implicit, patch_script],
-        variables={
-            "gc_dll_path": gc_dll_path,
-            "ps2_compiler_path": ps2_compiler_path,
-        },
-    )
-    # Ensure all MWCC rules wait for compiler patching.
+    if not patch_marker.is_file():
+        # Patch the compiler unless the local copy is already patched.
+        n.rule(
+            name="patch_compiler",
+            command=f"$python {patch_script} $gc_dll_path $ps2_compiler_path $out",
+            description="PATCH $ps2_compiler_path",
+        )
+        n.build(
+            outputs=patch_marker,
+            rule="patch_compiler",
+            implicit=[compilers_implicit, mwccps2_implicit, patch_script],
+            variables={
+                "gc_dll_path": gc_dll_path,
+                "ps2_compiler_path": ps2_compiler_path,
+            },
+        )
+    # Ensure all MWCC rules depend on the validated patch marker.
     mwcc_implicit.append(patch_marker)
     mwcc_sjis_implicit.append(patch_marker)
     mwcc_pch_implicit.append(patch_marker)
@@ -660,8 +708,8 @@ def generate_build_ninja(
     # Transform dependency files on non-Windows
     if os.name != "nt":
         transform_dep = config.tools_dir / "transform_dep.py"
-        mwcc_cmd += f" && $python {transform_dep} $basefile.d $basefile.d"
-        mwcc_sjis_cmd += f" && $python {transform_dep} $basefile.d $basefile.d"
+        mwcc_cmd += f" && $python {transform_dep} $basefile.d $basefile.d $depfile_args"
+        mwcc_sjis_cmd += f" && $python {transform_dep} $basefile.d $basefile.d $depfile_args"
         mwcc_pch_cmd += f" && $python {transform_dep} $basefile.d $basefile.d"
         mwcc_pch_sjis_cmd += f" && $python {transform_dep} $basefile.d $basefile.d"
         mwcc_implicit.append(transform_dep)
@@ -727,10 +775,9 @@ def generate_build_ninja(
 
     n.comment("Generate decomp.me context")
     decompctx = config.tools_dir / "decompctx.py"
-    ctx_include_flags = " ".join(f"-I {d}" for d in config.ctx_include_dirs)
     n.rule(
         name="ctx",
-        command=f"$python {decompctx} $in -o $out -d $out.d {ctx_include_flags}",
+        command=f"$python {decompctx} $in -o $out -d $out.d $ctx_flags",
         description="CTX $in",
         depfile="$out.d",
         deps="gcc",
@@ -837,6 +884,13 @@ def generate_build_ninja(
         lib_name = obj.options["lib"]
         build_rule = "mwcc_sjis" if obj.options["shift_jis"] else "mwcc"
         build_implicit = mwcc_sjis_implicit if obj.options["shift_jis"] else mwcc_implicit
+        # Allow an object to override the compiler runtime.
+        obj_wrapper = obj.options["compiler_wrapper"]
+        compile_wrapper = wrapper_cmd
+        if obj_wrapper is not None:
+            compile_wrapper = " ".join(shlex.quote(str(part)) for part in [
+                obj_wrapper, *obj.options["compiler_wrapper_args"]]) + " "
+            build_implicit = [*build_implicit, Path(obj_wrapper)]
         n.comment(f"{obj.name}: {lib_name} (linked {obj.completed})")
         n.build(
             outputs=obj.src_obj_path,
@@ -845,6 +899,9 @@ def generate_build_ninja(
             variables={
                 "mw_version": Path(obj.options["mw_version"]),
                 "cflags": cflags_str,
+                "mwcc_wrapper": compile_wrapper,
+                "depfile_args": "--cwd " + shlex.quote(obj.options["depfile_cwd"])
+                if obj.options["depfile_cwd"] else "",
                 "basefile": obj.src_obj_path.with_suffix(""),
             },
             implicit=build_implicit,
@@ -853,10 +910,16 @@ def generate_build_ninja(
         n.newline()
 
         if obj.ctx_path is not None:
+            pch_sources = [
+                source for flag in all_cflags
+                if (source := get_pch_source_for_prefix(config, flag)) is not None
+            ]
             n.build(
                 outputs=obj.ctx_path,
                 rule="ctx",
                 inputs=src_path,
+                implicit=[decompctx, *pch_sources],
+                variables={"ctx_flags": context_flags(config, all_cflags)},
             )
             n.newline()
 
@@ -1207,7 +1270,7 @@ def generate_objdiff_config(
         # Only generate scratch block for C/C++ source files
         if obj.src_path is not None and file_is_c_cpp(obj.src_path):
             def keep_flag(flag: str) -> bool:
-                return not any(
+                return get_pch_source_for_prefix(config, flag) is None and not any(
                     flag.startswith(prefix)
                     for prefix in ("-i ", "-i-", "-I ", "-I+", "-I-")
                 )

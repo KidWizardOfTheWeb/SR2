@@ -1,12 +1,14 @@
 #ifndef OOFONTSYSTEM_HPP
 #define OOFONTSYSTEM_HPP
 #include "types.h"
+#include "Develop/Projects/SR2/pgm/lib/OO/core/OOColor.hpp"
+#include "Develop/Projects/SR2/pgm/lib/OO/core/OOVector.hpp"
 #include "Develop/Projects/SR2/pgm/lib/OO/core/Flash/OOFlash.hpp"
 #include "Develop/Projects/SR2/pgm/lib/OO/core/OODraw2d.hpp"
 #include "Develop/Projects/SR2/pgm/lib/OO/core/OOHeapFragment.hpp"
 #include "Develop/Projects/SR2/pgm/src/2D/Score/Keyboard2D.hpp"
 
-// nspOOMisc namespace — template 2D math types used in function signatures
+// nspOOMisc namespace - template 2D math types used in function signatures
 namespace nspOOMisc {
 template <class T>
 struct stcPoint3d {
@@ -54,7 +56,6 @@ struct stcCharaData {
 };
 } // namespace nspFontSystem
 
-// Plain stcUv / stcUvRect used as value members in DWARF struct
 // total size: 0x8
 struct stcUv {
     s32 u; // offset 0x0, size 0x4
@@ -65,15 +66,6 @@ struct stcUv {
 struct stcUvRect {
     stcUv sUpperLeft;   // offset 0x0, size 0x8
     stcUv sBottomRight; // offset 0x8, size 0x8
-};
-
-// Plain stcRgbaF32 (DWARF global type, distinct from nspOOMisc::stcRgbaF32)
-// total size: 0x10
-struct stcRgbaF32 {
-    f32 f32r; // offset 0x0, size 0x4
-    f32 f32g; // offset 0x4, size 0x4
-    f32 f32b; // offset 0x8, size 0x4
-    f32 f32a; // offset 0xC, size 0x4
 };
 
 // OO Font lib internal map container, size 0x10
@@ -149,16 +141,63 @@ public:
 class clsOOTexture {
 public:
     virtual ~clsOOTexture() {}
+    virtual void SetTexture(void* pvTex, bool bSetUp) = 0;
+    virtual void SetDrawTexture(s32 s32TexNo) = 0;
+    virtual const nspOOMisc::stcSize2d<s32>& GetSize(s32 s32TexNo) const = 0;
 };
 
 // total size: 0x10
 class clsOOSplitTexture : public clsOOTexture {
 public:
-    vector m_cTexUVList; // offset 0x4, size 0xC
+    // RECONSTRUCTED: fields and UV grouping.
+    struct stcTexUVData {
+        u8 u8TexNo;
+        stcUvRect sTexUV;
+    };
+
+    // RECONSTRUCTED: file layout.
+    struct stcTexUVFileEntry {
+        u8 u8TexNo;
+        u8 au8Unknown[3];
+        s16 s16U0;
+        s16 s16V0;
+        s16 s16U1;
+        s16 s16V1;
+    };
+    struct stcTexUVFile {
+        u8 au8Unknown[16];
+        u32 u32Num;
+        stcTexUVFileEntry asEntries[1];
+    };
+
+    std::vector<stcTexUVData*, std::allocator<stcTexUVData*> > m_cTexUVList; // offset 0x4, size 0xC
 
     clsOOSplitTexture() {}
-    virtual ~clsOOSplitTexture() {}
-    void SetTexUVListFile(const void* pvParam1) {}
+    virtual ~clsOOSplitTexture()
+    {
+        for (std::vector<stcTexUVData*, std::allocator<stcTexUVData*> >::const_iterator cIt =
+                 m_cTexUVList.begin();
+             cIt != m_cTexUVList.end();
+             cIt++)
+        {
+            delete *cIt;
+        }
+    }
+    void SetTexUVListFile(const void* pvFile)
+    {
+        const stcTexUVFile* psFile = static_cast<const stcTexUVFile*>(pvFile);
+        m_cTexUVList.reserve(psFile->u32Num);
+        const stcTexUVFileEntry* psEntry = psFile->asEntries;
+        for (u32 u32Idx = 0; u32Idx < psFile->u32Num; ++u32Idx, ++psEntry) {
+            stcTexUVData* psData = new stcTexUVData;
+            psData->u8TexNo = psEntry->u8TexNo;
+            psData->sTexUV.sUpperLeft.u = psEntry->s16U0;
+            psData->sTexUV.sUpperLeft.v = psEntry->s16V0;
+            psData->sTexUV.sBottomRight.u = psEntry->s16U1;
+            psData->sTexUV.sBottomRight.v = psEntry->s16V1;
+            m_cTexUVList.push_back(psData);
+        }
+    }
 };
 
 // total size: 0x34
@@ -182,8 +221,6 @@ public:
     virtual void SetFontData(clsOOTexture* psTex, void* pvFontStatus);
     virtual void SetFontStrTbl(clsOOFontStrTbl* pcStrTbl);
 };
-
-class clsOOFontDataSet;
 
 // total size: 0x48
 class clsOOFontDataSet {
@@ -225,7 +262,11 @@ public:
     clsOOFontSystem(clsOODraw2d* pcDraw2d, u32 u32MaxFontObj, clsOOHeapFragment* pcAllocator);
     virtual ~clsOOFontSystem() {}
 
-    void SetBtnSplitTexture(clsOOSplitTexture* pcTex, u32 u32PointSize) {}
+    void SetBtnSplitTexture(clsOOSplitTexture* pcTex, u32 u32PointSize)
+    {
+        m_pcBtnTexture = pcTex;
+        m_u32BtnTexPointSize = u32PointSize;
+    }
 
     virtual void DrawString(
         const nspFontSystem::stcCharaData* pcChara,
@@ -361,7 +402,7 @@ public:
                                  nspFontSystem::stcCharaData* pcCharaData,
                                  u32 u32BufLen) const;
 
-    clsOOFontDataSet* GetFontSetting(u32 u32FontNo) { return 0; }
+    clsOOFontDataSet* GetFontSetting(u32 u32FontNo) { return NULL; }
 };
 
 #endif // OOFONTSYSTEM_HPP

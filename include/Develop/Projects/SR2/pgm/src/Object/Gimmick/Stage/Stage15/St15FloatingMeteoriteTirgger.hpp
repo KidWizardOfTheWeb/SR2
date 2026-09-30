@@ -13,7 +13,7 @@ class clsObject;
 class clsFloatingMeteoTrig_Obj : public clsPhantomGimmickObject {
 public:
     clsFloatingMeteoTrig_Obj() {}
-    virtual ~clsFloatingMeteoTrig_Obj() {}
+    virtual ~clsFloatingMeteoTrig_Obj() { destroyData(); }
     virtual void contactTriggerEvent(hkContactPoint* pcObject, clsObject* pParam2);
     virtual void createData();
     virtual void destroyData();
@@ -21,13 +21,16 @@ public:
 };
 
 // total size: 0x90
+
 class clsFloatingMeteoTrig_Task : public clsSingleModelGimmick_Task<clsFloatingMeteoTrig_Task,
                                                                     clsFloatingMeteoTrig_Obj,
                                                                     clsModelType_OB> {
 public:
     clsFloatingMeteoTrig_Task(u32 u32ObjectAreaNum)
-        : clsSingleModelGimmick_Task(0, u32ObjectAreaNum)
+        : clsSingleModelGimmick_Task(u32ObjectAreaNum, 101000)
     {
+        hkVector4 cBox(20.0f, 15.0f, 2.0f, 0.0f);
+        m_pcPhantomShape = new hkBoxShape(cBox, hkConvexShapeDefaultRadius);
     }
     virtual ~clsFloatingMeteoTrig_Task() {}
 

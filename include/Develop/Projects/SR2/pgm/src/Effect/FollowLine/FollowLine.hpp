@@ -23,11 +23,11 @@ struct stcParameter {
 
 // total size: 0x14
 struct stcGimickParam {
-    NNS_OBJECT* opsObject;  // offset 0x0, size 0x4
-    NNS_MOTION* opsMotion;  // offset 0x4, size 0x4
-    f32 (*opsMatrix)[4][4]; // offset 0x8, size 0x4
-    f32* opf32Frame;        // offset 0xC, size 0x4
-    f32 f32Scale;           // offset 0x10, size 0x4
+    NNS_OBJECT* opsObject; // offset 0x0, size 0x4
+    NNS_MOTION* opsMotion; // offset 0x4, size 0x4
+    NNS_MATRIX* opsMatrix; // offset 0x8, size 0x4
+    f32* opf32Frame;       // offset 0xC, size 0x4
+    f32 f32Scale;          // offset 0x10, size 0x4
 };
 
 // total size: 0xC
@@ -60,9 +60,19 @@ public:
         NNS_VECTORFAST sOffsetFast; // offset 0x30
     };
 
+    // total size: 0x20
+    struct stcStatus {
+        u8 u8Type;                   // offset 0x0
+        s8 s8Count;                  // offset 0x1
+        s16 s16SubNo;                // offset 0x2
+        u16 u16Flg;                  // offset 0x4
+        s16 s16CurNum;               // offset 0x6
+        NNS_VECTORFAST sLastPosFast; // offset 0x10
+    };
+
     virtual ~clsBackLineEffectTask();
 
-    clsBackLineEffectTask(u8 u8Type, const stcParam* opsParam, s32 s32SubNo) : clsTask(0, 0) {}
+    clsBackLineEffectTask(u8 u8Type, const stcParam* opsParam, s32 s32SubNo);
 
     virtual void execute();
     virtual void draw();
@@ -129,15 +139,14 @@ public:
     void drawObject() {}
     void drawEvent() {}
     void drawGimick() {}
-    void subFlg(u16 u16Param1) {}
-    u8 getFlg() { return m_sStatus.u8Windy; }
-    void addFlg(u16 u16Flg) { m_sStatus.u32Flg |= u16Flg; }
-    void changeParam(const stcParam* opsParam) { m_opsParam = const_cast<stcParam*>(opsParam); }
+    void subFlg(u16 u16Flg) { m_sStatus.u16Flg &= ~u16Flg; }
+    u16 getFlg() const { return m_sStatus.u16Flg; }
+    void addFlg(u16 u16Flg) { m_sStatus.u16Flg |= u16Flg; }
+    void changeParam(const stcParam* opsParam) { m_opsParam = opsParam; }
 
     static NNS_VECTORFAST m_asLastViewPosFast[5];
 
-    // Members
-    clsWeather_Task::stcStatus m_sStatus;   // offset 0x60, size 0x20
+    stcStatus m_sStatus;                    // offset 0x60, size 0x20
     stcGimickParam m_sGimickParam;          // offset 0x80, size 0x14
     u32 m_u32LineColor;                     // offset 0x94, size 0x4
     f32 m_f32GctrlWaitFrame;                // offset 0x98, size 0x4
@@ -145,8 +154,8 @@ public:
     NNS_VECTORFAST m_sLastBasePosFast;      // offset 0xB0, size 0x10
     NNS_VECTORFAST* m_opsNoMovePosFastAdr;  // offset 0xC0, size 0x4
     NNS_VECTORFAST* m_opsCompPosFastAdr;    // offset 0xC4, size 0x4
-    f32 (*m_opsNoMoveMtx)[4][4];            // offset 0xC8, size 0x4
-    stcParam* m_opsParam;                   // offset 0xCC, size 0x4
+    NNS_MATRIX* m_opsNoMoveMtx;             // offset 0xC8, size 0x4
+    const stcParam* m_opsParam;             // offset 0xCC, size 0x4
     stcTrickSubParam* m_opsTrickSubParam;   // offset 0xD0, size 0x4
     stcGimickSubParam* m_opsGimickSubParam; // offset 0xD4, size 0x4
     NNS_VECTOR m_asPoint[82];               // offset 0xD8, size 0x3D8

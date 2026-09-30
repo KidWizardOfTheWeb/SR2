@@ -1,6 +1,7 @@
 #ifndef PUTGRAVITYOBJ_HPP
 #define PUTGRAVITYOBJ_HPP
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 #include "types.h"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/RigidBodyGimmickObj.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickPath.hpp"
@@ -11,26 +12,24 @@
 
 class clsSe3DControl;
 class clsPutGravityObj_Task;
-class clsPutGravityObj_Obj;
-
-// NOTE: same values as enmPutGravityObjMode in PutGravityObj2.hpp
-#ifndef ENM_PUT_GRAVITY_OBJ_MODE_DECLARED
-#define ENM_PUT_GRAVITY_OBJ_MODE_DECLARED
-enum enmPutGravityObjMode {
-    MODE_INIT = 0,
-    MODE_MAIN = 1,
-};
-#endif
 
 // total size: 0xE0
 class clsPutGravityObj_Obj : public clsRigidBodyGimmickObj {
 public:
-    clsPutGravityObj_Obj() {}
-    virtual ~clsPutGravityObj_Obj() {}
+    enum enmPutGravityObjMode {
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
+    };
+
+    clsPutGravityObj_Obj()
+        : m_ePutGravityObjMode(MODE_INIT), m_psFloatingParticle(NULL), m_pcSe3DControl(NULL)
+    {
+    }
+    virtual ~clsPutGravityObj_Obj() { destroyData(); }
     virtual nspPackId::enm getPackId() const
     {
         return nspPackId::PUT_GRAVITYOBJ_2100;
-    } // likely: return 2100; [ASM-derived guess — verify]
+    } // RECONSTRUCTED.
     virtual void setData();
     virtual void createData();
     virtual void destroyData();
@@ -44,10 +43,10 @@ public:
     virtual void callbackBreakEvent();
 
     void draw(clsModelType_OB_TX* pcModels,
-              f32 (*psMtxPal)[4][4],
+              NNS_MATRIX* psMtxPal,
               u32* psNodeStat,
-              const f32 (*opaNnViewMtx)[4][4],
-              f32 (*psMtxWork)[4][4],
+              const NNS_MATRIX* opaNnViewMtx,
+              NNS_MATRIX* psMtxWork,
               u32 u32ViewNo,
               clsPutGravityObj_Task* pcTask);
 
@@ -66,12 +65,13 @@ class clsPutGravityObj_Task : public clsMultiShape,
                                                                clsMultiObTxModels> {
 public:
     clsPutGravityObj_Task(u32 u32ObjectAreaNum)
-        : clsMultiShape(), clsMultiModelGimmick_Task<clsPutGravityObj_Task,
-                                                     clsPutGravityObj_Obj,
-                                                     clsMultiObTxModels>(u32ObjectAreaNum, 0)
+        : clsMultiShape(u32ObjectAreaNum),
+          clsMultiModelGimmick_Task<clsPutGravityObj_Task,
+                                    clsPutGravityObj_Obj,
+                                    clsMultiObTxModels>(u32ObjectAreaNum, 101000)
     {
     }
-    virtual ~clsPutGravityObj_Task() {}
+    virtual ~clsPutGravityObj_Task();
 
     void createModel(stcBinInfo& rParam1);
 
@@ -79,5 +79,9 @@ public:
     virtual void execute();
     virtual void draw();
 };
+
+inline clsPutGravityObj_Task::~clsPutGravityObj_Task()
+{
+}
 
 #endif // PUTGRAVITYOBJ_HPP

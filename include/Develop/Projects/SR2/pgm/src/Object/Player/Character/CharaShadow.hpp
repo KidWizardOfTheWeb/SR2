@@ -13,7 +13,7 @@ class clsBackLineEffectTask;
 class clsCharaShadow : public clsCharaNodeBase {
 public:
     clsCharaShadow(clsPlayerTask* pcPlayer, u8 u8ModelType);
-    virtual ~clsCharaShadow() {}
+    virtual ~clsCharaShadow() { m_pcLineTask->setMode(0); }
 
     u32 m_u32LoopSeID;                   // offset 0x60, size 0x4
     clsBackLineEffectTask* m_pcLineTask; // offset 0x64, size 0x4

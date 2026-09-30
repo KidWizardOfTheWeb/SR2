@@ -28,7 +28,7 @@ u8 clsWallThroughCollision_Obj::CheckMode(u32 u32Lap, u32 u32Rank)
 }
 
 clsWallThroughCollision_Task::clsWallThroughCollision_Task(u32 u32ObjectAreaNum)
-    : clsSingleModelGimmick_Task(0, u32ObjectAreaNum)
+    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 101000)
 {
 }
 

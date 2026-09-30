@@ -11,19 +11,19 @@
 class hkShape;
 struct stcRequestArray;
 
-enum enmPlayAroundSeMode {
-    MODE_INIT = 0,
-    MODE_MAIN = 1,
-};
-
-enum enmPlayAroundSeState {
-    STATE_STOP = 0,
-    STATE_PLAY = 1,
-};
-
 // total size: 0x80
 class clsPlayAroundSe_Obj : public clsPhantomGimmickObject {
 public:
+    enum enmPlayAroundSeState {
+        STATE_STOP = 0,
+        STATE_PLAY = 1,
+    };
+
+    enum enmPlayAroundSeMode {
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
+    };
+
     clsPlayAroundSe_Obj();
     virtual ~clsPlayAroundSe_Obj();
     virtual void createData();
@@ -33,7 +33,6 @@ public:
     virtual void execute();
     virtual nspPackId::enm getPackId() const;
 
-    // Members
     hkShape* m_pcShape;                // offset 0x60, size 0x4
     enmPlayAroundSeMode m_ePlayMode;   // offset 0x64, size 0x4
     enmPlayAroundSeState m_ePlayState; // offset 0x68, size 0x4

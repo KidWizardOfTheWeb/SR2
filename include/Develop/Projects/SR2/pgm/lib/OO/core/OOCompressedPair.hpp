@@ -1,14 +1,26 @@
 #ifndef OOCOMPRESSEDPAIR_HPP
 #define OOCOMPRESSEDPAIR_HPP
 
-// TODO: Validate compressed_pair header ownership.
+// RECONSTRUCTED: header ownership and helper tags.
 
 namespace std {
 template <class T>
 class allocator;
-}
+template <class T>
+class less;
+} // namespace std
 
 namespace Metrowerks {
+
+template <int N>
+class compile_assert;
+
+template <>
+class compile_assert<1> {
+public:
+    compile_assert() {}
+};
+
 namespace details {
 
 struct copy_first_zero_second_t {};
@@ -37,15 +49,11 @@ public:
     const Second& second() const { return second_; }
 };
 
-template <class T, class Second>
-class compressed_pair_imp<std::allocator<T>, Second, 1> : private std::allocator<T> {
-    typedef std::allocator<T> First;
-
+template <class First, class Second>
+class compressed_pair_imp<First, Second, 1> : private First {
 public:
     Second second_; // offset 0x0
 
-    // Target vector codegen shows that the EBO default constructor initializes
-    // only the allocator base. second_ is intentionally left uninitialized.
     compressed_pair_imp() : First() {}
     explicit compressed_pair_imp(const First& first) : First(first), second_() {}
     compressed_pair_imp(const First& first, const Second& second) : First(first), second_(second) {}
@@ -65,6 +73,11 @@ struct compressed_pair_ebo {
 
 template <class T>
 struct compressed_pair_ebo<std::allocator<T> > {
+    enum { value = 1 };
+};
+
+template <class T>
+struct compressed_pair_ebo<std::less<T> > {
     enum { value = 1 };
 };
 

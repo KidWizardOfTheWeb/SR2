@@ -11,17 +11,17 @@ void clsExtraLamp_Obj::destroyData()
 }
 
 void clsExtraLamp_Obj::draw(clsModelType_OB_TX& rcModel,
-                            f32 (*psMtxPal)[4][4],
+                            NNS_MATRIX* psMtxPal,
                             u32* psNodeStat,
-                            const f32 (*opaNnViewMtx)[4][4],
-                            f32 (*psMtxWork)[4][4],
+                            const NNS_MATRIX* opaNnViewMtx,
+                            NNS_MATRIX* psMtxWork,
                             u32 u32ViewNo,
                             u32 NodeFlg)
 {
 }
 
 clsExtraLamp_Task::clsExtraLamp_Task(u32 u32ObjectAreaNum)
-    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 0)
+    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 101000)
 {
 }
 

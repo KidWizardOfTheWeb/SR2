@@ -10,7 +10,3 @@ void clsGearTypeChengeEffect_Task::execute()
 void clsGearTypeChengeEffect_Task::draw()
 {
 }
-
-clsFlyAction::clsFlyAction()
-{
-}

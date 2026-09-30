@@ -2,6 +2,7 @@
 #define LIMITTIME_HPP
 
 #include "types.h"
+#include "usr/local/sce/ee/gcc/ee/lib/libc/memset.h"
 
 struct stcRateTime {
     s32 s32Sec;         // offset 0x0, size 0x4
@@ -12,7 +13,11 @@ struct stcRateTime {
 
 class clsLimitTime {
 public:
-    clsLimitTime(f32 f32Param1 = 0.0f) {}
+    clsLimitTime(f32 f32Param1 = 0.0f)
+    {
+        m_f32LimitTime = f32Param1;
+        memset(&m_sRateTime, 0, sizeof(m_sRateTime));
+    }
     u8 update();
 
     stcRateTime m_sRateTime; // offset 0x0, size 0x10

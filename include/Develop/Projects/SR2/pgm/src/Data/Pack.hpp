@@ -10,8 +10,6 @@
 
 class clsTask;
 
-#ifndef NSP_PACK_ID_ENM_DECLARED
-#define NSP_PACK_ID_ENM_DECLARED
 namespace nspPackId {
 enum enm {
     NONE = -1,
@@ -462,7 +460,6 @@ enum enm {
     DUMMY_DATA = 65501,
 };
 } // namespace nspPackId
-#endif
 
 // total size: 0x8
 struct stcPackBinHead {
@@ -495,7 +492,7 @@ public:
     // total size: 0x28
     struct stcBinInfo {
         nspPackId::enm ePackId; // offset 0x0, size 0x4
-        u8* opu8Bin[6];         // offset 0x4, size 0x18
+        const u8* opu8Bin[6];   // offset 0x4, size 0x18
         u8* opu8BinTopAddr;     // offset 0x1C, size 0x4
         u32* opu32OffsetNo;     // offset 0x20, size 0x4
         s32 s32RestBinNum;      // offset 0x24, size 0x4
@@ -517,19 +514,22 @@ public:
         u32 u32GroupNum;       // offset 0x30, size 0x4
     };
 
-    // --- vtable ---
     virtual ~clsPack();
 
-    // --- non-weak methods ---
-    static void Pack2Set(void* pvAddrI, u32 u32Context, clsTask* pcTaskI);
+    void Pack2Set(void* pvAddrI, u32 u32Context, clsTask* pcTaskI);
     void loadGearModels(u32 u32DataIdx, stcBinInfo& rsBinInfo);
     void setPlayerPosition(
         oostd::clsOOVector<stcSetDataDetail*, oostd::clsOOStlAllocator<stcSetDataDetail*> >&
             rvctStarPos);
-    static c8* getFileName(nspPackId::enm eTypeIdI, s32 s32No0I, s32 s32No1I, s32 s32No2I);
+    void setPlayerPositionOther(
+        oostd::clsOOVector<stcSetDataDetail*, oostd::clsOOStlAllocator<stcSetDataDetail*> >&
+            rvctStarPos);
+    // RECONSTRUCTED: helper name.
+    void setPlayerPositionStartGate(
+        oostd::clsOOVector<stcSetDataDetail*, oostd::clsOOStlAllocator<stcSetDataDetail*> >&
+            rvctStarPos);
+    c8* getFileName(nspPackId::enm eTypeIdI, s32 s32No0I, s32 s32No1I, s32 s32No2I);
 };
-
-void setPlayerPositionOther(clsOOVector& rvctStarPos);
 
 typedef clsPack::stcBinInfo stcBinInfo;
 typedef clsPack::stcSetDataDetail stcSetDataDetail;

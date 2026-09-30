@@ -8,18 +8,18 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Player/Postural.hpp"
 #include "Develop/Projects/SR2/pgm/src/Data/Path.hpp"
 
-enum enmPathMode {
-    MODE_INIT = 0,
-    MODE_START_WAIT = 1,
-    MODE_MAIN = 2,
-    MODE_BLINK_WAIT = 3,
-    MODE_NOT_DISP = 4,
-    MODE_WAIT = 5,
-};
-
 // total size: 0x220
 class clsPathGravityObj_Obj : public clsRigidBodyGimmickObj {
 public:
+    enum enmPathMode {
+        MODE_INIT = 0,
+        MODE_START_WAIT = 1,
+        MODE_MAIN = 2,
+        MODE_BLINK_WAIT = 3,
+        MODE_NOT_DISP = 4,
+        MODE_WAIT = 5,
+    };
+
     clsPathGravityObj_Obj() {}
     virtual ~clsPathGravityObj_Obj() {}
 

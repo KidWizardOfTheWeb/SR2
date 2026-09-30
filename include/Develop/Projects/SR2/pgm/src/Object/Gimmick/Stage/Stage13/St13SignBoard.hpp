@@ -1,19 +1,20 @@
 #ifndef ST13SIGNBOARD_HPP
 #define ST13SIGNBOARD_HPP
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 #include "types.h"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/RigidBodyGimmickObj.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 
-enum enmSignBoardMode {
-    MODE_INIT = 0,
-    MODE_MAIN = 1,
-};
-
 // total size: 0xE0
 class clsSignBoard_Obj : public clsRigidBodyGimmickObj {
 public:
+    enum enmSignBoardMode {
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
+    };
+
     clsSignBoard_Obj();
     virtual ~clsSignBoard_Obj();
 
@@ -26,10 +27,10 @@ public:
     void reset();
     void main();
     void draw(clsModelType_OB_TX& rcModel,
-              f32 (*psMtxPal)[4][4],
+              NNS_MATRIX* psMtxPal,
               u32* psNodeStat,
-              const f32 (*opaNnViewMtx)[4][4],
-              f32 (*psMtxWork)[4][4],
+              const NNS_MATRIX* opaNnViewMtx,
+              NNS_MATRIX* psMtxWork,
               u32 u32ViewNo);
 
     static f32 m_tof32CLIP_DISTx2;

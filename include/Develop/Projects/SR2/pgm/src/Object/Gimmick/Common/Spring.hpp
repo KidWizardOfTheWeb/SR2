@@ -11,14 +11,14 @@
 class clsPlayerTask;
 class clsMapPartsFloorSwitch_Object;
 
-enum enmSpringMode {
-    MODE_INIT = 0,
-    MODE_MAIN = 1,
-};
-
 // total size: 0xB0
 class clsSpring_Obj : public clsPhantomGimmickObject {
 public:
+    enum enmSpringMode {
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
+    };
+
     enmSpringMode m_enSpringMode;                 // offset 0x60, size 0x4
     f32 m_f32Count;                               // offset 0x64, size 0x4
     f32 m_f32JumpSpeed;                           // offset 0x68, size 0x4
@@ -34,8 +34,16 @@ public:
     static f32 m_tof32CLIP_DISTx2;
     static u8 m_toau8TopNodeNo[3];
 
-    clsSpring_Obj() {}
-    virtual ~clsSpring_Obj() {}
+    clsSpring_Obj()
+    {
+        m_enSpringMode = MODE_INIT;
+        m_f32Count = 1.0f;
+        m_pcPlayerTask = NULL;
+        m_s32HitFrame = 0;
+        m_f32Scale = 1.0f;
+        m_pcSwitchObj = NULL;
+    }
+    virtual ~clsSpring_Obj() { destroyData(); }
     virtual nspPackId::enm getPackId() const { return nspPackId::SPRING_2030; }
     virtual void contactTriggerEvent(hkContactPoint* pParam1, clsObject* pParam2);
     virtual void setData();
@@ -49,7 +57,10 @@ class clsSpring_Task
     : public clsSingleModelGimmick_Task<clsSpring_Task, clsSpring_Obj, clsModelType_OB_TX>,
       public clsGimmickCommon {
 public:
-    clsSpring_Task(u32 u32ObjectAreaNum) : clsSingleModelGimmick_Task(0, 0) {}
+    clsSpring_Task(u32 u32ObjectAreaNum) : clsSingleModelGimmick_Task(u32ObjectAreaNum, 101000)
+    {
+        m_pcPhantomShape = new hkSphereShape(1.6f);
+    }
     virtual ~clsSpring_Task() {}
     virtual void execute();
     virtual void draw();

@@ -50,7 +50,7 @@ void clsGLinkElevator_Object::destroyData()
 clsGLinkElevator_Task::clsGLinkElevator_Task(u32 u32ObjectAreaNum)
     : clsSingleModelGimmick_Task<clsGLinkElevator_Task,
                                  clsGLinkElevator_Object,
-                                 clsModelType_OB_TX>(u32ObjectAreaNum, 0)
+                                 clsModelType_OB_TX>(u32ObjectAreaNum, 101000)
 {
 }
 

@@ -6,15 +6,15 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/RigidBodyGimmickObj.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 
-enum enmPlantMode {
-    MODE_INIT = 0,
-    MODE_MAIN = 1,
-    MODE_BLINK = 2,
-};
-
 // total size: 0xE0
 class clsPlant_Obj : public clsRigidBodyGimmickObj {
 public:
+    enum enmPlantMode {
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
+        MODE_BLINK = 2,
+    };
+
     clsPlant_Obj() {}
     virtual ~clsPlant_Obj();
 

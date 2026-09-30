@@ -9,8 +9,8 @@
 // total size: 0x50
 class clsGoalLine_Obj : public clsGimmickObj {
 public:
-    clsGoalLine_Obj();
-    virtual ~clsGoalLine_Obj();
+    clsGoalLine_Obj() {}
+    virtual ~clsGoalLine_Obj() {}
 
     nspPackId::enm getPackId() const { return nspPackId::GOAL_LINE_2060; }
 };
@@ -18,7 +18,7 @@ public:
 class clsGoalLine_Task
     : public clsSingleModelGimmick_Task<clsGoalLine_Task, clsGoalLine_Obj, clsModelType_OB_TX> {
 public:
-    clsGoalLine_Task() : clsSingleModelGimmick_Task(0, 0) {}
+    clsGoalLine_Task() : clsSingleModelGimmick_Task(2, 101000) {}
     virtual ~clsGoalLine_Task() {}
 
     virtual void execute();

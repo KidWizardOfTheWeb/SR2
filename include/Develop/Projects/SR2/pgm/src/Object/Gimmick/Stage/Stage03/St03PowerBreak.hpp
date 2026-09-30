@@ -9,14 +9,14 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 
-enum enmPowerBreakMode {
-    MODE_INIT = 0,
-    MODE_MAIN = 1,
-};
-
 // total size: 0xE0
 class clsPowerBreak_Obj : public clsRigidBodyGimmickObj {
 public:
+    enum enmPowerBreakMode {
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
+    };
+
     clsPowerBreak_Obj();
     virtual ~clsPowerBreak_Obj();
 

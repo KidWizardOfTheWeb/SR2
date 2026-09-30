@@ -2,17 +2,11 @@
 #define SCRIPTLIGHT_HPP
 
 #include "types.h"
+#include "Develop/Projects/SR2/pgm/lib/OO/core/OOColor.hpp"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 #include "usr/local/sega/nn/src/DrawPrim/nndrawprim.h"
 #include "usr/local/sega/nn/src/Light/nnlight.h"
 #include "usr/local/sega/nn/src/Object/nnobject.h"
-
-// total size: 0xC
-struct stcRgbF32 {
-    f32 f32r; // offset 0x0, size 0x4
-    f32 f32g; // offset 0x4, size 0x4
-    f32 f32b; // offset 0x8, size 0x4
-};
 
 // total size: 0x24
 struct stcParallelLight {
@@ -66,6 +60,16 @@ class clsScriptLight {
 public:
     inline clsScriptLight();
     virtual ~clsScriptLight();
+
+    // RECONSTRUCTED: method name.
+    inline void initData()
+    {
+        m_s32DataNum = 0;
+        s32 s32i = 0;
+        do {
+            m_pavLightData[s32i] = NULL;
+        } while (++s32i < 128);
+    }
 
     stcLightValue m_asLightValue[2];  // offset 0x4, size 0x250
     stcLightData m_asLightData[2][8]; // offset 0x254, size 0x100

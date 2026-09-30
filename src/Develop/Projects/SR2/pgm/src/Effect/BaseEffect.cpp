@@ -5,8 +5,8 @@ clsBaseEffect_Task::clsBaseEffect_Task(u32 u32TpI,
                                        clsModelType_OB_TX_MO_MA* pcModelI,
                                        u32 eFlagI,
                                        u32 u32ViewNo,
-                                       enmNo eNo,
-                                       enmCalcNodePos eBornNo,
+                                       nspPlayer::enmNo eNo,
+                                       clsPlayerTask::enmCalcNodePos eBornNo,
                                        f32 f32WaitFrame)
     : clsTask(0, 0)
 {

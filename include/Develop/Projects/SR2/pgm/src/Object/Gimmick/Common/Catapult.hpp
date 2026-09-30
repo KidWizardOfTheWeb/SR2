@@ -2,6 +2,7 @@
 #define CATAPULT_HPP
 
 #include "types.h"
+#include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/GimmickCommon.hpp"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/RigidBodyGimmickObj.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
@@ -9,11 +10,6 @@
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 
 class clsPlayerTask;
-
-enum enmCatapultMode {
-    MODE_INIT = 0,
-    MODE_MAIN = 1,
-};
 
 // Forward-declared for clsCatapultThroughCollision cross-reference
 class clsCatapult_Obj;
@@ -30,6 +26,11 @@ public:
 // total size: 0x160
 class clsCatapult_Obj : public clsRigidBodyGimmickObj {
 public:
+    enum enmCatapultMode {
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
+    };
+
     enum enmAiMode {
         AIMODE_WAIT = 0,
         AIMODE_OPEN = 1,
@@ -79,7 +80,8 @@ public:
 // total size: 0xAC
 class clsCatapult_Task : public clsSingleModelGimmick_Task<clsCatapult_Task,
                                                            clsCatapult_Obj,
-                                                           clsModelType_OB_TX_MO_MA> {
+                                                           clsModelType_OB_TX_MO_MA>,
+                         public clsGimmickCommon {
 public:
     clsCatapult_Task(u32 u32ObjectAreaNum);
     virtual ~clsCatapult_Task() {}

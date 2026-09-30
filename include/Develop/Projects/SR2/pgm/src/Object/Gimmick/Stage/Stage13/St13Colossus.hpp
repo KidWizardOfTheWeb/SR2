@@ -7,13 +7,13 @@
 
 class clsSe3DControl;
 
-enum enmColossusMode {
-    MODE_INIT = 0,
-    MODE_MAIN = 1,
-};
-
 class clsColossus_Obj : public clsRigidBodyGimmickObj {
 public:
+    enum enmColossusMode {
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
+    };
+
     clsColossus_Obj();
     virtual ~clsColossus_Obj();
 
@@ -29,7 +29,6 @@ public:
 
     static f32 tof32ClipSqDist;
 
-    // Members
     enmColossusMode m_eMode;         // offset 0xD0, size 0x4
     clsSe3DControl* m_pcSe3DControl; // offset 0xD4, size 0x4
     u8 m_u8ContactSeCount;           // offset 0xD8, size 0x1

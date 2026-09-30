@@ -14,7 +14,7 @@ public:
     };
 
     clsBreakFloor_Obj();
-    virtual ~clsBreakFloor_Obj();
+    virtual ~clsBreakFloor_Obj() {}
 
     virtual void setData();
     virtual void createData();
@@ -30,7 +30,6 @@ public:
 
     static f32 tof32ClipSqDist;
 
-    // Members
     enmBreakFloorMode m_eBreakFloorMode; // offset 0xD0, size 0x4
     u32 m_u32LinkMapUserDataNo;          // offset 0xD4, size 0x4
 };

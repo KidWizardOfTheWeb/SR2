@@ -73,10 +73,10 @@ void clsHelicopter_Obj::main()
 }
 
 void clsHelicopter_Obj::draw(clsModelType_OB_TX_MO& rModel,
-                             f32 (*pMtx)[4][4],
+                             NNS_MATRIX* pMtx,
                              u32* pu32Flg,
-                             const f32 (*pBaseMtx)[4][4],
-                             f32 (*pDstMtx)[4][4],
+                             const NNS_MATRIX* pBaseMtx,
+                             NNS_MATRIX* pDstMtx,
                              u32 u32Arg1,
                              u32 u32Arg2)
 {
@@ -99,16 +99,16 @@ void clsHelicopter_Manager::contactAlwaysEvent(hkContactPoint* pParam1, clsObjec
 }
 
 void clsHelicopter_Manager::draw(clsModelType_OB_TX_MO& rParam1,
-                                 f32 (*psMtxPal)[4][4],
+                                 NNS_MATRIX* psMtxPal,
                                  u32* pParam3,
-                                 const f32 (*opaNnViewMtx)[4][4],
-                                 f32 (*psMtxWork)[4][4],
+                                 const NNS_MATRIX* opaNnViewMtx,
+                                 NNS_MATRIX* psMtxWork,
                                  u32 u32Param6)
 {
 }
 
 clsHelicopter_Task::clsHelicopter_Task(u32 u32ObjectAreaNum)
-    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 0)
+    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 101000)
 {
 }
 

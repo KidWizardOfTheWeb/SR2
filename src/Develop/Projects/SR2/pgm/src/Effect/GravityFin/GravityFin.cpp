@@ -7,14 +7,7 @@ clsGravityFinEffect_Task::clsGravityFinEffect_Task(u32 u32Param1,
                                                    u32 u32Param6,
                                                    nspPlayer::enmNo eNo,
                                                    clsPlayerTask::enmCalcNodePos eNodePos)
-    : clsBaseEffect_Task(u32Param1,
-                         s32Param2,
-                         pcModel,
-                         u32Param5,
-                         u32Param6,
-                         (enmNo)eNo,
-                         (enmCalcNodePos)eNodePos,
-                         0.0f)
+    : clsBaseEffect_Task(u32Param1, s32Param2, pcModel, u32Param5, u32Param6, eNo, eNodePos, 0.0f)
 {
 }
 

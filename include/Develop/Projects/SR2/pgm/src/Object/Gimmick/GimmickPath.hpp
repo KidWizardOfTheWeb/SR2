@@ -70,22 +70,10 @@ public:
     void setSpeed(f32 f32Param1) { m_f32Speed = f32Param1; }
     clsPath& getPathRef() const { return const_cast<clsPath&>(m_cPath); }
     f32 getSpeed() const { return m_f32Speed; }
-    NNS_VECTORFAST& getInitPosVecFastRef() const
-    {
-        return const_cast<NNS_VECTORFAST&>(m_sInitPosVecFast);
-    }
-    NNS_VECTORFAST& getMoveVecFastRef() const
-    {
-        return const_cast<NNS_VECTORFAST&>(m_cPath.m_sMoveVecFast);
-    }
-    NNS_QUATERNION& getInitRotQuatRef() const
-    {
-        return const_cast<NNS_QUATERNION&>(m_sInitRotQuat);
-    }
-    NNS_QUATERNION& getResultQuatRef() const
-    {
-        return const_cast<NNS_QUATERNION&>(m_cPostural.m_cSurface.m_sResultQuat);
-    }
+    const NNS_VECTORFAST& getInitPosVecFastRef() const { return m_sInitPosVecFast; }
+    const NNS_VECTORFAST& getMoveVecFastRef() const { return m_cPath.m_sMoveVecFast; }
+    const NNS_QUATERNION& getInitRotQuatRef() const { return m_sInitRotQuat; }
+    const NNS_QUATERNION& getResultQuatRef() const { return m_cPostural.m_cSurface.m_sResultQuat; }
     u32 getHitBit() const { return m_cPath.m_u16HitBit; }
     enmGimmickPathMode getMode() const { return m_enGimmickPathMode; }
     s16 getPathNo() const { return m_cPath.m_s16PathNo; }

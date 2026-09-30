@@ -1,6 +1,6 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Player/Gravity.hpp"
 
-f32 clsGravity::DEFAULT_ACCELE = 0.03266667f;
+const f32 clsGravity::DEFAULT_ACCELE = 0.03266667f;
 
 void clsGravity::setType(enmType eType)
 {

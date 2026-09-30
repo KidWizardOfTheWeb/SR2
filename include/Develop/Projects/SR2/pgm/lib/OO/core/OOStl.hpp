@@ -5,99 +5,10 @@
 #include "Develop/Projects/SR2/pgm/lib/OO/core/OOCompressedPair.hpp"
 #include "Develop/Projects/SR2/pgm/lib/OO/core/OOStlAllocator.hpp"
 #include "Develop/Projects/SR2/pgm/src/System/NewDelete.hpp"
-#include "usr/local/metrowerks/PS2_Support/stl/deque.h"
 #include "usr/local/sce/ee/gcc/ee/lib/libc/abort.h"
 #include "usr/local/sce/ee/gcc/ee/lib/libc/fprintf.h"
 #include "usr/local/sce/ee/gcc/ee/lib/libc/stdio.h"
 
-class node;
-class node_base;
-
-// total size: 0x4
-class generic_iterator {
-    u32 i_; // offset 0x0, size 0x4
-};
-
-// total size: 0x1
-class iterator {};
-
-// total size: 0x4
-class reverse_iterator : public iterator {
-public:
-    generic_iterator current; // offset 0x0, size 0x4
-};
-
-// total size: 0x4
-class __pointer_plus_bit {
-public:
-    node_base* ptr_; // offset 0x0, size 0x4
-};
-
-// total size: 0x4
-class anchor {
-public:
-    node_base* left_; // offset 0x0, size 0x4
-};
-
-// total size: 0xC
-class node_base : public anchor {
-public:
-    node_base* right_;          // offset 0x4, size 0x4
-    __pointer_plus_bit parent_; // offset 0x8, size 0x4
-};
-
-// total size: 0x1
-class binary_function {};
-
-// total size: 0x1
-class less : public binary_function {};
-
-// total size: 0x1
-class value_compare : public binary_function {
-public:
-    less comp; // offset 0x0, size 0x1
-};
-
-template <class TFirst, class TSecond, class TReserved>
-class compressed_pair_imp {
-public:
-    TFirst first_;       // offset 0x0
-    TSecond second_;     // offset 0x4
-    TReserved reserved_; // offset varies by TSecond
-};
-
-template <class TFirst, class TSecond>
-class compressed_pair_imp<TFirst, TSecond, void> {
-public:
-    TFirst first_;   // offset 0x0
-    TSecond second_; // offset 0x4
-};
-
-// total size: 0x10
-class compressed_pair : private compressed_pair_imp<clsOOStlAllocator, cdeque, void> {};
-
-// total size: 0x1
-class __red_black_tree {};
-
-// total size: 0x14
-class __tree : private __red_black_tree {
-public:
-    // Flattened STL template variants share this unqualified DWARF name.
-    u8 alloc_[0x8];      // offset 0x0, size 0x8
-    u8 node_alloc_[0x8]; // offset 0x8, size 0x8
-    u8 comp_[0x4];       // offset 0x10, size 0x4
-};
-
-// total size: 0x14
-class set {
-public:
-    __tree tree_; // offset 0x0, size 0x14
-};
-
-// total size: 0x14
-class clsOOSet : public set {};
-
-// Template stubs for function-signature mangling only (namespace-qualified forms).
 namespace std {
 
 template <class T>
@@ -181,14 +92,10 @@ public:
     pair(const First& first_, const Second& second_) : first(first_), second(second_) {}
 
     template <class U, class V>
-    pair(const pair<U, V>& other);
+    pair(const pair<U, V>& other) : first(other.first), second(other.second)
+    {
+    }
 };
-
-template <class First, class Second>
-template <class U, class V>
-pair<First, Second>::pair(const pair<U, V>& other) : first(other.first), second(other.second)
-{
-}
 
 template <class Arg1, class Arg2, class Result>
 class binary_function_t {};
@@ -263,6 +170,12 @@ public:
     reverse_iterator() {}
     explicit reverse_iterator(Iterator iterator) : current(iterator) {}
 
+    typename Iterator::reference operator*() const
+    {
+        Iterator iterator(current);
+        return *--iterator;
+    }
+
     reverse_iterator& operator++()
     {
         __red_black_tree<1>::decrement(
@@ -305,11 +218,7 @@ public:
 
     typedef oostd::clsOOStlAllocator<node> node_allocator;
 
-    // The original cleanup-helper names and exact type decomposition are
-    // not recoverable from the available symbols/DWARF. The target supports
-    // a two-word node ownership guard plus an additional short-lived class
-    // temporary in the cleanup path. node_deallocator is a neutral model
-    // of that temporary, not a recovered historical type.
+    // RECONSTRUCTED: node cleanup helper.
     class node_deallocator {
     public:
         node_allocator* allocator_;
@@ -328,7 +237,7 @@ public:
 
         ~node_guard()
         {
-            if (ptr_ != 0) {
+            if (ptr_ != NULL) {
                 node_deallocator cleanup(*allocator_);
                 cleanup(ptr_);
             }
@@ -339,7 +248,7 @@ public:
         node* release()
         {
             node* ptr = ptr_;
-            ptr_ = 0;
+            ptr_ = NULL;
             return ptr;
         }
     };
@@ -515,7 +424,7 @@ protected:
     __list_imp() : Base() {}
     __list_imp(const A& allocator) : Base(allocator) {}
     __list_imp(const A& allocator, u32 count, const T& value)
-        : Base(allocator, static_cast<const typename Base::temp_init_t*>(0))
+        : Base(allocator, static_cast<const typename Base::temp_init_t*>(NULL))
     {
         init(count, value);
     }
@@ -665,32 +574,23 @@ public:
 
     bool empty() const { return Base::empty(); }
 
-    void resize(u32 size);
+    void resize(u32 size) { Base::resize(size); }
 
-    iterator insert(iterator position, const T& value);
+    iterator insert(iterator position, const T& value)
+    {
+        typename Base::base_iterator result =
+            Base::insert(position.i_, static_cast<const void*>(value));
+        return iterator(result.node_);
+    }
+
+    void push_back(const T& value) { Base::insert(end().i_, static_cast<const void*>(value)); }
 
     list(const A& allocator) : Base(oostd::clsOOStlAllocator<const void*>(allocator)) {}
 };
 
-template <class T, class A>
-void list<T, A>::resize(u32 size)
-{
-    Base::resize(size);
-}
-
-template <class T, class A>
-typename list<T, A>::iterator list<T, A>::insert(iterator position, const T& value)
-{
-    typename Base::base_iterator result =
-        Base::insert(position.i_, reinterpret_cast<const void* const&>(value));
-    return iterator(result.node_);
-}
-
 template <class Value, class Compare, class Allocator>
 class __tree {
 public:
-    // The PS2 STL stores three compressed pairs.  Their concrete flattened
-    // layout is verified from the prototype DWARF.
     class node;
 
     // total size: 0x4
@@ -698,7 +598,7 @@ public:
     public:
         node* left_; // offset 0x0, size 0x4
 
-        anchor() : left_(0) {}
+        anchor() : left_(NULL) {}
     };
 
     typedef typename __allocator_rebind<Allocator, node>::type node_allocator;
@@ -724,6 +624,7 @@ public:
     class __generic_iterator {
     public:
         typedef Value value_type;
+        typedef Value& reference;
 
         node_base* ptr_; // offset 0x0, size 0x4
 
@@ -742,6 +643,8 @@ public:
                 reinterpret_cast<const __red_black_tree<1>::node_base*&>(ptr_));
             return *this;
         }
+
+        Value& operator*() const { return static_cast<node*>(ptr_)->data_; }
 
         Value* operator->() const { return &static_cast<node*>(ptr_)->data_; }
 
@@ -780,7 +683,7 @@ public:
 
     ~__tree()
     {
-        if (node_alloc_.second().left_ != 0) {
+        if (node_alloc_.second().left_ != NULL) {
             destroy(node_alloc_.second().left_);
         }
     }
@@ -796,10 +699,10 @@ __tree<Value, Compare, Allocator>::__tree(const Compare& compare, const Allocato
 template <class Value, class Compare, class Allocator>
 void __tree<Value, Compare, Allocator>::destroy(node* root)
 {
-    if (root->left_ != 0) {
+    if (root->left_ != NULL) {
         destroy(root->left_);
     }
-    if (root->right_ != 0) {
+    if (root->right_ != NULL) {
         destroy(root->right_);
     }
     alloc().destroy(&root->data_);
@@ -809,10 +712,10 @@ void __tree<Value, Compare, Allocator>::destroy(node* root)
 template <class Value, class Compare, class Allocator>
 void __tree<Value, Compare, Allocator>::clear()
 {
-    if (node_alloc_.second().left_ != 0) {
+    if (node_alloc_.second().left_ != NULL) {
         destroy(node_alloc_.second().left_);
         alloc_.second() = 0;
-        node_alloc_.second().left_ = 0;
+        node_alloc_.second().left_ = NULL;
         comp_.second() = reinterpret_cast<node*>(&node_alloc_.second());
     }
 }
@@ -822,19 +725,15 @@ typename __tree<Value, Compare, Allocator>::node* __tree<Value, Compare, Allocat
     node* parent, bool insert_left, bool update_begin, const Value& value)
 {
     if (alloc_.second() > 0xffffffffu - 1u) {
-        ::fprintf(reinterpret_cast<void**>(::_impure_ptr)[3], "tree::insert length error\n");
+        ::fprintf(stderr, "tree::insert length error\n");
         ::abort();
     }
 
     node* new_node = node_alloc().allocate(1);
-    if (__allocator_rebind<Allocator, node>::is_std && new_node == 0) {
-        ::fprintf(reinterpret_cast<void**>(::_impure_ptr)[3], "Memory allocation failure");
-        ::abort();
-    }
     Value* value_ptr = &new_node->data_;
     new (value_ptr) Value(value);
-    new_node->right_ = 0;
-    new_node->left_ = 0;
+    new_node->right_ = NULL;
+    new_node->left_ = NULL;
     new_node->parent_ = reinterpret_cast<u32>(parent) | (new_node->parent_ & 1u);
 
     if (insert_left) {
@@ -858,13 +757,13 @@ template <class Value, class Compare, class Allocator>
 pair<typename __tree<Value, Compare, Allocator>::iterator, bool> __tree<Value, Compare, Allocator>::
     insert_one(const Value& value)
 {
-    node* previous = 0;
+    node* previous = NULL;
     node* parent = reinterpret_cast<node*>(&node_alloc_.second());
     node* current = node_alloc_.second().left_;
     bool insert_left = true;
     bool update_begin = true;
 
-    while (current != 0) {
+    while (current != NULL) {
         parent = current;
         if (comp_.first()(value, current->data_)) {
             current = current->left_;
@@ -877,7 +776,7 @@ pair<typename __tree<Value, Compare, Allocator>::iterator, bool> __tree<Value, C
         }
     }
 
-    if (previous == 0 || comp_.first()(previous->data_, value)) {
+    if (previous == NULL || comp_.first()(previous->data_, value)) {
         return pair<iterator, bool>(insert_node_at(parent, insert_left, update_begin, value), true);
     }
     return pair<iterator, bool>(previous, false);
@@ -891,7 +790,7 @@ typename __tree<Value, Compare, Allocator>::iterator __tree<Value, Compare, Allo
     node* current = node_alloc_.second().left_;
     node* result = reinterpret_cast<node*>(&node_alloc_.second());
 
-    while (current != 0) {
+    while (current != NULL) {
         if (!comp_.first()(current->data_, key)) {
             result = current;
             current = current->left_;
@@ -917,7 +816,7 @@ typename __tree<Value, Compare, Allocator>::iterator __tree<Value, Compare, Allo
     bool insert_left = true;
     bool update_begin = true;
 
-    while (current != 0) {
+    while (current != NULL) {
         parent = current;
         if (comp_.first()(value, current->data_)) {
             current = current->left_;
@@ -932,6 +831,43 @@ typename __tree<Value, Compare, Allocator>::iterator __tree<Value, Compare, Allo
     return iterator(insert_node_at(parent, insert_left, update_begin, value));
 }
 
+template <class Key, class Compare, class Allocator>
+class set {
+public:
+    typedef Key value_type;
+    typedef __tree<value_type, Compare, Allocator> tree_type;
+    typedef typename tree_type::iterator iterator;
+
+    tree_type tree_;
+
+    set(const Compare& compare = Compare(), const Allocator& allocator = Allocator())
+        : tree_(compare, allocator)
+    {
+    }
+
+    pair<iterator, bool> insert(const value_type& value) { return tree_.insert_one(value); }
+
+    iterator find(const Key& key) { return tree_.find(key); }
+
+    bool empty() const { return tree_.alloc_.second() == 0; }
+
+    iterator begin()
+    {
+        iterator result;
+        result.ptr_ = tree_.comp_.second();
+        return result;
+    }
+
+    iterator end()
+    {
+        iterator result;
+        result.ptr_ = reinterpret_cast<typename tree_type::node_base*>(&tree_.node_alloc_.second());
+        return result;
+    }
+
+    void clear() { tree_.clear(); }
+};
+
 template <class Key, class T, class Compare, class Allocator>
 class map {
 public:
@@ -941,6 +877,7 @@ public:
     public:
         Compare comp; // offset 0x0, size 0x1 for std::less<u32>
 
+        value_compare() {}
         value_compare(Compare compare) : comp(compare) {}
 
         bool operator()(const value_type& lhs, const value_type& rhs) const
@@ -965,44 +902,34 @@ public:
 
     typedef typename tree_type::iterator iterator;
 
+    map() : tree_(value_compare(), Allocator()) {}
+
     map(const Compare& compare, const Allocator& allocator)
         : tree_(value_compare(compare), allocator)
     {
     }
 
-    iterator begin();
-    iterator end();
+    iterator begin() { return iterator(tree_.comp_.second()); }
+    iterator end()
+    {
+        return iterator(
+            reinterpret_cast<typename tree_type::node_base*>(&tree_.node_alloc_.second()));
+    }
 
     pair<iterator, bool> insert(const value_type& value) { return tree_.insert_one(value); }
 
     iterator find(const Key& key) { return tree_.find(key); }
 };
 
-template <class Key, class T, class Compare, class Allocator>
-typename map<Key, T, Compare, Allocator>::iterator map<Key, T, Compare, Allocator>::begin()
-{
-    iterator result;
-    result.ptr_ = tree_.comp_.second();
-    return result;
-}
-
-template <class Key, class T, class Compare, class Allocator>
-typename map<Key, T, Compare, Allocator>::iterator map<Key, T, Compare, Allocator>::end()
-{
-    iterator result;
-    result.ptr_ = reinterpret_cast<typename tree_type::node_base*>(&tree_.node_alloc_.second());
-    return result;
-}
-
 template <int N>
 void __red_black_tree<N>::balance_insert(node_base* node, node_base* root)
 {
     set_red(node);
     node_base* parent_node;
-    while (node != root && is_red(parent_node = parent(node)) == true) {
+    while (node != root && is_red(parent_node = parent(node))) {
         if (parent_node == parent(parent_node)->left_) {
             node_base* uncle = parent(parent_node)->right_;
-            if (uncle != 0 && is_red(uncle) == true) {
+            if (uncle != NULL && is_red(uncle)) {
                 set_black(parent(node));
                 set_black(uncle);
                 node = parent(parent(node));
@@ -1018,7 +945,7 @@ void __red_black_tree<N>::balance_insert(node_base* node, node_base* root)
             }
         } else {
             node_base* uncle = parent(parent_node)->left_;
-            if (uncle != 0 && is_red(uncle) == true) {
+            if (uncle != NULL && is_red(uncle)) {
                 set_black(parent(node));
                 set_black(uncle);
                 node = parent(parent(node));
@@ -1046,7 +973,7 @@ void __red_black_tree<N>::rotate_right(node_base* node, node_base*& root)
     }
 
     node->left_ = pivot->right_;
-    if (pivot->right_ != 0) {
+    if (pivot->right_ != NULL) {
         pivot->right_->parent_ = reinterpret_cast<u32>(node) | (pivot->right_->parent_ & 1u);
     }
 
@@ -1071,7 +998,7 @@ void __red_black_tree<N>::rotate_left(node_base* node, node_base*& root)
     }
 
     node->right_ = pivot->left_;
-    if (pivot->left_ != 0) {
+    if (pivot->left_ != NULL) {
         pivot->left_->parent_ = reinterpret_cast<u32>(node) | (pivot->left_->parent_ & 1u);
     }
 
@@ -1096,9 +1023,9 @@ const typename __red_black_tree<N>::node_base* __red_black_tree<N>::parent(const
 template <int N>
 void __red_black_tree<N>::increment(const node_base*& node)
 {
-    if (node->right_ != 0) {
+    if (node->right_ != NULL) {
         const node_base* next = node->right_;
-        while (next->left_ != 0) {
+        while (next->left_ != NULL) {
             next = next->left_;
         }
         node = next;
@@ -1113,10 +1040,10 @@ void __red_black_tree<N>::increment(const node_base*& node)
 template <int N>
 void __red_black_tree<N>::decrement(const node_base*& node)
 {
-    if (node->left_ != 0) {
+    if (node->left_ != NULL) {
         const node_base* previous = node->left_;
         const node_base* next = previous->right_;
-        while (next != 0) {
+        while (next != NULL) {
             previous = next;
             next = next->right_;
         }
@@ -1193,7 +1120,13 @@ public:
 };
 
 template <class T, class C, class A>
-class clsOOSet {};
+class clsOOSet : public std::set<T, C, A> {
+    typedef std::set<T, C, A> Base;
+
+public:
+    // RECONSTRUCTED: constructor interface.
+    clsOOSet(const C& compare, const A& allocator) : Base(compare, allocator) {}
+};
 
 } // namespace oostd
 

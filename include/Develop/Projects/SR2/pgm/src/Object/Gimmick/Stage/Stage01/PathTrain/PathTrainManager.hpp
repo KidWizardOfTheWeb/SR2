@@ -2,6 +2,7 @@
 #define PATHTRAINMANAGER_HPP
 
 #include "types.h"
+#include "Develop/Projects/SR2/pgm/src/Havok/HavokHeap.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Collision/BaseThroughCollision.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickObj.hpp"
@@ -13,24 +14,10 @@ class clsPathTrainManager_Obj;
 class clsPathTrain_Obj;
 struct stcTrainData;
 
-// total size: 0xAC
-class clsPathTrain_Task : public clsBaseGimmickBody<clsPathTrain_Task,
-                                                    clsPathTrainManager_Obj,
-                                                    clsModelType_OB_TX_MO_MA> {
-public:
-    clsPathTrain_Task(u32 param);
-    virtual ~clsPathTrain_Task();
-
-    virtual void reset();
-    virtual void createModel(stcBinInfo& rBinInfo);
-    virtual void execute();
-    virtual void draw();
-};
-
 // total size: 0x18
 class clsPathTrainThroughCol : public clsBaseThroughCollision {
 public:
-    virtual ~clsPathTrainThroughCol() {}
+    virtual ~clsPathTrainThroughCol() { destroy(); }
 
     virtual void contactTriggerEvent(clsPlayerTask* pcPlayer);
 
@@ -43,19 +30,32 @@ public:
 class clsPathTrainManager_Obj : public clsGimmickObj {
 public:
     enum enmMode {
-        MODE_START = 0,
+        MODE_INIT = 0,
         MODE_MAIN = 1,
         MODE_WAIT = 2,
     };
 
-    clsPathTrainManager_Obj() {}
-    virtual ~clsPathTrainManager_Obj() {}
+    clsPathTrainManager_Obj()
+    {
+        m_cThroughCol.m_pcManager = this;
+        m_cThroughCol.m_cFrameControl.m_f32Frame = -2.0f;
+        m_cThroughCol.m_cFrameControl.m_f32CountFrame = 0.0f;
+        m_cThroughCol.m_s8StartCount = 0;
+        m_eMode = MODE_INIT;
+        m_s32TrainNum = 0;
+        m_s32VehiclesNum = 0;
+        m_f32Speed = 1.0f;
+        m_psSetData = NULL;
+        m_psTrainData = NULL;
+        m_pcTrainObj = NULL;
+    }
+    virtual ~clsPathTrainManager_Obj();
 
     virtual void setData();
     virtual void createData();
     virtual void destroyData();
     virtual nspPackId::enm getPackId() const { return nspPackId::ST01_PATH_TRAIN_11040; }
-    virtual u32 getMultiDrawNum() const { return m_s32TrainNum; }
+    virtual u32 getMultiDrawNum() const { return m_s32TrainNum * m_s32VehiclesNum; }
 
     void start();
     void execute();
@@ -73,5 +73,34 @@ public:
     stcTrainData* m_psTrainData;          // offset 0x80, size 0x4
     clsPathTrain_Obj* m_pcTrainObj;       // offset 0x84, size 0x4
 };
+
+// total size: 0xAC
+class clsPathTrain_Task : public clsBaseGimmickBody<clsPathTrain_Task,
+                                                    clsPathTrainManager_Obj,
+                                                    clsModelType_OB_TX_MO_MA> {
+public:
+    clsPathTrain_Task(u32 u32ObjectAreaNum)
+        : clsBaseGimmickBody<clsPathTrain_Task, clsPathTrainManager_Obj, clsModelType_OB_TX_MO_MA>(
+              u32ObjectAreaNum, 101000)
+    {
+        hkVector4 cVec(4.5f, 2.6f, 12.0f, 0.0f);
+        m_pcRigidShape = new hkBoxShape(cVec, hkConvexShapeDefaultRadius);
+    }
+    virtual ~clsPathTrain_Task();
+
+    virtual void reset();
+    virtual void createModel(stcBinInfo& rBinInfo);
+    virtual void execute();
+    virtual void draw();
+};
+
+inline clsPathTrain_Task::~clsPathTrain_Task()
+{
+}
+
+inline clsPathTrainManager_Obj::~clsPathTrainManager_Obj()
+{
+    destroyData();
+}
 
 #endif // PATHTRAINMANAGER_HPP

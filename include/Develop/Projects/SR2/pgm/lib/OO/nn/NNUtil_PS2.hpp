@@ -2,9 +2,12 @@
 #define NNUTIL_PS2_HPP
 
 #include "types.h"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 #include "usr/local/sega/nn/src/Camera/nncamera.h"
 #include "usr/local/sega/nn/src/Matrix/nnmatrixstack.h"
+#include "usr/local/sega/nn/src/Matrix/nnmatrix.h"
+#include "usr/local/sega/nn/src/Matrix/nnmakematrix.h"
 #include "usr/local/sega/nn/src/Morph/nnmorph.h"
 #include "usr/local/sega/nn/src/Object/nnobject.h"
 #include "usr/local/sega/nn/src/Texture/nntexture.h"
@@ -37,10 +40,10 @@ struct tagMatAlphaTmp;
 
 extern u8 cb_buf[32];
 extern u32 cb_texflush;
-extern f32 tsaNnMtxStackBuf[256][4][4];
+extern NNS_MATRIX tsaNnMtxStackBuf[256];
 extern NNS_MATRIXSTACK tsNnMtxStack;
-extern f32 (*tpsNnMtxList)[4][4];
-extern f32 (*tpsNnMtxPal)[4][4];
+extern NNS_MATRIX* tpsNnMtxList;
+extern NNS_MATRIX* tpsNnMtxPal;
 extern u32* tpsNnNodeStatus;
 extern NNS_TRS* tapTrs[2];
 extern s32 ts32MtxListNum;
@@ -48,12 +51,47 @@ extern s32 ts32MtxPalNum;
 extern s32 ts32NodeStatusNum;
 extern s32 ts32TrsNum;
 extern s32 ts32ResidenceTextureSize_PS2;
-extern f32 (**tppsNnMultiMtxPtrList)[4][4];
-extern void** tppsNodeStatusPtrList;
+extern NNS_MATRIX** tppsNnMultiMtxPtrList;
+extern u32** tppsNodeStatusPtrList;
 extern s32 ts32NnMultiObjNum;
 extern s32 ts32MtxPtrListNum;
 extern s32 ts32NodeStatusPtrListNum;
 extern u32 tu32PtrListOffset;
+
+template <class T_MODEL>
+inline void CalcUnionNnMtxBuffer(T_MODEL& rcModel)
+{
+    if (static_cast<u32>(ts32MtxPalNum) < static_cast<u32>(rcModel.m_psObject->nMtxPal)) {
+        ts32MtxPalNum = rcModel.m_psObject->nMtxPal;
+    }
+    if (static_cast<u32>(ts32MtxListNum) < static_cast<u32>(rcModel.m_psObject->nNode)) {
+        ts32MtxListNum = rcModel.m_psObject->nNode;
+    }
+    if (static_cast<u32>(ts32NodeStatusNum) < static_cast<u32>(rcModel.m_psObject->nNode)) {
+        ts32NodeStatusNum = rcModel.m_psObject->nNode;
+    }
+}
+
+template <class T_MODEL>
+inline void CalcUnionNnMtxBuffer_withTRS(T_MODEL& rcModel)
+{
+    u32 u32Num = rcModel.m_psObject->nMtxPal;
+    if (static_cast<u32>(ts32MtxPalNum) < u32Num) {
+        ts32MtxPalNum = u32Num;
+    }
+    u32Num = rcModel.m_psObject->nNode;
+    if (static_cast<u32>(ts32MtxListNum) < u32Num) {
+        ts32MtxListNum = u32Num;
+    }
+    u32Num = rcModel.m_psObject->nNode;
+    if (static_cast<u32>(ts32NodeStatusNum) < u32Num) {
+        ts32NodeStatusNum = u32Num;
+    }
+    u32Num = rcModel.m_psObject->nNode;
+    if (static_cast<u32>(ts32TrsNum) < u32Num) {
+        ts32TrsNum = u32Num;
+    }
+}
 
 void resetDrawModelAlpha();
 void setDrawModelAlpha(f32 f32Param1);
@@ -90,15 +128,36 @@ void BinSetUpMotion(NNS_MOTION** ppsParam1, void* pParam2);
 void BinSetUpObject(NNS_OBJECT** ppsParam1, NNS_TEXFILELIST** ppsParam2, void* pParam3);
 void BinResolvePointer(NNS_BINCNK_DATAHEADER* psParam1, const NNS_BINCNK_NOF0HEADER* psParam2);
 void MemCopyDma(void* pParam1, const void* pParam2, u32 u32Param3);
-void MakeRotateYZXMatrix(f32 (*pasParam1)[4][4], s32 s32Param2, s32 s32Param3, s32 s32Param4);
-void GetMultiDrawBuffer(const NNS_OBJECT* psParam1, f32 (**ppasParam2)[4][4], u32** ppu32Param3);
+static inline void MakeRotateYZXMatrix(NNS_MATRIX* pasParam1,
+                                       s32 s32Param2,
+                                       s32 s32Param3,
+                                       s32 s32Param4)
+{
+    NNS_MATRIX sMtx;
+    nnMakeRotateXMatrix(pasParam1, s32Param2);
+    nnRotateZMatrix(&sMtx, pasParam1, s32Param4);
+    nnRotateYMatrix(pasParam1, &sMtx, s32Param3);
+}
+inline void GetMultiDrawBuffer(const NNS_OBJECT* psParam1,
+                               NNS_MATRIX** ppasParam2,
+                               u32** ppu32Param3)
+{
+    s32 s32ObjNo = ts32NnMultiObjNum;
+    *ppasParam2 = tpsNnMtxList + tu32PtrListOffset;
+    tppsNnMultiMtxPtrList[s32ObjNo] = *ppasParam2;
+    *ppu32Param3 = tpsNnNodeStatus + tu32PtrListOffset;
+    tppsNodeStatusPtrList[s32ObjNo] = *ppu32Param3;
+    tu32PtrListOffset += psParam1->nNode;
+    ++ts32NnMultiObjNum;
+}
+
 void SetUpMultiDraw();
 void DrawMultiObjectInitialPose(const NNS_OBJECT* psParam1, u32 u32Param2, u32 u32Param3);
 void DrawMultiObjectInitialPose(const clsModelType_OB_TX* pcParam1, u32 u32Param2, u32 u32Param3);
 void DrawMultiObject(const NNS_OBJECT* psParam1, u32 u32Param2, u32 u32Param3);
 void DrawMultiObject(const clsModelType_OB_TX* pcParam1, u32 u32Param2, u32 u32Param3);
 void transformVectorFast44(NNS_VECTORFAST& rsParam1,
-                           const f32 (&rasParam2)[4][4],
+                           const NNS_MATRIX& rasParam2,
                            const NNS_VECTORFAST& rsParam3);
 void BinSetUp_Model(clsModelType_OB_TX_MO_MA_MF& rcParam1,
                     const u8* pu8Param2,

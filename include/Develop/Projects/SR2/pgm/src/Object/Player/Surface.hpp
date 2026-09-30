@@ -22,7 +22,7 @@ public:
                               f32& rf32Rad,
                               const NNS_QUATERNION& rsQuat);
 
-    NNS_QUATERNION* getQuatPtr() const { return const_cast<NNS_QUATERNION*>(&m_sQuat); }
+    const NNS_QUATERNION* getQuatPtr() const { return &m_sQuat; }
     void setQuat(const NNS_QUATERNION& rsQuat) { nnNormalizeQuaternion(&m_sQuat, &rsQuat); }
     f32 getRotateRadToDirNrmVecFast(const NNS_VECTORFAST* posDirVecFast)
     {

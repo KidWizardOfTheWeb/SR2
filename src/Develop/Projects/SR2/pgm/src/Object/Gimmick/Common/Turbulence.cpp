@@ -44,9 +44,9 @@ void clsTurbulence_Obj::execute()
 
 void clsTurbulence_Obj::draw(clsModelType_OB_TX_MO_MA& rcObj,
                              clsModelType_OB_TX_MO_MA& rcAObj,
-                             f32 (*psMtxPal)[4][4],
+                             NNS_MATRIX* psMtxPal,
                              u32* psNodeStat,
-                             const f32 (*opaNnViewMtx)[4][4])
+                             const NNS_MATRIX* opaNnViewMtx)
 {
 }
 
@@ -63,7 +63,7 @@ clsRigidBody* clsTurbulence_Task::create(hkShape* pcShape,
                                          clsTurbulence_Obj::stcTurbInfo* psTurbInfo,
                                          u8 u8IsCreateThrough)
 {
-    return 0;
+    return NULL;
 }
 
 void clsTurbulence_Task::parseColliData(const clsGroundCollision::stcBinBody* psBody,
@@ -110,9 +110,9 @@ void clsPutTurbulence_Obj::execute()
 }
 
 void clsPutTurbulence_Obj::draw(stcSt04TurbModel& rcObj,
-                                f32 (*psMtxPal)[4][4],
+                                NNS_MATRIX* psMtxPal,
                                 u32* psNodeStat,
-                                const f32 (*opaNnViewMtx)[4][4])
+                                const NNS_MATRIX* opaNnViewMtx)
 {
 }
 
@@ -151,10 +151,5 @@ void clsPutTurbulence_Obj::reset()
 }
 
 void clsPutTurbulence_Task::reset()
-{
-}
-
-clsPutTurbulence_Task::clsPutTurbulence_Task(u32 u32ObjectAreaNum)
-    : clsBaseGimmickBody(u32ObjectAreaNum, 0)
 {
 }

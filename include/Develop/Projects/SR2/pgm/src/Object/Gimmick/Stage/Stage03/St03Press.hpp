@@ -10,21 +10,6 @@
 class clsSe3DControl;
 class clsPress_Task;
 
-enum enmPressMode {
-    MODE_INIT = 0,
-    MODE_MAIN = 1,
-};
-
-enum enmPressState {
-    STATE_SLEEP = 0,
-    STATE_SAFE_STOP = 1,
-    STATE_STARTWAIT = 2,
-    STATE_FALL = 3,
-    STATE_FALL_WAIT = 4,
-    STATE_RISE = 5,
-    STATE_RISE_WAIT = 6,
-};
-
 // total size: 0x14
 class clsPressCollision : public clsBaseThroughCollision {
 public:
@@ -48,6 +33,21 @@ public:
 // total size: 0x100
 class clsPress_Obj : public clsRigidBodyGimmickObj {
 public:
+    enum enmPressMode {
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
+    };
+
+    enum enmPressState {
+        STATE_SLEEP = 0,
+        STATE_SAFE_STOP = 1,
+        STATE_STARTWAIT = 2,
+        STATE_FALL = 3,
+        STATE_FALL_WAIT = 4,
+        STATE_RISE = 5,
+        STATE_RISE_WAIT = 6,
+    };
+
     clsPress_Obj() {}
     virtual ~clsPress_Obj() {}
 
@@ -81,8 +81,7 @@ public:
         THROUGH_COLLISION_MAX = 4,
     };
 
-    // Note: enmState collision with NearData.hpp and other owners; nested for the clsPress_Task
-    // layout.
+    // RECONSTRUCTED: enum scope.
     enum enmState {
         STATE_START = 0,
         STATE_STOP = 1,
@@ -95,7 +94,7 @@ public:
     virtual void reset();
 
     enmState getState() const { return m_eState; }
-    enmPressState getObjState(u32 u32ObjectNo) { return STATE_SLEEP; }
+    clsPress_Obj::enmPressState getObjState(u32 u32ObjectNo) { return clsPress_Obj::STATE_SLEEP; }
     void createThroughCollision(enmThroughCollisionNum eColissionNum,
                                 clsPressCollision::enmMode eMode);
 

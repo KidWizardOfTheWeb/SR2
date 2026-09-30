@@ -1,6 +1,7 @@
 #ifndef ST10FALLSNOWBALL_HPP
 #define ST10FALLSNOWBALL_HPP
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 #include "types.h"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/RigidBodyGimmickObj.hpp"
@@ -8,16 +9,16 @@
 
 class clsSe3DControl;
 
-enum enmFallSnowBallMode {
-    MODE_START_WAIT = 0,
-    MODE_STOP = 1,
-    MODE_MOVE = 2,
-    MODE_GRAVITY = 3,
-};
-
 // total size: 0x140
 class clsFallSnowBall_Obj : public clsRigidBodyGimmickObj {
 public:
+    enum enmFallSnowBallMode {
+        MODE_START_WAIT = 0,
+        MODE_STOP = 1,
+        MODE_MOVE = 2,
+        MODE_GRAVITY = 3,
+    };
+
     clsFallSnowBall_Obj();
 
     virtual ~clsFallSnowBall_Obj() {}
@@ -34,10 +35,10 @@ public:
     virtual void callbackContactTriggerRigidBody(const hkContactPointConfirmedEvent& cEvent);
 
     void draw(clsModelType_OB_TX& rcModel,
-              f32 (*psMtxPal)[4][4],
+              NNS_MATRIX* psMtxPal,
               u32* psNodeStat,
-              const f32 (*opaNnViewMtx)[4][4],
-              f32 (*psMtxWork)[4][4],
+              const NNS_MATRIX* opaNnViewMtx,
+              NNS_MATRIX* psMtxWork,
               u32 u32ViewNo);
     void drawShadow(clsModelType_OB& model);
     void CheckCount();
@@ -51,7 +52,7 @@ public:
     u8 bHitFlag;                             // offset 0xE8, size 0x1
     clsSe3DControl* m_pcSe3DControl;         // offset 0xEC, size 0x4
     u8 bDrawFlag;                            // offset 0xF0, size 0x1
-    f32 m_sShadowMtx[4][4];                  // offset 0x100, size 0x40
+    NNS_MATRIX m_sShadowMtx;                 // offset 0x100, size 0x40
 };
 
 // total size: 0x9C

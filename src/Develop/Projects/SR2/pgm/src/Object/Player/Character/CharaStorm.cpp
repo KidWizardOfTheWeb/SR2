@@ -35,6 +35,7 @@ void clsCharaStorm::loadAdditionalData(stcBinInfo& rsBinInfo)
 
 clsCharaStorm::~clsCharaStorm()
 {
+    m_pcLineTask->setMode(0);
 }
 
 f32 clsCharaStorm::getCollisionRadius() const

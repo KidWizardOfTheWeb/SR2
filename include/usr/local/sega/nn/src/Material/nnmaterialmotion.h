@@ -1,9 +1,16 @@
 #ifndef NNMATERIALMOTION_H
 #define NNMATERIALMOTION_H
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
+
 #include "usr/local/sega/nn/src/Material/nnmaterial.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 unsigned int nnCalcMaterialMotionObjectBufferSize(struct NNS_OBJECT* obj, struct NNS_MOTION* mmot);
+
 void nnInitMaterialMotionObject(struct NNS_OBJECT* mmobj,
                                 struct NNS_OBJECT* obj,
                                 struct NNS_MOTION* mmot);
@@ -49,9 +56,13 @@ void nnCalcMaterialStatusListNodeStatusList(unsigned int* pMatStatList,
                                             struct NNS_OBJECT* pObj,
                                             unsigned int* pNodeStatList);
 void nnDrawMaterialMotionObject(struct NNS_OBJECT* mmobj,
-                                float (*mtxpal)[4][4],
+                                NNS_MATRIX* mtxpal,
                                 unsigned int* nodestatlist,
                                 unsigned int subobjtype,
                                 unsigned int flag);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // NNMATERIALMOTION_H

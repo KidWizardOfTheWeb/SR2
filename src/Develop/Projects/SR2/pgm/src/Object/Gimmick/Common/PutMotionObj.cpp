@@ -1,7 +1,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/PutMotionObj.hpp"
 
 clsPutMotionObj_Task::clsPutMotionObj_Task(u32 u32ObjectAreaNum)
-    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 0)
+    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 101000)
 {
 }
 

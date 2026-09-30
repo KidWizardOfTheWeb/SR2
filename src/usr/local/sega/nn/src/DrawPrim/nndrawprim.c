@@ -27,7 +27,7 @@ void nnEndDrawPrimitive2D(void)
 {
 }
 
-void nnSetPrimitive3DMatrix(float (*mtx)[4][4])
+void nnSetPrimitive3DMatrix(const NNS_MATRIX* mtx)
 {
 }
 

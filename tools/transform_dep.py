@@ -25,11 +25,12 @@ def in_wsl() -> bool:
     return "microsoft-standard" in uname().release
 
 
-def import_d_file(in_file: str) -> str:
+def import_d_file(in_file: str, compiler_cwd: str = "") -> str:
     if not os.path.exists(in_file):
         return ""
 
     out_text = ""
+    compiler_cwd = compiler_cwd.replace("\\", "/").rstrip("/").lower()
 
     with open(in_file) as file:
         for idx, line in enumerate(file):
@@ -47,7 +48,11 @@ def import_d_file(in_file: str) -> str:
                     path = line.strip()
                 # lowercase drive letter
                 path = path[0].lower() + path[1:]
-                if path[0] == "z":
+                normalized = path.replace("\\", "/")
+                if compiler_cwd and normalized.lower().startswith(compiler_cwd + "/"):
+                    # The compiler may report a virtual working directory.
+                    path = os.path.join(os.getcwd(), normalized[len(compiler_cwd) + 1:])
+                elif path[0] == "z":
                     # shortcut for z:
                     path = path[2:].replace("\\", "/")
                 elif in_wsl():
@@ -75,9 +80,14 @@ def main() -> None:
         "d_file_out",
         help="""Dependency file out""",
     )
+    parser.add_argument(
+        "--cwd",
+        default="",
+        help="compiler working directory alias to map to the current directory",
+    )
     args = parser.parse_args()
 
-    output = import_d_file(args.d_file)
+    output = import_d_file(args.d_file, args.cwd)
 
     if not output:
         return

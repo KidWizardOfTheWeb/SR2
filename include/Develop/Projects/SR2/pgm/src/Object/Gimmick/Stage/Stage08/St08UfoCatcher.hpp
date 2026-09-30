@@ -1,6 +1,8 @@
 #ifndef ST08UFOCATCHER_HPP
 #define ST08UFOCATCHER_HPP
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
+#include "usr/local/sce/ee/gcc/ee/lib/libc/memset.h"
 #include "types.h"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickAutoRunObj.hpp"
@@ -9,6 +11,7 @@
 #include "Develop/Projects/SR2/pgm/src/Data/Pack.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/FrameControl.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/DebrisControl.hpp"
 
 class clsPlayerTask;
 class clsDebrisControl;
@@ -30,11 +33,10 @@ class clsUfoCatcher_Obj;
 // total size: 0x280
 class clsUfoCatcher : public clsGimmickAutoRunObj {
 public:
-    // Note: enmMode name collision with Game.hpp ? nested per scaffold rule
+    // RECONSTRUCTED: enum scope.
     enum enmMode {
-        MODE_NONE = 0,
-        MODE_EXECUTE = 1,
-        MODE_BREAK = 2,
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
     };
 
     enum enmState {
@@ -50,14 +52,18 @@ public:
     };
 
     clsUfoCatcher() {}
-    virtual ~clsUfoCatcher() {}
-    virtual void destroy() {}
+    virtual ~clsUfoCatcher() { destroy(); }
+    virtual void destroy()
+    {
+        delete m_pcDebrisControl;
+        m_pcDebrisControl = NULL;
+    }
 
     void draw(clsUfoCatcherModels& rcModel,
-              f32 (*psMtxPal)[4][4],
+              NNS_MATRIX* psMtxPal,
               u32* psNodeStat,
-              const f32 (*opaNnViewMtx)[4][4],
-              f32 (*psMtxWork)[4][4],
+              const NNS_MATRIX* opaNnViewMtx,
+              NNS_MATRIX* psMtxWork,
               u32 u32ViewNo,
               u32 NodeStatus);
     void execute();
@@ -73,13 +79,13 @@ public:
     enmState m_eState;                       // offset 0x1C4, size 0x4
     clsUfoCatcher_Obj* m_pcUfoObj;           // offset 0x1C8, size 0x4
     f32 m_f32ArmMotionFrame;                 // offset 0x1CC, size 0x4
-    f32 m_sTrsMtxBall[4][4];                 // offset 0x1D0, size 0x40
+    NNS_MATRIX m_sTrsMtxBall;                // offset 0x1D0, size 0x40
     clsDebrisControl* m_pcDebrisControl;     // offset 0x210, size 0x4
     f32 m_f32PlayerScale;                    // offset 0x214, size 0x4
     clsFrameControl m_cFrameControl;         // offset 0x218, size 0x8
     u8 m_bCatch;                             // offset 0x220, size 0x1
     u8 m_u8UfoSeFlg;                         // offset 0x221, size 0x1
-    f32 m_sLineDrawMtx[4][4];                // offset 0x230, size 0x40
+    NNS_MATRIX m_sLineDrawMtx;               // offset 0x230, size 0x40
     clsBackLineEffectTask* m_apcLineTask[2]; // offset 0x270, size 0x8
 
     static f32 m_tof32CLIP_DISTx2;
@@ -89,17 +95,13 @@ public:
 // total size: 0xD0
 class clsUfoCatcher_Obj : public clsPhantomGimmickObject {
 public:
-    // Note: enmMode name collision with Game.hpp ? nested per scaffold rule
+    // RECONSTRUCTED: enum scope.
     enum enmMode {
-        MODE__READY = 0,
-        MODE__WAIT = 1,
-        MODE__CHARGE = 2,
-        MODE__SHOOT = 3,
-        MODE__HORMING = 4,
-        MODE__BLAST = 5,
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
     };
 
-    // Note: enmCtrlMode name collision with GearCtrl.hpp ? nested per scaffold rule
+    // RECONSTRUCTED: enum scope.
     enum enmCtrlMode {
         CTRL_NULL = 0,
         CTRL_RUN = 1,
@@ -115,18 +117,25 @@ public:
         DOOR_CLOSE_FIX = 5,
     };
 
-    clsUfoCatcher_Obj() {}
-    virtual ~clsUfoCatcher_Obj() {}
+    clsUfoCatcher_Obj() : m_eMode(MODE_INIT)
+    {
+        m_f32MotionFrame = 0.0f;
+        m_eDoorMode = DOOR_CLOSE_FIX;
+        m_f32DoorMotionFrame = 0.0f;
+        memset(m_aeCtrlMode, 0, sizeof(m_aeCtrlMode));
+        memset(m_as16SeSfId, -1, sizeof(m_as16SeSfId));
+    }
+    virtual ~clsUfoCatcher_Obj() { destroyData(); }
     virtual void createData();
     virtual void destroyData();
     virtual nspPackId::enm getPackId() const { return nspPackId::ST08_UFOCATCHER_18050; }
     virtual void contactTriggerEvent(hkContactPoint* pParam1, clsObject* pParam2);
 
     void draw(clsUfoCatcherModels& rcModel,
-              f32 (*psMtxPal)[4][4],
+              NNS_MATRIX* psMtxPal,
               u32* psNodeStat,
-              const f32 (*opaNnViewMtx)[4][4],
-              f32 (*psMtxWork)[4][4],
+              const NNS_MATRIX* opaNnViewMtx,
+              NNS_MATRIX* psMtxWork,
               u32 u32ViewNo);
     void execute();
     clsUfoCatcher* getStateCmp(clsUfoCatcher::enmState eState);
@@ -154,7 +163,7 @@ public:
 class clsUfoCatcher_Task
     : public clsBaseGimmickBody<clsUfoCatcher_Task, clsUfoCatcher_Obj, clsUfoCatcherModels> {
 public:
-    clsUfoCatcher_Task(u32 u32ObjectAreaNum);
+    clsUfoCatcher_Task(u32 u32ObjectAreaNum) : clsBaseGimmickBody(u32ObjectAreaNum, 101000) {}
     virtual ~clsUfoCatcher_Task();
 
     virtual void execute();
@@ -162,5 +171,9 @@ public:
     virtual void reset();
     virtual void createModel(stcBinInfo& rsBinInfoI);
 };
+
+inline clsUfoCatcher_Task::~clsUfoCatcher_Task()
+{
+}
 
 #endif // ST08UFOCATCHER_HPP

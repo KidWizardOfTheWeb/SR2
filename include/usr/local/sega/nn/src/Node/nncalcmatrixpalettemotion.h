@@ -1,6 +1,8 @@
 #ifndef NNCALCMATRIXPALETTEMOTION_H
 #define NNCALCMATRIXPALETTEMOTION_H
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
+
 #include "usr/local/sega/nn/src/Object/nnobject.h"
 
 struct NNS_MATRIXSTACK;
@@ -24,20 +26,24 @@ typedef void (*NNS_NODEUSRMOT_CALLBACK_FUNC)(struct NNS_NODEUSRMOT_CALLBACK_VAL*
 
 extern NNS_NODEUSRMOT_CALLBACK_FUNC nngNodeUserMotionCallbackFunc;
 
-void nnCalcMatrixPaletteMotion(float (*mtxpal)[4][4],
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void nnCalcMatrixPaletteMotion(NNS_MATRIX* mtxpal,
                                unsigned int* nodestatlist,
                                struct NNS_OBJECT* obj,
                                struct NNS_MOTION* mot,
                                float frame,
-                               float (*basemtx)[4][4],
+                               NNS_MATRIX* basemtx,
                                struct NNS_MATRIXSTACK* mstk,
                                unsigned int flag);
 signed int nnCalcMotionFrame(
     float* dstframe, unsigned int fType, float startframe, float endframe, float frame);
 void nnCalcMatrixPaletteMotionNode(signed int nodeIdx);
-signed int nnCalcNodeMotionCore(float (*pNodeMtx)[4][4],
+signed int nnCalcNodeMotionCore(NNS_MATRIX* pNodeMtx,
                                 signed int* pHideFlag,
-                                float (*pBaseMtx)[4][4],
+                                NNS_MATRIX* pBaseMtx,
                                 struct NNS_NODE* pNode,
                                 signed int NodeIdx,
                                 struct NNS_MOTION* pMot,
@@ -48,18 +54,22 @@ signed int nnCalcMotionRotate(struct NNS_SUBMOTION* submot,
                               struct NNS_ROTATE_A32* rv,
                               struct NNS_QUATERNION* rq,
                               unsigned int rtype);
-void nnRotateXYZMatrixFast(float (*mtx)[4][4], signed int ax, signed int ay, signed int az);
-void nnRotateXZYMatrixFast(float (*mtx)[4][4], signed int ax, signed int ay, signed int az);
-void nnRotateZXYMatrixFast(float (*mtx)[4][4], signed int ax, signed int ay, signed int az);
+void nnRotateXYZMatrixFast(NNS_MATRIX* mtx, signed int ax, signed int ay, signed int az);
+void nnRotateXZYMatrixFast(NNS_MATRIX* mtx, signed int ax, signed int ay, signed int az);
+void nnRotateZXYMatrixFast(NNS_MATRIX* mtx, signed int ax, signed int ay, signed int az);
 signed int nnCalcMotionTranslate(struct NNS_SUBMOTION* submot, float frame, struct NNS_VECTOR* tv);
-void nnTranslateMatrixFast(float (*mtx)[4][4], float x, float y, float z);
+void nnTranslateMatrixFast(NNS_MATRIX* mtx, float x, float y, float z);
 signed int nnCalcMotionScale(struct NNS_SUBMOTION* submot, float frame, struct NNS_VECTOR* sv);
-void nnScaleMatrixFast(float (*mtx)[4][4], float x, float y, float z);
+void nnScaleMatrixFast(NNS_MATRIX* mtx, float x, float y, float z);
 void nnCalcMatrixPaletteMotionNode2BoneSIIK(signed int jnt1nodeIdx);
 void nnCalcMatrixPaletteMotionNode1BoneSIIK(signed int jnt1nodeIdx);
 enum NNE_BOOL nnCalcMotionUserData(struct NNS_NODEUSRMOT_CALLBACK_VAL* val,
                                    struct NNS_SUBMOTION* submot,
                                    float frame);
-void nnNormalizeColumn(float (*mtx)[4][4], signed int clm);
+void nnNormalizeColumn(NNS_MATRIX* mtx, signed int clm);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // NNCALCMATRIXPALETTEMOTION_H

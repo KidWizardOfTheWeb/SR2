@@ -23,9 +23,9 @@ public:
 class clsFusionMachine_Obj;
 
 // total size: 0xD0
-class clsFusionMachine_Task : public clsSingleModelGimmick_Task<clsFusionMachine_Task,
-                                                                clsFusionMachine_Obj,
-                                                                clsFusionMachineModels> {
+class clsFusionMachine_Task : public clsBaseGimmickBody<clsFusionMachine_Task,
+                                                        clsFusionMachine_Obj,
+                                                        clsFusionMachineModels> {
 public:
     clsFusionMachine_Task(u32 packId);
     virtual ~clsFusionMachine_Task() {}
@@ -130,7 +130,12 @@ public:
     f32 getMotionFrame() const { return m_f32MotionFrame; }
     s32 getMotionNo() const { return m_s32MotionNo; }
     enmFusionMachineMode getMode() const { return m_eFusionMachineMode; }
-    void upDateLightData() {}
+    void drawModel(NNS_OBJECT* psObject,
+                   NNS_MOTION* psMotion,
+                   NNS_MATRIX* psMtxPal,
+                   u32* psNodeStat,
+                   const NNS_MATRIX& rsViewMtx);
+    void upDateLightData();
     void stopLoopParticle(u8 u8Param1) {}
     void moveDamageAction() {}
     void setAttackState(enmAttackState param_1) { m_eAttackState = param_1; }
@@ -188,7 +193,7 @@ public:
     clsOOVector m_vecLapMark;                     // offset 0x104, size 0x10
     clsPosturalCtrl m_cPostural;                  // offset 0x120, size 0xB0
     clsPath m_cPath;                              // offset 0x1D0, size 0x60
-    f32 m_sProjMtx44[4][4];                       // offset 0x230, size 0x40
+    NNS_MATRIX m_sProjMtx44;                      // offset 0x230, size 0x40
     clsBossGravityWave_Task* m_pcBossGravityWave; // offset 0x270, size 0x4
     clsSe3DControl* m_pcSe3DControl;              // offset 0x274, size 0x4
     NNS_VECTORFAST m_sDirVecFast;                 // offset 0x280, size 0x10
@@ -228,9 +233,9 @@ public:
     u8 m_u8PathNo;                                // offset 0x37B, size 0x1
     NNS_VECTORFAST m_sEffectFollowPos;            // offset 0x380, size 0x10
     NNS_VECTORFAST m_sEffectFollowPos2;           // offset 0x390, size 0x10
-    f32 m_sEffectMtx[4][4];                       // offset 0x3A0, size 0x40
+    NNS_MATRIX m_sEffectMtx;                      // offset 0x3A0, size 0x40
     clsTask* m_apcLoopParticle[3];                // offset 0x3E0, size 0xC
-    f32 m_sLineDrawMtx[4][4];                     // offset 0x3F0, size 0x40
+    NNS_MATRIX m_sLineDrawMtx;                    // offset 0x3F0, size 0x40
     clsBackLineEffectTask* m_apcLineTask[2];      // offset 0x430, size 0x8
 };
 

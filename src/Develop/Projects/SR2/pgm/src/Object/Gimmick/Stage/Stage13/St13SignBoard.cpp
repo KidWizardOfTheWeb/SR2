@@ -27,16 +27,17 @@ void clsSignBoard_Obj::main()
 }
 
 void clsSignBoard_Obj::draw(clsModelType_OB_TX& rcModel,
-                            f32 (*psMtxPal)[4][4],
+                            NNS_MATRIX* psMtxPal,
                             u32* psNodeStat,
-                            const f32 (*opaNnViewMtx)[4][4],
-                            f32 (*psMtxWork)[4][4],
+                            const NNS_MATRIX* opaNnViewMtx,
+                            NNS_MATRIX* psMtxWork,
                             u32 u32ViewNo)
 {
 }
 
 clsSignBoard_Task::clsSignBoard_Task(u32 param)
-    : clsSingleModelGimmick_Task<clsSignBoard_Task, clsSignBoard_Obj, clsModelType_OB_TX>(param, 0)
+    : clsSingleModelGimmick_Task<clsSignBoard_Task, clsSignBoard_Obj, clsModelType_OB_TX>(param,
+                                                                                          101000)
 {
 }
 

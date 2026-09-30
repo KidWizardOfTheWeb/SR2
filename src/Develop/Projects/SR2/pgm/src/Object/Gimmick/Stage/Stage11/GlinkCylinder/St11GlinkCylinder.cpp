@@ -1,4 +1,5 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage11/GlinkCylinder/St11GlinkCylinder.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage11/GlinkCylinder/St11GlinkCylinderManager.hpp"
 
 NNS_VECTOR clsGlinkCylinder_Object::tosCollisionHalfSizeVec = {5.0f, 5.0f, 18.0f};
 f32 clsGlinkCylinder_Object::tof32ClipSqDist = 0.0f;
@@ -50,10 +51,10 @@ void clsGlinkCylinder_Object::main()
 }
 
 void clsGlinkCylinder_Object::draw(NNS_OBJECT* psObject,
-                                   f32 (*psMtxPal)[4][4],
+                                   NNS_MATRIX* psMtxPal,
                                    u32* psNodeStat,
-                                   const f32 (*opaNnViewMtx)[4][4],
-                                   f32 (*psMtxWork)[4][4],
+                                   const NNS_MATRIX* opaNnViewMtx,
+                                   NNS_MATRIX* psMtxWork,
                                    u32 u32ViewNo)
 {
 }

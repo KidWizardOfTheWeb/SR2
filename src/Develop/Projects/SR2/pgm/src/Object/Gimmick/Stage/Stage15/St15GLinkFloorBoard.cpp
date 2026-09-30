@@ -5,10 +5,10 @@ f32 clsGLinkFloorBoard_Object::tof32ClipSqDist = 0.0f;
 clsGravityGimmickParam clsGLinkFloorBoard_Object::t_ocGravityGimmickParam;
 
 void clsGLinkFloorBoard_Object::draw(NNS_OBJECT* psObject,
-                                     f32 (*psMtxPal)[4][4],
+                                     NNS_MATRIX* psMtxPal,
                                      u32* psNodeStat,
-                                     const f32 (*opaNnViewMtx)[4][4],
-                                     f32 (*psMtxWork)[4][4],
+                                     const NNS_MATRIX* opaNnViewMtx,
+                                     NNS_MATRIX* psMtxWork,
                                      u32 u32ViewNo)
 {
 }
@@ -46,7 +46,7 @@ void clsGLinkFloorBoard_Object::destroyData()
 }
 
 clsGLinkFloorBoard_Task::clsGLinkFloorBoard_Task(u32 u32ObjectAreaNum)
-    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 0)
+    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 101010)
 {
 }
 

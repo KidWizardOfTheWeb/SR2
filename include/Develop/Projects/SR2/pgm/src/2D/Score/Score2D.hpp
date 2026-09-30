@@ -28,8 +28,8 @@ public:
     u8 getAlpha() const { return m_u8Alpha; }
 
     void setRecordTime(s32 s32Arg0, f32 f32Arg1);
-    void setStartPos(f32 f32Arg0, f32 f32Arg1, f32 f32Arg2);
-    void setStartRot(f32 f32Arg0, f32 f32Arg1, f32 f32Arg2);
+    static void setStartPos(f32 f32x, f32 f32y, f32 f32z);
+    static void setStartRot(f32 f32x, f32 f32y, f32 f32z);
     void drawReverseMark();
 
     static f32 DrawRecordTime;

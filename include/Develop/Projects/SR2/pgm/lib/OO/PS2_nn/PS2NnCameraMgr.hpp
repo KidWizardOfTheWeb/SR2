@@ -13,14 +13,17 @@ public:
     clsPfCameraMgr() {}
     virtual ~clsPfCameraMgr() {}
 
-    clsPfCamera* getCamera(u32 u32Param1) const
-    {
-        return static_cast<clsPfCamera**>(m_vecCamera._data)[u32Param1];
-    }
+    clsPfCamera* getCamera(u32 u32Param1) const;
 
     void updateAllCamera();
 
-    vector m_vecCamera; // offset 0x8, size 0xC
+    std::vector<clsPfCamera*, std::allocator<clsPfCamera*> > m_vecCamera; // offset 0x8, size 0xC
 };
+
+// Defined after the class so it does not instantiate the vector accessor early.
+inline clsPfCamera* clsPfCameraMgr::getCamera(u32 u32Param1) const
+{
+    return m_vecCamera[u32Param1];
+}
 
 #endif // PS2NNCAMERAMGR_HPP

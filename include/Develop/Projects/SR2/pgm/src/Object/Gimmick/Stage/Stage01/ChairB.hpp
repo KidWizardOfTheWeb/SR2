@@ -1,18 +1,19 @@
 #ifndef CHAIRB_HPP
 #define CHAIRB_HPP
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 #include "types.h"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/RigidBodyGimmickObj.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 
-enum enmBulletinBoardMode {
-    INIT = 0,
-    MAIN = 1,
-};
-
 class clsChairB_Obj : public clsRigidBodyGimmickObj {
 public:
+    enum enmBulletinBoardMode {
+        INIT = 0,
+        MAIN = 1,
+    };
+
     clsChairB_Obj();
     virtual ~clsChairB_Obj();
 
@@ -22,14 +23,13 @@ public:
     virtual void main();
 
     void draw(clsModelType_OB_TX& rModels,
-              f32 (*psMtxPal)[4][4],
+              NNS_MATRIX* psMtxPal,
               u32* psNodeStat,
-              const f32 (*opaNnViewMtx)[4][4],
-              f32 (*psMtxWork)[4][4]);
+              const NNS_MATRIX* opaNnViewMtx,
+              NNS_MATRIX* psMtxWork);
 
     nspPackId::enm getPackId() const { return nspPackId::ST01_CHAIR_B_11191; }
 
-    // Members
     enmBulletinBoardMode m_enBulletinBoardMode; // offset 0xD0, size 0x4
 };
 

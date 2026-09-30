@@ -33,10 +33,10 @@ void clsCriMovie::pause(u32 bSetI)
 
 MwsfdStat clsCriMovie::getStatus() const
 {
-    if (clsPfCri::GS()->m_pcAllocator_Movie == 0) {
+    if (clsPfCri::GS()->m_psSofdecHandle_Movie == NULL) {
         return MWSFD_STAT_STOP;
     }
-    return mwPlyGetStat(clsPfCri::GS()->m_pcAllocator_Movie);
+    return mwPlyGetStat(clsPfCri::GS()->m_psSofdecHandle_Movie);
 }
 
 f32 clsCriMovie::getTime_Sec() const

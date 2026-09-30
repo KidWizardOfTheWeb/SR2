@@ -26,7 +26,14 @@ enum enmGDiveType {
 class clsReaction {
 public:
     clsReaction() {}
-    clsReaction(clsPlayerTask* pcParam1) : m_pcPlayer(pcParam1) {}
+    clsReaction(clsPlayerTask* pcParam1)
+        : m_pcPlayer(pcParam1), m_pcPlaySe2D(NULL), m_f32EffectFrame(0.0f),
+          m_f32EffectSubFrame(0.0f), m_eWallType(WALL_TYPE__NORMAL),
+          m_eGDiveType(GDIVE_TYPE__NORMAL), m_s8WallHitCount(0)
+    {
+        m_vecColInfo.reserve(10);
+        initSe();
+    }
 
     enum enmColEfefctType {
         COL_EFFECT_GROUND = 0,
@@ -41,7 +48,9 @@ public:
     enmWallType m_eWallType;       // offset 0x20, size 0x4
     enmGDiveType m_eGDiveType;     // offset 0x24, size 0x4
     s8 m_s8WallHitCount;           // offset 0x28, size 0x1
-    vector m_vecColInfo;           // offset 0x2C, size 0xC
+    std::vector<const clsGroundCollision::stcInfo*,
+                std::allocator<const clsGroundCollision::stcInfo*> >
+        m_vecColInfo; // offset 0x2C, size 0xC
 
     void alwaysChangeSpeed();
     void triggerDead();

@@ -21,7 +21,7 @@ void clsSurveillanceCamera_Obj::destroyData()
 }
 
 clsSurveillanceCamera_Task::clsSurveillanceCamera_Task(u32 u32ObjectAreaNum)
-    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 0)
+    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 101000)
 {
 }
 

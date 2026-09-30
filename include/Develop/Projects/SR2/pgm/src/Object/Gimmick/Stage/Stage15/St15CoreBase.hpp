@@ -11,8 +11,8 @@
 // total size: 0x60
 class clsCoreBase_Obj : public clsGimmickObj {
 public:
-    clsCoreBase_Obj() {}
-    virtual ~clsCoreBase_Obj() {}
+    clsCoreBase_Obj() : m_eCoreBaseMode(MODE_INIT), m_bDrawFlag(0) {}
+    virtual ~clsCoreBase_Obj() { destroyData(); }
 
     virtual nspPackId::enm getPackId() const { return nspPackId::ST15_CORE_BASE_25000; }
 
@@ -34,7 +34,7 @@ class clsCoreBase_Task : public clsSingleModelGimmick_Task<clsCoreBase_Task,
 public:
     clsCoreBase_Task(u32 u32ObjectAreaNum)
         : clsSingleModelGimmick_Task<clsCoreBase_Task, clsCoreBase_Obj, clsModelType_OB_TX_MO_MA>(
-              u32ObjectAreaNum, 0x18A88)
+              u32ObjectAreaNum, 99999)
     {
     }
     virtual ~clsCoreBase_Task() {}

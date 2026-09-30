@@ -27,19 +27,14 @@ template <>
 u32 clsBitset<u8>::getOnBitCnt() const
 {
     u32 u32Count = 0;
-    u32 u32Buffer = 0;
+    u8* pu8Buffer = m_pBuffer;
 
-    if (m_BufferSize != 0) {
-        u8* pu8Buffer = m_pBuffer;
-        do {
-            u8 u8Val = *pu8Buffer;
-            u32Buffer++;
-            pu8Buffer++;
-            u32 u32Val = u8Val;
-            u32Count += (u8Val & 1) + ((u32)u8Val >> 1 & 1) + ((u32)u8Val >> 2 & 1) +
-                        (u32Val >> 3 & 1) + (u32Val >> 4 & 1) + (u32Val >> 5 & 1) +
-                        (u32Val >> 6 & 1) + (u32Val >> 7);
-        } while (u32Buffer < m_BufferSize);
+    for (u32 u32Buffer = 0; u32Buffer < m_BufferSize; u32Buffer++) {
+        u8 u8Val = *pu8Buffer;
+        pu8Buffer++;
+        u32 u32Val = u8Val;
+        u32Count += (u8Val & 1) + (u32Val >> 1 & 1) + (u32Val >> 2 & 1) + (u32Val >> 3 & 1) +
+                    (u32Val >> 4 & 1) + (u32Val >> 5 & 1) + (u32Val >> 6 & 1) + (u32Val >> 7);
     }
 
     return u32Count;
@@ -63,7 +58,7 @@ void clsSaveDataCtrl::LoadAllOptionData()
 
 void* clsSaveDataCtrl::GetSaveDataBuff_Crc()
 {
-    return 0;
+    return NULL;
 }
 
 u8 clsSaveDataCtrl::CheckSaveDataCrc(const void* pvParam1) const

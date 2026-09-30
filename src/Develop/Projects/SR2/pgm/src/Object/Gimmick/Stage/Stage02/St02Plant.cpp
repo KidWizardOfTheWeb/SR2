@@ -26,7 +26,7 @@ void clsPlant_Obj::destroyData()
 
 clsPlant_Task::clsPlant_Task(u32 u32ObjectAreaNum)
     : clsSingleModelGimmick_Task<clsPlant_Task, clsPlant_Obj, clsModelType_OB_TX>(u32ObjectAreaNum,
-                                                                                  0)
+                                                                                  101000)
 {
 }
 

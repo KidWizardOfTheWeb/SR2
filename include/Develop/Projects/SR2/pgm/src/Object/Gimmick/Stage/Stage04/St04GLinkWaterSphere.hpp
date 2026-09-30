@@ -1,6 +1,7 @@
 #ifndef ST04GLINKWATERSPHERE_HPP
 #define ST04GLINKWATERSPHERE_HPP
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 #include "types.h"
 #include "Develop/Projects/SR2/pgm/src/Script/ScriptShadow.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Object.hpp"
@@ -14,20 +15,15 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Player/Player.hpp"
 #include "Develop/Projects/SR2/pgm/lib/OO/core/Compression/OOLZSS.hpp"
 
-// Enum used by clsGLinkWaterSphere_Object (owned by clsGLinkWaterSphere_Object)
-enum enmWaterSphereMode {
-    MODE_INIT = 0,
-    MODE_WAIT = 1,
-    MODE_RISE = 2,
-    MODE_FLOAT = 3,
-    MODE_MOVE_INIT = 4,
-    MODE_MOVE = 5,
-    MODE_END = 6,
-};
-
 // total size: 0x110
 class clsGLinkWaterSphere_Object : public clsBaseGravityLinkObject {
 public:
+    enum enmMode {
+        MODE_INIT = 0,
+        MODE_APPEAR = 1,
+        MODE_WAIT = 2,
+    };
+
     clsGLinkWaterSphere_Object() {}
     virtual ~clsGLinkWaterSphere_Object();
     virtual void reset();
@@ -43,17 +39,17 @@ public:
     virtual NNS_VECTOR* getCollisionHalfSizeVecPtr() const;
     virtual nspPackId::enm getPackId() const { return nspPackId::ST04_GLINK_WATERSPHERE_14010; }
     virtual void draw(clsModelType_OB_TX_MO_MA& rcModel,
-                      f32 (*psMtxPal)[4][4],
+                      NNS_MATRIX* psMtxPal,
                       u32* psNodeStat,
-                      const f32 (*opaNnViewMtx)[4][4],
-                      f32 (*psMtxWork)[4][4],
+                      const NNS_MATRIX* opaNnViewMtx,
+                      NNS_MATRIX* psMtxWork,
                       u32 u32ViewNo);
 
     NNS_OBJECT* m_psMorphObject; // offset 0xE0, size 0x4
 
     clsSe3DControl* m_pcSe3DControl; // offset 0xE4, size 0x4
 
-    enmWaterSphereMode m_eMode; // offset 0xE8, size 0x4
+    enmMode m_eMode; // offset 0xE8, size 0x4
 
     f32 m_f32MatFrame; // offset 0xEC, size 0x4
 

@@ -451,9 +451,27 @@ segments:
       - [0x0F23F0, asmtu, Develop/Projects/SR2/pgm/src/Object/Player/Data/GameData] # vram: 0x001F2370
       # - [0x0F2610, asmtu, unk_block_0F2610] # vram: 0x001F2590
       - [0x0F28E0, asmtu, Develop/Projects/SR2/pgm/src/Havok/HavokHeap] # vram: 0x001F2860
-      # - [0x0F29E0, asmtu, unk_block_0F29E0] # vram: 0x001F2960
-      # - [0x0F2AD0, asmtu, Develop/Projects/SR2/pgm/src/Havok/HavokHeap] # vram: 0x001F2A50
-      # - [0x0F2AE0, asmtu, unk_block_0F2AE0] # vram: 0x001F2A60
+      # Real game HavokHeap.cpp ends at 0x001F2A58; stripped Havok SDK/library code begins at 0x001F2A60.
+      - [0x0F2AE0, asmtu, Develop/Projects/SR2/pgm/src/Havok/HavokVendor] # vram: 0x001F2A60
+      - [0x137930, asmtu, Develop/Projects/SR2/pgm/src/Havok/HavokEntity] # vram: 0x002378B0
+      - [0x139180, asmtu, Develop/Projects/SR2/pgm/src/Havok/HavokRigidBody] # vram: 0x00239100
+      - [0x13A650, asmtu, Develop/Projects/SR2/pgm/src/Havok/HavokVendorPostEntity] # vram: 0x0023A5D0
+      - [0x13B190, asmtu, Develop/Projects/SR2/pgm/src/Havok/HavokMotion] # vram: 0x0023B110
+      - [0x13B6D0, asmtu, Develop/Projects/SR2/pgm/src/Havok/HavokThinBoxMotion] # vram: 0x0023B650
+      - [0x13B710, asmtu, Develop/Projects/SR2/pgm/src/Havok/HavokBoxMotion] # vram: 0x0023B690
+      - [0x13BDC0, asmtu, Develop/Projects/SR2/pgm/src/Havok/HavokFixedRigidMotion] # vram: 0x0023BD40
+      - [0x13C030, asmtu, Develop/Projects/SR2/pgm/src/Havok/HavokKeyframedRigidMotion] # vram: 0x0023BFB0
+      - [0x13C410, asmtu, Develop/Projects/SR2/pgm/src/Havok/HavokSphereMotion] # vram: 0x0023C390
+      - [0x13C8C0, asmtu, Develop/Projects/SR2/pgm/src/Havok/HavokStabilizedBoxMotion] # vram: 0x0023C840
+      - [0x13C900, asmtu, Develop/Projects/SR2/pgm/src/Havok/HavokRigidMotionUtil] # vram: 0x0023C880
+      - [0x13F990, asmtu, Develop/Projects/SR2/pgm/src/Havok/HavokAabbPhantom] # vram: 0x0023F910
+      - [0x140490, asmtu, Develop/Projects/SR2/pgm/src/Havok/HavokPhantom] # vram: 0x00240410
+      - [0x141510, asmtu, Develop/Projects/SR2/pgm/src/Havok/HavokShapePhantom] # vram: 0x00241490
+      - [0x141960, asmtu, Develop/Projects/SR2/pgm/src/Havok/HavokSimpleShapePhantom] # vram: 0x002418E0
+      - [0x142860, asmtu, Develop/Projects/SR2/pgm/src/Havok/HavokBroadPhaseBorder] # vram: 0x002427E0
+      - [0x143080, asmtu, Develop/Projects/SR2/pgm/src/Havok/HavokSimulationIsland] # vram: 0x00243000
+      - [0x143FD0, asmtu, Develop/Projects/SR2/pgm/src/Havok/HavokWorld] # vram: 0x00243F50
+      - [0x14A660, asmtu, Develop/Projects/SR2/pgm/src/Havok/HavokVendorPostWorld] # vram: 0x0024A5E0
       - [0x1AF6B0, asmtu, Develop/Projects/SR2/pgm/src/Object/Player/PlayerMotion] # vram: 0x002AF630
       - [0x1AFBE0, asmtu, Develop/Projects/SR2/pgm/lib/OO/PS2/PS2CamCtrl] # vram: 0x002AFB60
       # - [0x1B0010, asmtu, unk_block_1B0010] # vram: 0x002AFF90

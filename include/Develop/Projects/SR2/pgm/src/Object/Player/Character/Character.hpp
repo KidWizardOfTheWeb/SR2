@@ -2,6 +2,7 @@
 #define CHARACTER_HPP
 
 #include "types.h"
+#include "usr/local/sega/nn/src/Matrix/nnvector.h"
 #include "Develop/Projects/SR2/pgm/src/Object/Player/Data/CharaData.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Player/Performance.hpp"
 
@@ -72,21 +73,36 @@ public:
         BORN_ID__MAX = 52,
     };
 
+    clsModelType_OB_TX* m_pcModel;            // offset 0x0, size 0x4
+    stcData* m_posData;                       // offset 0x4, size 0x4
+    clsPlayerTask* m_pcPlayer;                // offset 0x8, size 0x4
+    f32 m_f32OffsetPosition;                  // offset 0xC, size 0x4
+    u8 m_u8Type;                              // offset 0x10, size 0x1
+    enmBaseType m_eBaseType;                  // offset 0x14, size 0x4
+    enmWalkType m_eWalkType;                  // offset 0x18, size 0x4
+    u8 m_u8ModelType;                         // offset 0x1C, size 0x1
+    f32 m_f32DrawAlpha;                       // offset 0x20, size 0x4
+    f32 m_f32behaviorCnt;                     // offset 0x24, size 0x4
+    clsDrawAttackEffect_Task* m_pcDrawEffTsk; // offset 0x28, size 0x4
+    NNS_VECTORFAST m_sFollowOffsetVF;         // offset 0x30, size 0x10
+    NNS_VECTORFAST m_sFollowVF;               // offset 0x40, size 0x10
+    u32 m_u32FollowCalcNodeIdx;               // offset 0x50, size 0x4
+
     clsCharacter(clsPlayerTask* pcPlayer, u8 u8Type, u8 u8ModelType);
-    ~clsCharacter() {}
-    f32 getSpeedRate();
-    void draw(u32 u32AddDrawFlagI);
-    void drawAttackEffect();
-    f32 getCollisionRadius() const;
-    f32 getDrawOffset() const;
-    void behavior();
-    void initAttack00();
-    void initAttack01();
-    void actionAttack00();
-    void actionAttack01();
-    void updateModel() {}
-    void reset() {}
-    s32 getNodeIndex(enmCharaBornNo) const;
+    virtual ~clsCharacter() {}
+    virtual f32 getCollisionRadius() const = 0;
+    virtual f32 getDrawOffset() const = 0;
+    virtual f32 getSpeedRate();
+    virtual void draw(u32 u32AddDrawFlagI);
+    virtual void drawAttackEffect();
+    virtual void behavior() = 0;
+    virtual void initAttack00() = 0;
+    virtual void initAttack01() = 0;
+    virtual void actionAttack00() = 0;
+    virtual void actionAttack01() = 0;
+    virtual void updateModel() {}
+    virtual void reset() {}
+    virtual s8 getNodeIndex(enmCharaBornNo) const = 0;
 
     u32 holdAttackBase();
     void addAttackMotionFrame();
@@ -99,21 +115,6 @@ public:
     static f32 t_of32OffsetWalkHeight;
     static f32 t_of32OffsetGearHeight;
     static NNS_VECTORFAST m_toaFalseStartOffsetVec[19];
-
-    clsModelType_OB_TX* m_pcModel;            // offset 0x0, size 0x4
-    stcData* m_posData;                       // offset 0x4, size 0x4
-    clsPlayerTask* m_pcPlayer;                // offset 0x8, size 0x4
-    f32 m_f32OffsetPosition;                  // offset 0xC, size 0x4
-    u8 m_u8Type;                              // offset 0x10, size 0x1
-    enmBaseType m_eBaseType;                  // offset 0x14, size 0x4
-    enmWalkType m_eWalkType;                  // offset 0x18, size 0x4
-    u8 m_u8ModelType;                         // offset 0x1C, size 0x1
-    f32 m_f32DrawAlpha;                       // offset 0x20, size 0x4
-    f32 m_f32behaviorCnt;                     // offset 0x24, size 0x4
-    clsDrawAttackEffect_Task* m_pcDrawEffTsk; // offset 0x28, size 0x4
-    f32 m_sFollowOffsetVF[4];                 // offset 0x30, size 0x10
-    f32 m_sFollowVF[4];                       // offset 0x40, size 0x10
-    u32 m_u32FollowCalcNodeIdx;               // offset 0x50, size 0x4
 };
 
 #endif // CHARACTER_HPP

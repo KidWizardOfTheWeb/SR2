@@ -29,14 +29,27 @@ public:
 
     typedef u32 enmState;
 
-    // total size: 0x10
+    // total size: 0x18
     struct stcViewRect {
-        s32 s32Left;   // offset 0x0, size 0x4
-        s32 s32Top;    // offset 0x4, size 0x4
-        s32 s32Right;  // offset 0x8, size 0x4
-        s32 s32Bottom; // offset 0xC, size 0x4
+        f32 f32wd;      // offset 0x0, size 0x4
+        f32 f32hw;      // offset 0x4, size 0x4
+        f32 f32OffsetX; // offset 0x8, size 0x4
+        f32 f32OffsetY; // offset 0xC, size 0x4
+        f32 f32Width;   // offset 0x10, size 0x4
+        f32 f32Height;  // offset 0x14, size 0x4
     };
 
+    clsOOSystem()
+        : m_eSoundMode(SOUND_MODE___STEREO), m_eMessageLanguage(LANGUAGE___ENGLISH),
+          m_eVoiceLanguage(LANGUAGE___ENGLISH), m_f32FrameRate(60.0f), m_f32FrameRateAdd(1.0f),
+          m_f32FrameRateAdd2(1.0f), m_f32FrameRateAddCount(1.0f), m_f32FrameRateAddCount2(1.0f),
+          m_s32FrameRateMaxMicroSec(16666), m_u32VblankCnt(0), m_u32VblankCntOld(0),
+          m_u32GameCnt(0), m_eState(1), m_u8FrameRateDef(60), m_u8VblankNum(1), m_s8ViewportNum(1),
+          m_s8BackUpViewportNum(1), m_s8MaxViewportNum(1), m_bPause(false), m_bUnPause(true),
+          m_bEnablePauseWorks(true), m_bDisablePauseCancel(false), m_bDisablePauseDraw(false),
+          m_bNextPause(false)
+    {
+    }
     virtual ~clsOOSystem() {}
     virtual void setSoundMode(enmSoundMode eSoundMode) { m_eSoundMode = eSoundMode; }
     virtual u8 isMono() const { return m_eSoundMode == SOUND_MODE___MONAURAL; }
@@ -51,7 +64,7 @@ public:
     f32 getFrameRate() const { return m_f32FrameRate; }
     f32 getFrameRateAdd() const { return m_f32FrameRateAdd; }
     u32 getGameCnt() const { return m_u32GameCnt; }
-    s8 getViewportNum() const { return m_s8ViewportNum; }
+    s32 getViewportNum() const { return m_s8ViewportNum; }
     s8 getBackUpViewportNum() const { return m_s8BackUpViewportNum; }
     u8 getDisablePauseCancel() const { return m_bDisablePauseCancel; }
     enmLanguage getMessageLanguage() const { return m_eMessageLanguage; }
@@ -70,6 +83,7 @@ public:
 
     static c8* m_tac8LanguageName_Debug[11];
     static c8 m_tac8RomRegionName_Debug[3];
+    static c8 m_toac8LanguagePreFix[11];
 
     enmSoundMode m_eSoundMode;                // offset 0x4, size 0x4
     enmLanguage m_eMessageLanguage;           // offset 0x8, size 0x4

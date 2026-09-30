@@ -1,6 +1,7 @@
 #ifndef ST03EXTRALAMP_HPP
 #define ST03EXTRALAMP_HPP
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 #include "types.h"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickObj.hpp"
@@ -9,32 +10,32 @@
 
 class clsPress_Obj;
 
-enum enmExtraLampMode {
-    MODE_INIT = 0,
-    MODE_MAIN = 1,
-};
-
-enum enmExtraLampState {
-    STATE_STARTWAIT = 0,
-    STATE_FALL = 1,
-    STATE_FALL_WAIT = 2,
-    STATE_RISE = 3,
-    STATE_SLEEP = 4,
-};
-
 // total size: 0x60
 class clsExtraLamp_Obj : public clsGimmickObj {
 public:
+    enum enmExtraLampMode {
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
+    };
+
+    enum enmExtraLampState {
+        STATE_STARTWAIT = 0,
+        STATE_FALL = 1,
+        STATE_FALL_WAIT = 2,
+        STATE_RISE = 3,
+        STATE_SLEEP = 4,
+    };
+
     clsExtraLamp_Obj() {}
     virtual ~clsExtraLamp_Obj() {}
     virtual void createData();
     virtual void destroyData();
     virtual nspPackId::enm getPackId() const { return nspPackId::ST03_EXTRALAMP_13020; }
     void draw(clsModelType_OB_TX& rcModel,
-              f32 (*psMtxPal)[4][4],
+              NNS_MATRIX* psMtxPal,
               u32* psNodeStat,
-              const f32 (*opaNnViewMtx)[4][4],
-              f32 (*psMtxWork)[4][4],
+              const NNS_MATRIX* opaNnViewMtx,
+              NNS_MATRIX* psMtxWork,
               u32 u32ViewNo,
               u32 NodeFlg);
 

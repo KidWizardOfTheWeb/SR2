@@ -2,6 +2,7 @@
 #define OBJECT_HPP
 
 #include "types.h"
+#include "Develop/Projects/SR2/pgm/src/Havok/HavokMath.hpp"
 
 enum enmRet {
     VISIBLE_CLIP = 0,
@@ -11,7 +12,6 @@ enum enmRet {
     OUT_FAR = 4,
 };
 
-// Havok physics forward declarations (hk prefix excluded from scaffold)
 class hkContactPoint;
 class hkContactPointConfirmedEvent;
 class hkContactProcessEvent;
@@ -21,6 +21,10 @@ class hkRotation;
 class hkTransform;
 
 // Havok math types
+struct hkQuadReal {
+    f32 x, y, z, w;
+} __attribute__((aligned(16)));
+
 struct hkVector4 {
     hkVector4() {}
     hkVector4(f32 f32Param1, f32 f32Param2, f32 f32Param3, f32 f32Param4)
@@ -38,9 +42,10 @@ struct hkVector4 {
         return *this;
     }
     f32& operator()(s32 s32Param1) { return (&x)[s32Param1]; }
-    f32 operator()(s32 s32Param1) const { return (&x)[s32Param1]; }
+    const f32& operator()(s32 s32Param1) const { return (&x)[s32Param1]; }
 
-    const hkVector4& getQuad() const { return *this; }
+    hkQuadReal& getQuad() { return *reinterpret_cast<hkQuadReal*>(this); }
+    const hkQuadReal& getQuad() const { return *reinterpret_cast<const hkQuadReal*>(this); }
     f32 getSimdAt(s32 s32Param1) const { return (&x)[s32Param1]; }
     void set(f32 f32Param1, f32 f32Param2, f32 f32Param3, f32 f32Param4)
     {
@@ -51,14 +56,105 @@ struct hkVector4 {
     }
     void setZero4() { set(0.0f, 0.0f, 0.0f, 0.0f); }
     void zeroElement(s32 s32Param1) { (&x)[s32Param1] = 0.0f; }
-    void add4(const hkVector4& rParam1);
-    void mul4(f32 f32Param1);
-    void setNeg4(const hkVector4& rParam1);
-    f32 dot4(const hkVector4& rParam1) const;
-    f32 dot4xyz1(const hkVector4& rParam1) const;
-    void addMul4(f32 f32Param1, const hkVector4& rParam2);
-    void subMul4(f32 f32Param1, const hkVector4& rParam2);
-    void setCross(const hkVector4& rParam1, const hkVector4& rParam2);
+    // RECONSTRUCTED: accessor names.
+    void setAbs4(const hkVector4& value)
+    {
+        x = hkMath::fabs(value.x);
+        y = hkMath::fabs(value.y);
+        z = hkMath::fabs(value.z);
+        w = hkMath::fabs(value.w);
+    }
+    s32 compareEqual4(const hkVector4& value) const
+    {
+        return ((x == value.x) ? 8 : 0) | ((y == value.y) ? 4 : 0) | ((z == value.z) ? 2 : 0) |
+               ((w == value.w) ? 1 : 0);
+    }
+    s32 compareLessThan4(const hkVector4& value) const
+    {
+        return ((x < value.x) ? 8 : 0) | ((y < value.y) ? 4 : 0) | ((z < value.z) ? 2 : 0) |
+               ((w < value.w) ? 1 : 0);
+    }
+    void setSub4(const hkVector4& rParam1, const hkVector4& rParam2)
+    {
+        x = rParam1.x - rParam2.x;
+        y = rParam1.y - rParam2.y;
+        z = rParam1.z - rParam2.z;
+        w = rParam1.w - rParam2.w;
+    }
+    void setAdd4(const hkVector4& rParam1, const hkVector4& rParam2)
+    {
+        x = rParam1.x + rParam2.x;
+        y = rParam1.y + rParam2.y;
+        z = rParam1.z + rParam2.z;
+        w = rParam1.w + rParam2.w;
+    }
+    void sub4(const hkVector4& rParam1)
+    {
+        x -= rParam1.x;
+        y -= rParam1.y;
+        z -= rParam1.z;
+        w -= rParam1.w;
+    }
+    void add4(const hkVector4& rParam1)
+    {
+        x += rParam1.x;
+        y += rParam1.y;
+        z += rParam1.z;
+        w += rParam1.w;
+    }
+    void mul4(f32 f32Scale)
+    {
+        x *= f32Scale;
+        y *= f32Scale;
+        z *= f32Scale;
+        w *= f32Scale;
+    }
+    void mul4(const hkVector4& value)
+    {
+        x *= value.x;
+        y *= value.y;
+        z *= value.z;
+        w *= value.w;
+    }
+    void setNeg4(const hkVector4& rParam1)
+    {
+        x = -rParam1.x;
+        y = -rParam1.y;
+        z = -rParam1.z;
+        w = -rParam1.w;
+    }
+    f32 dot4(const hkVector4& rParam1) const
+    {
+        return x * rParam1.x + y * rParam1.y + z * rParam1.z + w * rParam1.w;
+    }
+    f32 dot4xyz1(const hkVector4& rParam1) const
+    {
+        return x * rParam1.x + y * rParam1.y + z * rParam1.z + w;
+    }
+    void addMul4(f32 f32Param1, const hkVector4& rParam2)
+    {
+        x += f32Param1 * rParam2.x;
+        y += f32Param1 * rParam2.y;
+        z += f32Param1 * rParam2.z;
+        w += f32Param1 * rParam2.w;
+    }
+    void subMul4(f32 f32Param1, const hkVector4& rParam2)
+    {
+        x -= f32Param1 * rParam2.x;
+        y -= f32Param1 * rParam2.y;
+        z -= f32Param1 * rParam2.z;
+        w -= f32Param1 * rParam2.w;
+    }
+    void setCross(const hkVector4& rParam1, const hkVector4& rParam2)
+    {
+        f32 f32X = rParam1.y * rParam2.z - rParam1.z * rParam2.y;
+        f32 f32Y = rParam1.z * rParam2.x - rParam1.x * rParam2.z;
+        f32 f32Z = rParam1.x * rParam2.y - rParam1.y * rParam2.x;
+        x = f32X;
+        y = f32Y;
+        z = f32Z;
+        w = 0.0f;
+    }
     void setTransformedPos(const hkTransform& rParam1, const hkVector4& rParam2);
     void setTransformedInversePos(const hkTransform& rParam1, const hkVector4& rParam2);
     void setRotatedDir(const hkRotation& rParam1, const hkVector4& rParam2);
@@ -70,25 +166,6 @@ struct hkVector4 {
     f32 z; // offset 0x8, size 0x4
     f32 w; // offset 0xC, size 0x4
 } __attribute__((aligned(16)));
-
-inline void hkVector4::mul4(f32 f32Scale)
-{
-    x *= f32Scale;
-    y *= f32Scale;
-    z *= f32Scale;
-    w *= f32Scale;
-}
-
-// total size: 0x10
-struct stcInfo {
-    u8 u8Effect;     // offset 0x0, size 0x1
-    u8 u8Attr;       // offset 0x1, size 0x1
-    u8 u8Filter;     // offset 0x2, size 0x1
-    s8 s8Grip;       // offset 0x3, size 0x1
-    u8 u8Union[4];   // offset 0x4, size 0x4
-    f32 f32Param;    // offset 0x8, size 0x4
-    u32 u32Reserved; // offset 0xC, size 0x4
-};
 
 // total size: 0x4
 class clsObject {

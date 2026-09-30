@@ -1,6 +1,7 @@
 #ifndef ST08FZONEENEMY_HPP
 #define ST08FZONEENEMY_HPP
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 #include "types.h"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/RigidBodyGimmickObj.hpp"
@@ -12,44 +13,31 @@ struct stcPointData;
 // total size: 0x100
 class clsFZoneEnemy_Obj : public clsRigidBodyGimmickObj {
 public:
-    // Note: enmMode — DWARF body has GAME_MODE___NONE values; name collision
-    // with Game.hpp. Nested to avoid conflict; verify correct body during implementation.
+    // RECONSTRUCTED: enum scope.
     enum enmMode {
-        GAME_MODE___NONE = 0,
-        GAME_MODE___ADVERTISE = 1,
-        GAME_MODE___TITLE_DEMO = 2,
-        GAME_MODE___FREE_RACE = 3,
-        GAME_MODE___TIME_ATTACK = 4,
-        GAME_MODE___STORY = 5,
-        GAME_MODE___WORLD_GP = 6,
-        GAME_MODE___MISSION = 7,
-        GAME_MODE___TUTORIAL = 8,
-        GAME_MODE___SURVIVAL_RELAY = 9,
-        GAME_MODE___SURVIVAL_BALL = 10,
-        GAME_MODE___SURVIVAL_BATTLE = 11,
-        GAME_MODE___EVENT = 12,
-        GAME_MODE___CREDIT = 13,
-        GAME_MODE___EASY_MENU = 14,
-        GAME_MODE___MODEL_VIEWER = 15,
-        GAME_MODE___MAX = 16,
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
     };
 
-    // Note: enmState — DWARF body; name collision with St03Cogwheel.hpp.
-    // Nested to avoid conflict; verify correct body during implementation.
+    // RECONSTRUCTED: enum scope.
     enum enmState {
         STATE_WAIT = 0,
-        STATE_MOVE_UFO = 1,
-        STATE_RETURN_UFO = 2,
-        STATE_END_UFO = 3,
-        STATE_FALL = 4,
-        STATE_MOVE_PATH = 5,
-        STATE_BALL_BREAK = 6,
-        STATE_END = 7,
-        STATE_STARTWAIT = 8,
+        STATE_MOVE = 1,
+        STATE_SLOWDOWN = 2,
     };
 
-    virtual ~clsFZoneEnemy_Obj() {}
-    clsFZoneEnemy_Obj() {}
+    virtual ~clsFZoneEnemy_Obj();
+    clsFZoneEnemy_Obj()
+    {
+        m_eMode = MODE_INIT;
+        m_eState = STATE_WAIT;
+        m_cFrameControl.m_f32Frame = -2.0f;
+        m_cFrameControl.m_f32CountFrame = 0.0f;
+        m_u8NowPointNo = 0;
+        m_s8AddPoint = 0;
+        m_opsPointData = NULL;
+        m_u8PointNum = 0;
+    }
 
     virtual void contactTriggerEvent(hkContactPoint* pcContact, clsObject* pcObject);
     virtual void setData();
@@ -63,10 +51,10 @@ public:
     virtual void requestDrawBreakEffect();
 
     void draw(clsModelType_OB_TX_MO& rcModel,
-              f32 (*psMtxPal)[4][4],
+              NNS_MATRIX* psMtxPal,
               u32* psNodeStat,
-              const f32 (*opaNnViewMtx)[4][4],
-              f32 (*psMtxWork)[4][4],
+              const NNS_MATRIX* opaNnViewMtx,
+              NNS_MATRIX* psMtxWork,
               u32 u32ViewNo);
     void setVelocityAndFrame(f32 f32LengthRate, f32 f32Speed);
 
@@ -88,12 +76,25 @@ class clsFZoneEnemy_Task : public clsSingleModelGimmick_Task<clsFZoneEnemy_Task,
                                                              clsFZoneEnemy_Obj,
                                                              clsModelType_OB_TX_MO> {
 public:
-    clsFZoneEnemy_Task(u32 u32Param1) : clsSingleModelGimmick_Task(0, 0) {}
-    virtual ~clsFZoneEnemy_Task() {}
+    clsFZoneEnemy_Task(u32 u32Param1) : clsSingleModelGimmick_Task(u32Param1, 101000)
+    {
+        hkVector4 cBox(8.0f, 5.0f, 8.0f, 0.0f);
+        m_pcRigidShape = new hkBoxShape(cBox, hkConvexShapeDefaultRadius);
+    }
+    virtual ~clsFZoneEnemy_Task();
 
     virtual void reset();
     virtual void execute();
     virtual void draw();
 };
+
+inline clsFZoneEnemy_Obj::~clsFZoneEnemy_Obj()
+{
+    destroyData();
+}
+
+inline clsFZoneEnemy_Task::~clsFZoneEnemy_Task()
+{
+}
 
 #endif // ST08FZONEENEMY_HPP

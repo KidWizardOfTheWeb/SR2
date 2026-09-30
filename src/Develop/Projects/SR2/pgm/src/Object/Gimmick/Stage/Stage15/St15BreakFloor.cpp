@@ -43,10 +43,6 @@ clsBreakFloor_Obj::clsBreakFloor_Obj()
 {
 }
 
-clsBreakFloor_Obj::~clsBreakFloor_Obj()
-{
-}
-
 void clsBreakFloor_Obj::reset()
 {
 }

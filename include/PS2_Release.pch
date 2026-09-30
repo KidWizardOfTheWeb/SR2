@@ -1,3 +1,6 @@
-// Reconstructed minimal PS2 release-PCH slice.
+#include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 #include "Develop/Projects/SR2/pgm/lib/OO/PS2/PS2System.hpp"
 #include "Develop/Projects/SR2/pgm/src/Script/Script.hpp"
+#include "Develop/Projects/SR2/pgm/src/System/IO/SR2_MemoryCardFile.hpp"
+#include "Develop/Projects/SR2/pgm/lib/OO/core/OOStl.hpp"
+#include "Develop/Projects/SR2/pgm/src/Data/Pack.hpp"

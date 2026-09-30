@@ -2,33 +2,42 @@
 #define CONTROLMATRIX_HPP
 
 #include "types.h"
+#include "Develop/Projects/SR2/pgm/lib/OO/nn/NNUtil.hpp"
+#include "usr/local/sega/nn/src/Matrix/nnmakematrix.h"
+#include "usr/local/sce/ee/gcc/ee/lib/libc/memset.h"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 
 // total size: 0x110
 class clsControlMatrix {
 public:
-    // Note: enmFlag collides with other headers; nested here for disambiguation.
     enum enmFlag {
-        FLAG_NULL = 0,
-        FLAG_DRAW_COL = 1,
-        FLAG_DRAW_MOV_LINE = 2,
-        FLAG_DRAW_PST_LINE = 4,
-        FLAG_DRAW_VLC_LINE = 8,
-        FLAG_DRAW_GRAVITY = 16,
-        FLAG_DRAW_GRID = 32,
-        FLAG_INFINI_AGP = 64,
-        FLAG_FREE_GEARCHANGE = 128,
-        FLAG_CHANGE_COM = 256,
-        FLAG_STOP = 512,
-        FLAG_UPDATE_TIMER = 268435456,
-        FLAG_DEFAULT = 0,
+        FLAG_CLEAR = 0,
+        FLAG_VIBRATION = 1,
+        FLAG_AUTORETURN = 2,
+        FLAG_SCALING = 4,
+        FLAG_INIT = 7,
     };
 
-    clsControlMatrix() {}
+    clsControlMatrix() : m_f32TrsDecayRate(0.0f), m_f32RotDecayRate(0.0f), m_eFlag(FLAG_INIT)
+    {
+        nnMakeUnitMatrix(&m_sMtx);
+        nnCopyVectorFast(&m_sVibTrsVecFast, &nspNnUtil::tosZeroVecFast);
+        nnCopyVectorFast(&m_sVibTrsSyncVecFast, &nspNnUtil::tosZeroVecFast);
+        nnCopyVectorFast(&m_sVibTrsSyncAddVecFast, &nspNnUtil::tosZeroVecFast);
+        nnCopyVectorFast(&m_sVibRotVecFast, &nspNnUtil::tosZeroVecFast);
+        nnCopyVectorFast(&m_sVibRotSyncVecFast, &nspNnUtil::tosZeroVecFast);
+        nnCopyVectorFast(&m_sVibRotSyncAddVecFast, &nspNnUtil::tosZeroVecFast);
+        nnCopyVectorFast(&m_sVibRotAxisVecFast, &nspNnUtil::tosZeroVecFast);
+        m_f32TrsDecayRate = 0.0f;
+        m_f32RotDecayRate = 0.0f;
+        memset(&m_sAutoRotA32, 0, sizeof(m_sAutoRotA32));
+        memset(&m_sAutoRotRetAddA32, 0, sizeof(m_sAutoRotRetAddA32));
+        nnCopyVectorFast(&m_sAutoRotAxisVecFast, &nspNnUtil::tosZeroVecFast);
+    }
 
     void reset();
     void update();
-    f32* getMtxRef() { return &m_sMtx[0][0]; }
+    NNS_MATRIX* getMtxRef() { return &m_sMtx; }
     NNS_ROTATE_A32* getAutoRotRetAddA32Ref() { return &m_sAutoRotRetAddA32; }
     NNS_ROTATE_A32* getAutoRotA32Ref() { return &m_sAutoRotA32; }
     void setRotDecayRate(f32 f32Param1) { m_f32RotDecayRate = f32Param1; }
@@ -37,7 +46,7 @@ public:
     NNS_VECTORFAST* getAutoRotAxisVecFastRef() { return &m_sAutoRotAxisVecFast; }
     NNS_VECTORFAST* getScaleVecFastRef() { return &m_sScaleVecFast; }
 
-    f32 m_sMtx[4][4];                       // offset 0x0, size 0x40
+    NNS_MATRIX m_sMtx;                      // offset 0x0, size 0x40
     NNS_ROTATE_A32 m_sAutoRotA32;           // offset 0x40, size 0xC
     NNS_ROTATE_A32 m_sAutoRotRetAddA32;     // offset 0x4C, size 0xC
     NNS_VECTORFAST m_sAutoRotAxisVecFast;   // offset 0x60, size 0x10

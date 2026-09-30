@@ -2,7 +2,13 @@
 #define WINLOSE2D_HPP
 
 #include "types.h"
+#include "usr/local/sega/nn/src/Texture/nntexture.h"
 #include "Develop/Projects/SR2/pgm/src/Task/TaskManager.hpp"
+
+// RECONSTRUCTED: header placement.
+namespace nspWinLose2D {
+extern _NNS_TEXLIST* psTexList_WinLose2D;
+}
 
 // total size: 0x94
 class clsWinLose2D_Task : public clsTask {

@@ -9,14 +9,14 @@
 
 class hkShape;
 
-enum enmPlayLoopSeMode {
-    MODE_INIT = 0,
-    MODE_MAIN = 1,
-};
-
 // total size: 0x80
 class clsPlayLoopSe_Obj : public clsPhantomGimmickObject {
 public:
+    enum enmPlayLoopSeMode {
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
+    };
+
     ~clsPlayLoopSe_Obj();
 
     clsPlayLoopSe_Obj();

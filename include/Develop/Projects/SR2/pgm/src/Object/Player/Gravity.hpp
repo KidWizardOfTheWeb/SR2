@@ -1,8 +1,10 @@
 #ifndef GRAVITY_HPP
 #define GRAVITY_HPP
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 #include "types.h"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
+#include "usr/local/sega/nn/src/Matrix/nnmakematrix.h"
 #include "Develop/Projects/SR2/pgm/src/Data/Path.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/SlerpQuat.hpp"
 
@@ -11,32 +13,21 @@ class clsPlayerTask;
 // total size: 0x130
 class clsGravity {
 public:
-    typedef f32 (*MtxPtr)[4][4];
-
-    static f32 DEFAULT_ACCELE;
+    static const f32 DEFAULT_ACCELE;
 
     enum enmFlag {
-        FLAG_NULL = 0,
-        FLAG_DRAW_COL = 1,
-        FLAG_DRAW_MOV_LINE = 2,
-        FLAG_DRAW_PST_LINE = 4,
-        FLAG_DRAW_VLC_LINE = 8,
-        FLAG_DRAW_GRAVITY = 16,
-        FLAG_DRAW_GRID = 32,
-        FLAG_INFINI_AGP = 64,
-        FLAG_FREE_GEARCHANGE = 128,
-        FLAG_CHANGE_COM = 256,
-        FLAG_STOP = 512,
-        FLAG_UPDATE_TIMER = 268435456,
-        FLAG_DEFAULT = 0,
+        FLAG_CLEAR = 0,
+        FLAG_NOT_GRAVITY = 1,
     };
 
     enum enmType {
-        TYPE_FRONT = 0,
-        TYPE_BACK = 1,
+        TYPE_NULL = 0,
+        TYPE_NORMAL = 1,
+        TYPE_GCTRL = 2,
+        TYPE_STEEP = 3,
     };
 
-    f32 m_sMtx[4][4];            // offset 0x0, size 0x40
+    NNS_MATRIX m_sMtx;           // offset 0x0, size 0x40
     NNS_VECTORFAST m_sVecFast;   // offset 0x40, size 0x10
     NNS_VECTORFAST m_sUpVecFast; // offset 0x50, size 0x10
     clsPlayerTask* m_pcPlayer;   // offset 0x60, size 0x4
@@ -50,15 +41,26 @@ public:
     f32 m_f32ChangeFrame;        // offset 0x120, size 0x4
 
     clsGravity() {}
-    clsGravity(clsPlayerTask* pcPlayer) : m_pcPlayer(pcPlayer) {}
+    clsGravity(clsPlayerTask* pcPlayer) : m_pcPlayer(pcPlayer)
+    {
+        m_f32Speed = 0.0f;
+        m_f32Accele = DEFAULT_ACCELE;
+        m_f32FrameRate = 1.0f;
+        m_eFlag = FLAG_CLEAR;
+        m_eType = TYPE_NORMAL;
+        m_f32ChangeFrame = 0.0f;
+        nnMakeUnitMatrix(&m_sMtx);
+        nnSetUpVectorFast(&m_sVecFast, 0.0f, 0.0f, 0.0f);
+        nnSetUpVectorFast(&m_sUpVecFast, 0.0f, 1.0f, 0.0f);
+    }
     void setType(enmType eType);
     void update();
     void quicksetTypeNormal(f32 of32SlerpFrame);
     void setQuatAndUpVec(const NNS_QUATERNION* psQuat);
-    NNS_VECTORFAST* getUpVecFastPtr() const { return const_cast<NNS_VECTORFAST*>(&m_sUpVecFast); }
-    NNS_VECTORFAST* getVecFastPtr() const { return const_cast<NNS_VECTORFAST*>(&m_sVecFast); }
+    const NNS_VECTORFAST* getUpVecFastPtr() const { return &m_sUpVecFast; }
+    const NNS_VECTORFAST* getVecFastPtr() const { return &m_sVecFast; }
     clsPath* getPathRef() { return &m_cPath; }
-    MtxPtr getMtxPtr() const { return const_cast<MtxPtr>(&m_sMtx); }
+    const NNS_MATRIX* getMtxPtr() const { return &m_sMtx; }
     void setFlag(enmFlag eParam1) { m_eFlag = eParam1; }
     void setFrameRate(f32 f32Param1) { m_f32FrameRate = f32Param1; }
     void setAccele(f32 f32Param1) { m_f32Accele = f32Param1; }

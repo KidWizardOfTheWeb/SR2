@@ -139,7 +139,7 @@ public:
                        f32 f32WaitFrame,
                        f32 f32FadeFrame);
     void setBlurEndStatus(s16 s16Frame);
-    void setBinaryData(u8* pu8Buf);
+    static void setBinaryData(u8* pu8Buf);
     void unusedFunc(u8* pcParam1, clsScript_Task* pParam2);
     void codeCut(u8* pu8Ptr, clsScript_Task* pcTask);
     void codeFastStart(u8* pcTask, clsScript_Task* pParam2);

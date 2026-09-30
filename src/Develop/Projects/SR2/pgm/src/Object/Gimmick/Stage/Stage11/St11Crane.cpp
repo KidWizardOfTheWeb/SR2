@@ -29,10 +29,10 @@ void clsCrane::execute()
 }
 
 u8 clsCrane::draw(clsModelType_OB_TX& rcModel,
-                  f32 (*psMtxPal)[4][4],
+                  NNS_MATRIX* psMtxPal,
                   u32* psNodeStat,
-                  const f32 (*opaNnViewMtx)[4][4],
-                  f32 (*psMtxWork)[4][4],
+                  const NNS_MATRIX* opaNnViewMtx,
+                  NNS_MATRIX* psMtxWork,
                   u32 u32ViewNo,
                   u32 NodeStatus)
 {
@@ -64,9 +64,5 @@ void clsCrane_Task::draw()
 }
 
 clsCrane::clsCrane()
-{
-}
-
-clsCrane::~clsCrane()
 {
 }

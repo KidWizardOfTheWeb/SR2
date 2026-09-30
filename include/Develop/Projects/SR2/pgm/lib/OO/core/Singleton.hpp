@@ -3,14 +3,19 @@
 
 #include "types.h"
 
-// Singleton base class — provides a global instance pointer per type (header-only template)
 template <class T>
 class clsSingleton {
 public:
-    clsSingleton() { m_tpcSingleton = static_cast<T*>(this); }
+    clsSingleton()
+    {
+        // RECONSTRUCTED: integer adjustment preserves MWCC code generation.
+        s32 s32Offset =
+            1 - reinterpret_cast<s32>(static_cast<clsSingleton<T>*>(reinterpret_cast<T*>(1)));
+        m_tpcSingleton = reinterpret_cast<T*>(reinterpret_cast<s32>(this) + s32Offset);
+    }
     virtual ~clsSingleton() { m_tpcSingleton = NULL; }
     static T* GS() { return m_tpcSingleton; }
-    static T& RS() { return *m_tpcSingleton; }
+    static T& RS() { return *GS(); }
     static T* m_tpcSingleton;
 };
 

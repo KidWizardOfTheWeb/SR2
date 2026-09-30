@@ -1,6 +1,7 @@
 #ifndef BASESKY_HPP
 #define BASESKY_HPP
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 #include "types.h"
 #include "Develop/Projects/SR2/pgm/src/Data/Pack.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
@@ -23,7 +24,7 @@ public:
     virtual void draw();
 
     clsModelType_OB_TX m_cModel;       // offset 0x54, size 0x8
-    f32 m_sTrsMtx[4][4];               // offset 0x60, size 0x40
+    NNS_MATRIX m_sTrsMtx;              // offset 0x60, size 0x40
     stcBinDataDetail* m_opsSkyRotData; // offset 0xA0, size 0x4
     stcBinDataDetail m_sSkyRotData;    // offset 0xA4, size 0xC
 };

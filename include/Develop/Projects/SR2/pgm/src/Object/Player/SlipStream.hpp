@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
+#include "usr/local/sce/ee/gcc/ee/lib/libc/memset.h"
 
 class clsPlayerTask;
 
@@ -22,9 +23,12 @@ public:
         f32 f32Speed;               // offset 0x20, size 0x4
         f32 f32Accele;              // offset 0x24, size 0x4
         f32 f32Reserved[2];         // offset 0x28, size 0x8
-    }; // total size: 0x30
+    };                              // total size: 0x30
 
-    clsSlipStream() {}
+    clsSlipStream() : m_eStatus(STATUS__NONE), m_f32UpdateCount(0.0f), m_u32PointNo(0)
+    {
+        memset(m_sData, 0, sizeof(m_sData));
+    }
 
     void update(clsPlayerTask* pcPlayer);
     void execute(clsPlayerTask* pcPlayer);

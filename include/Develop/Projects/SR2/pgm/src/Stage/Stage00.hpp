@@ -5,6 +5,7 @@
 
 class clsStage00_Task : public clsBaseStage_Task {
 public:
+    clsStage00_Task(stcBinInfo& rsBinInfoI) : clsBaseStage_Task(rsBinInfoI) {}
     virtual ~clsStage00_Task();
 
     virtual void init();

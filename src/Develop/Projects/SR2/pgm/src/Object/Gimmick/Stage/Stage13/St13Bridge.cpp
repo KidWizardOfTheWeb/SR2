@@ -32,7 +32,7 @@ u8 clsBridge_Obj::stepMotionFrame()
 }
 
 clsBridge_Task::clsBridge_Task(u32 u32ObjectAreaNum)
-    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 0)
+    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 100098)
 {
 }
 

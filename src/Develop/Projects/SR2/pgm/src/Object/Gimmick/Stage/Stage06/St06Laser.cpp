@@ -14,7 +14,8 @@ void clsLaser_Obj::destroyData()
 {
 }
 
-clsLaser_Task::clsLaser_Task(u32 u32ObjectAreaNum) : clsSingleModelGimmick_Task(u32ObjectAreaNum, 0)
+clsLaser_Task::clsLaser_Task(u32 u32ObjectAreaNum)
+    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 101000)
 {
 }
 

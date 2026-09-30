@@ -33,7 +33,7 @@ void clsPutCanoeMotion_Obj::callbackCrashEvent()
 }
 
 clsPutCanoeMotion_Task::clsPutCanoeMotion_Task(u32 u32ObjectAreaNum)
-    : clsSingleModelGimmick_Task(0, 0)
+    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 101000)
 {
 }
 

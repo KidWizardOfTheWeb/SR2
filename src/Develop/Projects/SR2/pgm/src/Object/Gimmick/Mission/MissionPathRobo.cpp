@@ -37,10 +37,10 @@ void clsMissionPathRobo_Obj::destroyData()
 }
 
 void clsMissionPathRobo_Obj::draw(clsModelType_OB_TX& rcObj,
-                                  f32 (*psMtxPal)[4][4],
+                                  NNS_MATRIX* psMtxPal,
                                   u32* psNodeStat,
-                                  const f32 (*opaNnViewMtx)[4][4],
-                                  f32 (*psMtxWork)[4][4],
+                                  const NNS_MATRIX* opaNnViewMtx,
+                                  NNS_MATRIX* psMtxWork,
                                   u32 u32ViewNo)
 {
 }
@@ -52,7 +52,7 @@ void clsMissionPathRobo_Obj::main()
 clsMissionPathRobo_Task::clsMissionPathRobo_Task(u32 u32ObjectAreaNum)
     : clsSingleModelGimmick_Task<clsMissionPathRobo_Task,
                                  clsMissionPathRobo_Obj,
-                                 clsModelType_OB_TX>(0, 0)
+                                 clsModelType_OB_TX>(u32ObjectAreaNum, 101000)
 {
 }
 
@@ -63,7 +63,7 @@ s32 clsMissionPathRobo_Task::getPathPoint()
 
 NNS_VECTORFAST* clsMissionPathRobo_Task::getPosVecFastPtr()
 {
-    return 0;
+    return NULL;
 }
 
 void clsMissionPathRobo_Task::reset()

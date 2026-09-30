@@ -1,16 +1,26 @@
 #ifndef NNCALCMATRIXPALETTE_H
 #define NNCALCMATRIXPALETTE_H
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
+
 struct NNS_MATRIXSTACK;
 struct NNS_OBJECT;
 
-void nnCopyMatrix33(float (*dst)[4][4], float (*src)[4][4]);
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void nnCopyMatrix33(NNS_MATRIX* dst, NNS_MATRIX* src);
 void nnCalcMatrixPaletteNode(signed int nodeIdx);
-void nnCalcMatrixPalette(float (*mtxpal)[4][4],
+void nnCalcMatrixPalette(NNS_MATRIX* mtxpal,
                          unsigned int* nodestatlist,
                          struct NNS_OBJECT* obj,
-                         float (*basemtx)[4][4],
+                         NNS_MATRIX* basemtx,
                          struct NNS_MATRIXSTACK* mstk,
                          unsigned int flag);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // NNCALCMATRIXPALETTE_H

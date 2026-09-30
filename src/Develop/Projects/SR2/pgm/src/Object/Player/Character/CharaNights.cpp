@@ -1,3 +1,4 @@
+#include "Develop/Projects/SR2/pgm/src/Data/Sound/PlaySe_2D.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Player/Character/CharaNights.hpp"
 
 clsBackLineEffectTask::stcParam clsCharaNights::asNightsLineParam[2] = {
@@ -62,6 +63,10 @@ void clsCharaNights::loadAdditionalData(stcBinInfo& rParam1)
 
 clsCharaNights::~clsCharaNights()
 {
+    delete m_pcPlaySe2D;
+    m_pcPlaySe2D = NULL;
+    m_apcLineTask[0]->setMode(0);
+    m_apcLineTask[1]->setMode(0);
 }
 
 f32 clsCharaNights::getCollisionRadius() const

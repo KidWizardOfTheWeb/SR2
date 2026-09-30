@@ -3,6 +3,7 @@
 
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 #include "types.h"
+#include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/Pendulum.hpp"
 
 class clsPendulum;
 
@@ -19,7 +20,7 @@ struct stcControlParam {
 class clsPendulumControl {
 public:
     clsPendulumControl(u8 param_1, const stcControlParam& rsControlParam);
-    ~clsPendulumControl() {}
+    ~clsPendulumControl() { delete m_pcPendulum; }
 
     void update(s8 s8KeyLevelX);
     clsPendulum* getPendulum();

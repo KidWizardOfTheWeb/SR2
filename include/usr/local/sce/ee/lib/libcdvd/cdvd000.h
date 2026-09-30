@@ -13,4 +13,14 @@ struct sceCdCLOCK {
     unsigned char year;   // offset 0x7, size 0x1
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+int sceCdReadClock(struct sceCdCLOCK* rtc);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif // CDVD000_H

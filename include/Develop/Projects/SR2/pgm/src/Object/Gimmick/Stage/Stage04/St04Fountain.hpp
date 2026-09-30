@@ -12,15 +12,14 @@ class clsSe3DControl;
 class clsTask;
 class clsFountainThroughCollision;
 
-enum enmFountainMode {
-    MODE_INIT = 0,
-    MODE_MAIN = 1,
-};
-
 // total size: 0x160
 class clsFountain_Obj : public clsRigidBodyGimmickObj {
 public:
-    // Nested: collides with other enmMode declarations at global scope
+    enum enmFountainMode {
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
+    };
+
     enum enmWaterColumnMode {
         MODE_SLEEP = 0,
         MODE_UP = 1,
@@ -33,10 +32,7 @@ public:
     virtual void setData();
     virtual void createData();
     virtual void destroyData();
-    virtual nspPackId::enm getPackId() const
-    {
-        return nspPackId::ST04_FOUNTAIN_14020;
-    } // likely: return 14020
+    virtual nspPackId::enm getPackId() const { return nspPackId::ST04_FOUNTAIN_14020; }
     virtual void reset();
     virtual void main();
     virtual void requestDrawBreakEffect();
@@ -46,7 +42,7 @@ public:
     enmWaterColumnMode m_eWaterColumnMode;      // offset 0xD4, size 0x4
     u8 m_bWaterColumnDarw;                      // offset 0xD8, size 0x1
     NNS_VECTORFAST* m_opsPointVecFast;          // offset 0xDC, size 0x4
-    f32 m_psMtx[4][4];                          // offset 0xE0, size 0x40
+    NNS_MATRIX m_psMtx;                         // offset 0xE0, size 0x40
     f32 m_f32WaterColumnScale_y;                // offset 0x120, size 0x4
     f32 m_f32WaterColumnScale_xz;               // offset 0x124, size 0x4
     f32 m_f32WaterColumnFrame;                  // offset 0x128, size 0x4

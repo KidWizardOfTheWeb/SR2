@@ -14,23 +14,21 @@ stcMotionFlgs asMotionFlgsEgg[8];
 stcMotionFlgs asMotionFlgsOther[8];
 stcMotionFlgs asMotionFlgsWave[8];
 stcMotionFlgs asMotionFlgsBily[8];
-} // namespace nspChara
-
-enum enmModelType getCharaModelType(u16 u16GearCtrlNo)
+enmModelType getCharaModelType(u16 u16GearCtrlNo)
 {
-    enmModelType eVar1;
-    if (u16GearCtrlNo == 0x38) {
-        eVar1 = MODEL_TYPE_SKATE_END;
-    } else if (u16GearCtrlNo == 0x26) {
-        eVar1 = MODEL_TYPE_SNB;
-    } else if (u16GearCtrlNo == 0x28) {
-        eVar1 = MODEL_TYPE_RLL;
-    } else if (u16GearCtrlNo == 0x17) {
-        eVar1 = MODEL_TYPE_CVS;
-    } else if (u16GearCtrlNo == 0x1a) {
-        eVar1 = MODEL_TYPE_ADS;
-    } else {
-        eVar1 = MODEL_TYPE_DEF;
+    switch (u16GearCtrlNo) {
+    case 0x1a:
+        return MODEL_TYPE_ADS;
+    case 0x17:
+        return MODEL_TYPE_CVS;
+    case 0x28:
+        return MODEL_TYPE_RLL;
+    case 0x26:
+        return MODEL_TYPE_SNB;
+    case 0x38:
+        return MODEL_TYPE_SKATE_END;
+    default:
+        return MODEL_TYPE_DEF;
     }
-    return eVar1;
 }
+} // namespace nspChara

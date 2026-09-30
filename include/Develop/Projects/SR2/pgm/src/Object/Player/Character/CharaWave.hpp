@@ -13,7 +13,7 @@ class clsBackLineEffectTask;
 class clsCharaWave : public clsCharaNodeBase {
 public:
     clsCharaWave(clsPlayerTask* pcPlayer, u8 u8ModelType);
-    virtual ~clsCharaWave() {}
+    virtual ~clsCharaWave() { m_pcLineTask->setMode(0); }
 
     f32 m_f32behaviorTailCnt;            // offset 0x60, size 0x4
     clsBackLineEffectTask* m_pcLineTask; // offset 0x64, size 0x4

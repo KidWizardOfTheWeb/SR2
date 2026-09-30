@@ -9,11 +9,13 @@
 // total size: 0xF0
 class clsSvlBtlBomb_Object : public clsRigidBodyGimmickObj {
 public:
-    // Note: enmMode collision with Game.hpp (GAME_MODE___* pParam1) — nested here
     enum enmMode {
-        MODE_START = 0,
-        MODE_MAIN = 1,
-        MODE_WAIT = 2,
+        MODE__READY = 0,
+        MODE__WAIT = 1,
+        MODE__CHARGE = 2,
+        MODE__SHOOT = 3,
+        MODE__HORMING = 4,
+        MODE__BLAST = 5,
     };
 
     enmMode m_eMode;       // offset 0xD0, size 0x4
@@ -27,7 +29,7 @@ public:
 
     static NNS_VECTORFAST t_osOffsetPosVecFastTable;
     static f32 t_f32SphereRadius;
-    static f32 t_of32ClipSqDist;
+    static const f32 t_of32ClipSqDist;
     static f32 t_of32LimitFrame;
 
     clsSvlBtlBomb_Object();
@@ -35,10 +37,10 @@ public:
     void shoot();
     void charge();
     void draw(NNS_OBJECT* pParam1,
-              f32 (*)[4][4],
+              NNS_MATRIX*,
               u32* pParam3,
-              const f32 (*)[4][4],
-              f32 (*)[4][4],
+              const NNS_MATRIX*,
+              NNS_MATRIX*,
               u32 u32Param6);
 
     virtual ~clsSvlBtlBomb_Object();

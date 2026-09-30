@@ -1,6 +1,6 @@
 #include "usr/local/sega/nn/src/Matrix/nnquaternion.h"
 
-void nnCopyQuaternion(struct NNS_QUATERNION* dst, struct NNS_QUATERNION* src)
+void nnCopyQuaternion(struct NNS_QUATERNION* dst, const struct NNS_QUATERNION* src)
 {
 }
 

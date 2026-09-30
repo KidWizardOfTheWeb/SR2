@@ -45,7 +45,7 @@ public:
     u16 m_u16TaskNo;       // offset 0x6, size 0x2
     stcParam m_sCurParam;  // offset 0x8, size 0x1C
     stcParam m_sNextParam; // offset 0x24, size 0x1C
-    f32 m_sDrawMtx[4][4];  // offset 0x40, size 0x40
+    NNS_MATRIX m_sDrawMtx; // offset 0x40, size 0x40
     u32 m_u32GsOld;        // offset 0x80, size 0x4
     u32 m_u32Priority;     // offset 0x84, size 0x4
 
@@ -53,7 +53,7 @@ public:
 
     void update();
     void drawShadowPS2();
-    void initData();
+    static void initData();
     void releaseData();
     void codeShadow(u8* pu8Ptr, clsScript_Task* pcTask);
     void codeShadowDisp(u8* pu8Ptr, clsScript_Task* pcTask);
@@ -63,7 +63,7 @@ public:
     void codeShadowScale(u8* pu8Ptr, clsScript_Task* pcTask);
     void codeShadowChange(u8* pu8Ptr, clsScript_Task* pcTask);
     void codeShadowPriority(u8* pu8Ptr, clsScript_Task* pcTask);
-    void setShadowData(u32 u32Type, stcBinInfo& rsBinInfoI);
+    static void setShadowData(u32 u32Type, stcBinInfo& rsBinInfoI);
 };
 
 // total size: 0x94

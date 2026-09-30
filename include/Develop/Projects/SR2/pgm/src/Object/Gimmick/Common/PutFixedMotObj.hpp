@@ -10,16 +10,16 @@
 // total size: 0x60
 class clsPutFixedMotObj_Obj : public clsGimmickObj {
 public:
-    clsPutFixedMotObj_Obj();
-    virtual ~clsPutFixedMotObj_Obj();
+    clsPutFixedMotObj_Obj() : m_ePutFixedMotObjMode(MODE_INIT) {}
+    virtual ~clsPutFixedMotObj_Obj() { destroyData(); }
 
     nspPackId::enm getPackId() const { return nspPackId::PUT_FIXEDMOTOBJ_2091; }
-    virtual void draw(clsModelType_OB_TX_MO* pModel,
-                      f32* pfMatA,
-                      u32* pu32NodeCount,
-                      f32* pfMatB,
-                      f32 f32Param,
-                      u32 u32Param);
+    void draw(clsModelType_OB_TX_MO* pModel,
+              f32* pfMatA,
+              u32* pu32NodeCount,
+              f32* pfMatB,
+              f32 f32Param,
+              u32 u32Param);
 
     static f32 m_tof32CLIP_DISTx2;
 

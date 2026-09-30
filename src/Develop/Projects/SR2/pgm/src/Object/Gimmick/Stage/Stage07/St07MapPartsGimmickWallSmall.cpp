@@ -20,7 +20,7 @@ void clsMapPartsGimmickWallSmall_Object::destroyData()
 }
 
 clsMapPartsGimmickWallSmall_Task::clsMapPartsGimmickWallSmall_Task(u32 u32ObjectAreaNum)
-    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 0)
+    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 100098)
 {
 }
 

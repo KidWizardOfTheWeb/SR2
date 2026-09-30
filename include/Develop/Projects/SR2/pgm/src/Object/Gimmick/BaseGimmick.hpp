@@ -2,11 +2,13 @@
 #define BASEGIMMICK_HPP
 
 #include "types.h"
+#include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickManager.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 #include "Develop/Projects/SR2/pgm/src/Data/Pack.hpp"
 #include "Develop/Projects/SR2/pgm/src/Havok/HavokHeap.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Object.hpp"
 #include "Develop/Projects/SR2/pgm/src/Task/TaskManager.hpp"
+#include "Develop/Projects/SR2/pgm/src/Havok/Havok.hpp"
 
 class hkShape;
 struct NNS_VECTORFAST;
@@ -17,7 +19,12 @@ public:
     clsSimpleShapePhantom(const hkShape* pcShape,
                           const hkTransform& rcTransform,
                           u32 u32FilterInfo);
-    virtual ~clsSimpleShapePhantom() {}
+    virtual ~clsSimpleShapePhantom()
+    {
+        if (m_world != NULL) {
+            clsHavok::GS()->m_pcWorld->removePhantom(this);
+        }
+    }
 
     void setPositionVecFast(const NNS_VECTORFAST* psPosVecFast) {}
 
@@ -30,16 +37,28 @@ class clsCollision : public clsObject {};
 // total size: 0x68
 class clsBaseGimmickHead : public clsTask {
 public:
-    clsBaseGimmickHead(u32 packId, u32 objectMax) : clsTask(packId, 0) {}
-    virtual ~clsBaseGimmickHead() {}
+    clsBaseGimmickHead(u32 u32ObjectAreaNum, u32 u32TpI, s32 s32Type)
+        : clsTask(u32TpI, s32Type), m_ePackId(nspPackId::NONE), m_u32ObjectMax(u32ObjectAreaNum),
+          m_pcPhantomShape(NULL), m_pcRigidShape(NULL), m_bIsLoadBinary(0)
+    {
+        clsGmkManager::GS()->registGimmick(this);
+    }
+    virtual ~clsBaseGimmickHead()
+    {
+        delete m_pcPhantomShape;
+        delete m_pcRigidShape;
+    }
 
     virtual void execute() {}
     virtual void draw() {}
 
-    void loadBinary(stcBinInfo&)
+    virtual void createModel(stcBinInfo&) = 0;
+    virtual void setSetData(const stcSetDataDetail&) = 0;
+
+    void loadBinary(stcBinInfo& rsBinInfoI)
     {
         m_bIsLoadBinary = 1;
-        reset();
+        createModel(rsBinInfoI);
     }
     u32 getObjectMax() const { return m_u32ObjectMax; }
     hkShape* getPhantomShape() const { return m_pcPhantomShape; }
@@ -55,8 +74,14 @@ public:
 // total size: 0x8
 class clsMultiObTxModels {
 public:
-    clsMultiObTxModels() {}
-    virtual ~clsMultiObTxModels() {}
+    clsMultiObTxModels() : m_u32Num(0), m_apcModels(NULL) {}
+    ~clsMultiObTxModels()
+    {
+        if (m_apcModels != NULL) {
+            delete[] m_apcModels;
+        }
+        m_apcModels = NULL;
+    }
 
     void createModels(stcBinInfo& rsBinInfoI, u32 u32CalcObjNum);
 
@@ -67,7 +92,14 @@ public:
 // total size: 0x8
 class clsMultiObjTxMoMaModels {
 public:
-    ~clsMultiObjTxMoMaModels() {}
+    clsMultiObjTxMoMaModels() : m_u32Num(0), m_apcModels(NULL) {}
+    ~clsMultiObjTxMoMaModels()
+    {
+        if (m_apcModels != NULL) {
+            delete[] m_apcModels;
+        }
+        m_apcModels = NULL;
+    }
     void createModels(stcBinInfo& rsBinInfoI, u32 u32CalcObjNum);
 
     u32 m_u32Num;                          // offset 0x0, size 0x4
@@ -77,7 +109,14 @@ public:
 // total size: 0x8
 class clsMultiObjTxMaModels {
 public:
-    ~clsMultiObjTxMaModels() {}
+    clsMultiObjTxMaModels() : m_u32Num(0), m_apcModels(NULL) {}
+    ~clsMultiObjTxMaModels()
+    {
+        if (m_apcModels != NULL) {
+            delete[] m_apcModels;
+        }
+        m_apcModels = NULL;
+    }
     void createModels(stcBinInfo& rsBinInfoI, u32 u32CalcObjNum);
 
     u32 m_u32Num;                          // offset 0x0, size 0x4
@@ -87,7 +126,14 @@ public:
 // total size: 0x8
 class clsMultiObjTxMoModels {
 public:
-    ~clsMultiObjTxMoModels() {}
+    clsMultiObjTxMoModels() : m_u32Num(0), m_apcModels(NULL) {}
+    ~clsMultiObjTxMoModels()
+    {
+        if (m_apcModels != NULL) {
+            delete[] m_apcModels;
+        }
+        m_apcModels = NULL;
+    }
     void createModels(stcBinInfo& rsBinInfoI, u32 u32CalcObjNum);
 
     u32 m_u32Num;                       // offset 0x0, size 0x4
@@ -97,7 +143,14 @@ public:
 // total size: 0x8
 class clsMultiModels {
 public:
-    ~clsMultiModels() {}
+    clsMultiModels() : m_u32Num(0), m_apcModels(NULL) {}
+    ~clsMultiModels()
+    {
+        if (m_apcModels != NULL) {
+            delete[] m_apcModels;
+        }
+        m_apcModels = NULL;
+    }
     void createModels(stcBinInfo& rsBinInfoI, u32 u32CalcObjNum);
 
     u32 m_u32Num;                          // offset 0x0, size 0x4

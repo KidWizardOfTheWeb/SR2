@@ -6,6 +6,8 @@
 // total size: 0x10
 class clsLerpParam {
 public:
+    clsLerpParam() : m_f32Target(0.0f), m_f32Result(0.0f), m_f32Add(0.0f), m_f32Frame(0.0f) {}
+
     void startLerp(f32 f32Base, f32 f32Target, f32 f32Frame);
     void update();
 

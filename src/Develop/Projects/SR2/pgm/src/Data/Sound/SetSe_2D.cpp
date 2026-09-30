@@ -6,10 +6,6 @@ clsSetSe_2D_Task::~clsSetSe_2D_Task()
 {
 }
 
-clsSetSe_2D_Task::clsSetSe_2D_Task(const stcSetDataDetail& packData) : clsTask(0, 0)
-{
-}
-
 void clsSetSe_2D_Task::execute()
 {
 }

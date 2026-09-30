@@ -5,6 +5,8 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/PhantomGimmickObject.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
 #include "Develop/Projects/SR2/pgm/lib/OO/core/OOVector.hpp"
+#include "Develop/Projects/SR2/pgm/lib/OO/PS2/PS2Heap.hpp"
+#include "Develop/Projects/SR2/pgm/lib/OO/PS2/PS2System.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 
 class clsPlayerTask;
@@ -25,13 +27,13 @@ struct stcRoadInfo {
 // total size: 0xA0
 class clsRoad_Obj : public clsPhantomGimmickObject {
 public:
-    // Note: enmMode collision with Game.hpp (GAME_MODE___* pParam1) — nested per scaffold rule
+    // RECONSTRUCTED: enum scope.
     enum enmMode {
-        MODE_START = 0,
-        MODE_MAIN = 1,
-        MODE_WAIT = 2,
+        MODE_INIT = 0,
+        MODE_SORT = 1,
+        MODE_MAIN = 2,
     };
-    // Note: enmState collision with St03Cogwheel.hpp — nested per scaffold rule
+    // RECONSTRUCTED: enum scope.
     enum enmState {
         STATE_START = 0,
         STATE_MOVEWAIT = 1,
@@ -51,19 +53,23 @@ public:
         bool operator()(const clsRoadCarControl* a, const clsRoadCarControl* b) const;
     };
 
-    clsRoad_Obj() {}
-    virtual ~clsRoad_Obj() {}
+    clsRoad_Obj()
+        : m_eMode(MODE_INIT), m_eState(STATE_STOP), m_f32WaitFrame(0.0f), m_f32WorkFrame(0.0f),
+          m_f32FrameAdd(clsPfSystem::GS()->getFrameRateAdd()), m_f32ResetStopDist(0.0f),
+          m_pcPlayer(NULL), m_vctCar(*clsPfMainHeap::GS()), m_vctCarSort(*clsPfMainHeap::GS())
+    {
+        m_vctCar.reserve(10);
+        m_vctCarSort.reserve(10);
+    }
+    virtual ~clsRoad_Obj();
     virtual void contactTriggerEvent(hkContactPoint* pcContact, clsObject* pcObj);
     virtual void setData();
     virtual void createData();
     virtual void destroyData();
-    virtual nspPackId::enm getPackId() const
-    {
-        return nspPackId::ST08_ROAD_18000;
-    } // [verify from ASM]
+    virtual nspPackId::enm getPackId() const { return nspPackId::ST08_ROAD_18000; }
 
-    stcRoadInfo* getRoadInfo() const;              // weak inline, size:24
-    enmState getState() const { return m_eState; } // weak inline, size:8
+    stcRoadInfo* getRoadInfo() const;
+    enmState getState() const { return m_eState; }
 
     void requestMove();
     void requestStop();
@@ -78,8 +84,10 @@ public:
     f32 m_f32FrameAdd;         // offset 0x70, size 0x4
     f32 m_f32ResetStopDist;    // offset 0x74, size 0x4
     clsPlayerTask* m_pcPlayer; // offset 0x78, size 0x4
-    clsOOVector m_vctCar;      // offset 0x7C, size 0x10
-    clsOOVector m_vctCarSort;  // offset 0x8C, size 0x10
+    oostd::clsOOVector<clsRoadCarControl*, oostd::clsOOStlAllocator<clsRoadCarControl*> >
+        m_vctCar; // offset 0x7C, size 0x10
+    oostd::clsOOVector<clsRoadCarControl*, oostd::clsOOStlAllocator<clsRoadCarControl*> >
+        m_vctCarSort; // offset 0x8C, size 0x10
 
     static stcRoadInfo t_astcRoadInfoTbl[6];
     static f32 t_of32AccleFrame;
@@ -89,16 +97,25 @@ public:
 // total size: 0x94
 class clsRoad_Task : public clsBaseGimmickBody<clsRoad_Task, clsRoad_Obj, clsModelType_OB_TX> {
 public:
-    clsRoad_Task(u32 u32PackId)
-        : clsBaseGimmickBody<clsRoad_Task, clsRoad_Obj, clsModelType_OB_TX>(u32PackId, 0)
+    clsRoad_Task(u32 u32NumI)
+        : clsBaseGimmickBody<clsRoad_Task, clsRoad_Obj, clsModelType_OB_TX>(u32NumI, 101000)
     {
-    } // [verify params from ASM]
-    virtual ~clsRoad_Task() {}
+    }
+    virtual ~clsRoad_Task();
 
     virtual void draw();
     virtual void execute();
     virtual void reset();
-    virtual void createModel(stcBinInfo& rsBinInfoI) {} // weak inline, size:12
+    virtual void createModel(stcBinInfo& rsBinInfoI) { m_ePackId = nspPackId::ST08_ROAD_18000; }
 };
+
+inline clsRoad_Obj::~clsRoad_Obj()
+{
+    destroyData();
+}
+
+inline clsRoad_Task::~clsRoad_Task()
+{
+}
 
 #endif // ST08ROAD_HPP

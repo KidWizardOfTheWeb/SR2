@@ -93,6 +93,12 @@ parser.add_argument(
     help="path to objdiff-cli binary or source (optional)",
 )
 parser.add_argument(
+    "--sjiswrap",
+    metavar="BINARY",
+    type=Path,
+    help="path to sjiswrap binary (optional)",
+)
+parser.add_argument(
     "--ninja",
     metavar="BINARY",
     type=Path,
@@ -134,6 +140,11 @@ parser.add_argument(
     action="store_true",
     help="delete the version build directory and generated files, then exit",
 )
+parser.add_argument(
+    "--keep-target-objects",
+    action="store_true",
+    help="preserve target objects when cleaning",
+)
 args = parser.parse_args()
 
 config = ProjectConfig()
@@ -141,10 +152,24 @@ config.version = str(args.version)
 version_num = VERSIONS.index(config.version)
 
 
-def do_clean(version: str, build_dir: Path) -> None:
-    """Delete the version build directory and generated root files."""
+def do_clean(version: str, build_dir: Path, keep_target_objects: bool = False) -> None:
+    """Delete generated build state, optionally keeping target objects."""
     version_build_dir = build_dir / version
-    shutil.rmtree(version_build_dir, ignore_errors=True)
+    if keep_target_objects and version_build_dir.is_dir():
+        for child in version_build_dir.iterdir():
+            if child.name == "obj":
+                continue
+            if child.is_dir() and not child.is_symlink():
+                shutil.rmtree(child, ignore_errors=True)
+            else:
+                try:
+                    child.unlink()
+                except FileNotFoundError:
+                    pass
+    elif version_build_dir.is_symlink():
+        version_build_dir.unlink()
+    elif version_build_dir.exists():
+        shutil.rmtree(version_build_dir)
     for filename in [".splache", ".ninja_deps", ".ninja_log", "build.ninja", "objdiff.json", "compile_commands.json"]:
         try:
             os.remove(filename)
@@ -153,19 +178,21 @@ def do_clean(version: str, build_dir: Path) -> None:
 
 
 if args.clean or args.clean_only:
-    do_clean(config.version, args.build_dir)
+    do_clean(config.version, args.build_dir, args.keep_target_objects)
     if args.clean_only:
         sys.exit(0)
 
 # Strip clean flags from sys.argv so they don't get baked into ninja rules
 # (project.py reads sys.argv[1:] directly when writing the configure_args variable)
-for _flag in ["-c", "--clean", "-C", "--clean-only"]:
+for _flag in ["-c", "--clean", "-C", "--clean-only", "--keep-target-objects"]:
     while _flag in sys.argv:
         sys.argv.remove(_flag)
 
 # Apply arguments
 config.build_dir = args.build_dir
+
 config.objdiff_path = args.objdiff
+config.sjiswrap_path = args.sjiswrap
 config.binutils_path = args.binutils
 config.compilers_path = args.compilers
 config.generate_map = args.map
@@ -255,11 +282,13 @@ config.precompiled_headers = [
     {
         "source": pch_source,
         "mw_version": config.linker_version,
-        "cflags": [*cflags_base],
+        "cflags": [*cflags_base, "-RTTI off"],
         "shift_jis": False,
-    }
+    },
 ]
-cflags_game = [*cflags_base, f"-prefix {pch_output.as_posix()}"]
+# Havok vendor code retains RTTI; game code does not.
+cflags_havok = [*cflags_base, f"-prefix {pch_output.as_posix()}", "-flag no-tailcall"]
+cflags_game = [*cflags_base, f"-prefix {pch_output.as_posix()}", "-RTTI off"]
 
 Matching = True                   # Object matches and should be linked
 NonMatching = False               # Object does not match and should not be linked
@@ -270,12 +299,12 @@ config.warn_missing_source = False
 config.scratch_preset_id = 213
 
 
-def GameSrc(subdir: str, objects: List[Object]) -> Dict[str, Any]:
+def GameSrc(subdir: str, objects: List[Object], cflags: List[str] = cflags_game) -> Dict[str, Any]:
     """Game source code under pgm/src/<subdir>/"""
     return {
         "lib": subdir,
         "mw_version": config.linker_version,
-        "cflags": cflags_game,
+        "cflags": cflags,
         "progress_category": "game",
         "objects": objects,
     }
@@ -446,7 +475,11 @@ config.libs = [
         Object(NonMatching, "Develop/Projects/SR2/pgm/src/Camera/VectorCamCtrl.cpp"),
     ]),
     GameSrc("Data", [
-        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Data/Pack.cpp"),
+        Object(
+            NonMatching,
+            "Develop/Projects/SR2/pgm/src/Data/Pack.cpp",
+            shift_jis=False,
+        ),
         Object(NonMatching, "Develop/Projects/SR2/pgm/src/Data/Path/PathCom.cpp"),
         Object(NonMatching, "Develop/Projects/SR2/pgm/src/Data/Path/PathCourse.cpp"),
         Object(NonMatching, "Develop/Projects/SR2/pgm/src/Data/Path/PathCourseSt15.cpp"),
@@ -544,11 +577,40 @@ config.libs = [
         Object(NonMatching, "Develop/Projects/SR2/pgm/src/Game/WorldGp/WorldGpMgr.cpp"),
     ]),
     GameSrc("Havok", [
-        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Havok/Havok.cpp"),
-        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Havok/HavokBase.cpp"),
-        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Havok/HavokHeap.cpp"),
-        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Havok/WorldManager.cpp"),
-    ]),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Havok/Havok.cpp",
+               cflags=cflags_game),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Havok/HavokBase.cpp",
+               cflags=cflags_game),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Havok/HavokHeap.cpp",
+               cflags=cflags_game),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Havok/HavokVendor.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Havok/HavokEntity.cpp",
+               extra_cflags=["-inline auto,deferred,nobottomup,level=8"]),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Havok/HavokRigidBody.cpp",
+               extra_cflags=["-inline noauto,on,deferred,bottomup"], shift_jis=False),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Havok/HavokVendorPostEntity.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Havok/HavokMotion.cpp",
+               extra_cflags=["-inline auto,deferred,nobottomup,level=8"]),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Havok/HavokThinBoxMotion.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Havok/HavokBoxMotion.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Havok/HavokFixedRigidMotion.cpp",
+               extra_cflags=["-inline auto,deferred,nobottomup,level=8"]),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Havok/HavokKeyframedRigidMotion.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Havok/HavokSphereMotion.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Havok/HavokStabilizedBoxMotion.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Havok/HavokRigidMotionUtil.cpp",
+               extra_cflags=["-inline auto,deferred,nobottomup,level=8"]),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Havok/HavokAabbPhantom.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Havok/HavokPhantom.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Havok/HavokShapePhantom.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Havok/HavokSimpleShapePhantom.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Havok/HavokBroadPhaseBorder.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Havok/HavokSimulationIsland.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Havok/HavokWorld.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Havok/HavokVendorPostWorld.cpp"),
+        Object(NonMatching, "Develop/Projects/SR2/pgm/src/Havok/WorldManager.cpp",
+               cflags=cflags_game),
+    ], cflags=cflags_havok),
     GameSrc("Misc", [
         Object(NonMatching, "Develop/Projects/SR2/pgm/src/Misc/MathEtc.cpp"),
     ]),

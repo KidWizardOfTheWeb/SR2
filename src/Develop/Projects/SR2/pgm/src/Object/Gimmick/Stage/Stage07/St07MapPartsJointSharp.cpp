@@ -9,7 +9,7 @@ void clsMapPartsJointSharp_Object::createData()
 clsMapPartsJointSharp_Task::clsMapPartsJointSharp_Task(u32 u32ObjectAreaNum)
     : clsSingleModelGimmick_Task<clsMapPartsJointSharp_Task,
                                  clsMapPartsJointSharp_Object,
-                                 clsModelType_OB_TX>(u32ObjectAreaNum, 0)
+                                 clsModelType_OB_TX>(u32ObjectAreaNum, 100098)
 {
 }
 

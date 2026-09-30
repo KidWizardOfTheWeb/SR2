@@ -194,7 +194,7 @@ public:
 
     u8 isRide() const { return m_eCtrlMode == CTRL_MODE_RIDE; }
     stcCtrlData* getCtrlData() const { return m_posData; }
-    stcAddPrfm* getAddPrfmData() const { return const_cast<stcAddPrfm*>(&m_sAddPrfmData); }
+    const stcAddPrfm* getAddPrfmData() const { return &m_sAddPrfmData; }
     nspGear::enmGearCtrl getGearCtrlNo() const { return m_eCtrlNo; }
 
     clsGear* m_apcGear[4];                      // offset 0x4, size 0x10

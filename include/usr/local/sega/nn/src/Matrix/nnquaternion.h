@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-void nnCopyQuaternion(struct NNS_QUATERNION* dst, struct NNS_QUATERNION* src);
+void nnCopyQuaternion(struct NNS_QUATERNION* dst, const struct NNS_QUATERNION* src);
 void nnMultiplyQuaternion(struct NNS_QUATERNION* dst,
                           struct NNS_QUATERNION* quat1,
                           struct NNS_QUATERNION* quat2);

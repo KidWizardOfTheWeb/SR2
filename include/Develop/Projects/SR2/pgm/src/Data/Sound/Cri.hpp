@@ -3,6 +3,7 @@
 
 #include "Develop/Projects/SR2/pgm/lib/OO/core/OOSystem.hpp"
 #include "types.h"
+#include "usr/local/cri/mwlib/ee/lib/cri_libs.h"
 
 // total size: 0x10
 class RofsInitPara {

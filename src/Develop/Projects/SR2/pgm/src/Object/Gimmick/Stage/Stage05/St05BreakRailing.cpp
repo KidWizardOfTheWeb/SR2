@@ -44,11 +44,6 @@ void clsBreakRailing_Task::draw()
 {
 }
 
-clsBreakRailing_Task::clsBreakRailing_Task(u32 param)
-    : clsBaseGimmickBody<clsBreakRailing_Task, clsBreakRailing_Obj, clsModelType_OB>(0, 0)
-{
-}
-
 clsBreakRailing_Task::~clsBreakRailing_Task()
 {
 }

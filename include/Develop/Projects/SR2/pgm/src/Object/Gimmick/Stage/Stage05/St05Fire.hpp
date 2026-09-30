@@ -23,16 +23,11 @@ public:
 class clsFire_Obj : public clsGimmickObj {
 public:
     enum enmMode {
-        MODE__NONE = 0,
-        MODE__SETUP = 1,
-        MODE__CHARGE = 2,
-        MODE__READY_SHOOT = 3,
-        MODE__SHOOT = 4,
-        MODE__CRUISE = 5,
-        MODE__BLAST = 6,
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
     };
 
-    clsFire_Obj() {}
+    clsFire_Obj() : m_eMode(MODE_INIT), m_pcSparks(NULL), m_u8FireType(0) {}
     virtual ~clsFire_Obj() {}
 
     virtual void setData();
@@ -50,7 +45,11 @@ public:
 // total size: 0xA4
 class clsFire_Task : public clsBaseGimmickBody<clsFire_Task, clsFire_Obj, clsFireModel> {
 public:
-    inline clsFire_Task(u32 u32ViewNo) : clsBaseGimmickBody(0, 0) {}
+    clsFire_Task(u32 u32ObjectAreaNum)
+        : clsBaseGimmickBody(u32ObjectAreaNum, 101010), m_pf32TexCoordU(NULL), m_f32AnimSpeed(0.0f)
+    {
+        m_cModel.m_acModel[1].m_psObject = NULL;
+    }
     virtual ~clsFire_Task() {}
 
     f32* m_pf32TexCoordU; // offset 0x9C, size 0x4

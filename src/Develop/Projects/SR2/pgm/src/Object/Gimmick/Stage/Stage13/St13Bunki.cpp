@@ -34,7 +34,8 @@ void clsBunki_Obj::destroyData()
 {
 }
 
-clsBunki_Task::clsBunki_Task(u32 u32ObjectAreaNum) : clsSingleModelGimmick_Task(u32ObjectAreaNum, 0)
+clsBunki_Task::clsBunki_Task(u32 u32ObjectAreaNum)
+    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 100098)
 {
 }
 

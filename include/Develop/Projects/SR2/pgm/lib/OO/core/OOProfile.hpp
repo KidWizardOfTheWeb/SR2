@@ -25,4 +25,27 @@ public:
     u8 m_u8SortType;             // offset 0x1410, size 0x1
 };
 
+inline void OOProfileBegin(const c8* opc8Name)
+{
+    if (clsOOProfile::GS()->m_bRunning) {
+        clsOOProfile::GS()->begin(opc8Name);
+    }
+}
+
+inline void OOProfileEnd(const c8* opc8Name)
+{
+    if (clsOOProfile::GS()->m_bRunning) {
+        clsOOProfile::GS()->end(opc8Name);
+    }
+}
+
+// total size: 0x4
+class clsOOProfileObject {
+public:
+    clsOOProfileObject(const c8* opc8Name) : m_opc8Name(opc8Name) { OOProfileBegin(opc8Name); }
+    ~clsOOProfileObject() { OOProfileEnd(m_opc8Name); }
+
+    const c8* m_opc8Name; // RECONSTRUCTED name; offset 0x0, size 0x4
+};
+
 #endif // OOPROFILE_HPP

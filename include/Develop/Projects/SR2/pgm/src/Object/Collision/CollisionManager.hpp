@@ -10,7 +10,6 @@
 
 class clsObject;
 class hkCollidable;
-struct stcInfo;
 
 // total size: 0x10
 struct stcBinHeader {
@@ -36,10 +35,10 @@ public:
     // total size: 0x30
     struct stcRetRayCast {
     public:
-        NNS_VECTORFAST sCrossVecFast;  // offset 0x0, size 0x10
-        NNS_VECTORFAST sNormalVecFast; // offset 0x10, size 0x10
-        stcInfo* psInfo;               // offset 0x20, size 0x4
-        clsObject* pcObject;           // offset 0x24, size 0x4
+        NNS_VECTORFAST sCrossVecFast;        // offset 0x0, size 0x10
+        NNS_VECTORFAST sNormalVecFast;       // offset 0x10, size 0x10
+        clsGroundCollision::stcInfo* psInfo; // offset 0x20, size 0x4
+        clsObject* pcObject;                 // offset 0x24, size 0x4
     };
 
     clsCollisionManager() {}
@@ -53,7 +52,7 @@ public:
     s32 m_s32GroundVertexNum;                        // offset 0xBC, size 0x4
     s32 m_s32GroundPartsNum;                         // offset 0xC0, size 0x4
 
-    inline clsObject* getCollidableObject(const hkCollidable* pcCollidable) const { return 0; }
+    inline clsObject* getCollidableObject(const hkCollidable* pcCollidable) const { return NULL; }
     void setupBinData(void* pvBuff);
     void registData(const void* pvBuff);
     s8 checkRayCast(stcRetRayCast& rsRetRayCast,

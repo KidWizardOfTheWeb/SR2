@@ -1,6 +1,7 @@
 #ifndef TYPE_HPP
 #define TYPE_HPP
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 #include "types.h"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickObj.hpp"
@@ -18,24 +19,27 @@ public:
     virtual nspPackId::enm getPackId() const { return nspPackId::TYPE_2070; }
 
     void draw(clsModelType_OB_TX_MO_MA& rcObj,
-              f32 (*psMtxPal)[4][4],
+              NNS_MATRIX* psMtxPal,
               u32* psNodeStat,
-              const f32 (*opaNnViewMtx)[4][4],
-              f32 (*psMtxWork)[4][4],
+              const NNS_MATRIX* opaNnViewMtx,
+              NNS_MATRIX* psMtxWork,
               u16** apsTexIdx,
               u32 u32GameCount,
               u32 u32Param8);
 };
 
 // total size: 0xC4
+
 class clsType_Task
     : public clsSingleModelGimmick_Task<clsType_Task, clsType_Obj, clsModelType_OB_TX_MO_MA>,
       public clsGimmickCommon {
 public:
     clsType_Task(u32 u32ObjectAreaNum)
         : clsSingleModelGimmick_Task<clsType_Task, clsType_Obj, clsModelType_OB_TX_MO_MA>(
-              u32ObjectAreaNum, 0x18A88)
+              u32ObjectAreaNum, 101000)
     {
+        clsType_Obj::t_f32ClipDist =
+            clsType_Obj::t_aof32ClipDistSq[nspGlobal::sTask.pcBaseRace->getStageNo()];
     }
     virtual ~clsType_Task() {}
 

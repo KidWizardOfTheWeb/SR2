@@ -2,6 +2,7 @@
 #define SVLBTLMISSILETASK_HPP
 
 #include "types.h"
+#include "usr/local/sce/ee/gcc/ee/lib/libc/memset.h"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/SurvivalBattle/Missile/SvlBtlMissileObject.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
@@ -13,6 +14,8 @@ class clsLockOnTarget2D_Task;
 class clsLockOnAppoint3D_Task;
 class clsLockOnFixed3D_Task;
 class clsPlayerTask;
+
+class clsSvlBtlMissile_Task;
 
 // total size: 0x8
 struct stcLockOnPlayerData {
@@ -52,9 +55,25 @@ public:
         LOCKON_PLAYER_TYPE__FIXED = 2,
     };
 
-    virtual ~clsSvlBtlMissile_Task() {}
+    virtual ~clsSvlBtlMissile_Task();
     clsSvlBtlMissile_Task(const stcSetDataDetail& param_1)
-        : clsSingleModelGimmick_Task(0, 0) {} // [verify params from ASM]
+        : clsSingleModelGimmick_Task<clsSvlBtlMissile_Task,
+                                     clsSvlBtlMissile_Object,
+                                     clsModelType_OB_TX>(0x40, 0x18A88)
+    {
+        hkVector4 cVec(clsSvlBtlMissile_Object::tosCollisionHalfSizeVec.x,
+                       clsSvlBtlMissile_Object::tosCollisionHalfSizeVec.y,
+                       clsSvlBtlMissile_Object::tosCollisionHalfSizeVec.z,
+                       0.0f);
+        m_pcRigidShape = new hkBoxShape(cVec, hkConvexShapeDefaultRadius);
+        memset(m_asPlayerData, 0, sizeof(m_asPlayerData));
+        for (s32 s32i = 0; s32i < 0x40; ++s32i) {
+            clsSvlBtlMissile_Object* pcObj = m_vecUnusedGmkObjArray.back();
+            m_vecUnusedGmkObjArray.pop_back();
+            m_vecGmkObjArray.push_back(pcObj);
+            pcObj->setSetData(param_1);
+        }
+    }
 
     virtual void execute();
     virtual void draw();
@@ -73,5 +92,9 @@ public:
 
     stcPlayerMissileData m_asPlayerData[4]; // offset 0x94, size 0x160
 };
+
+inline clsSvlBtlMissile_Task::~clsSvlBtlMissile_Task()
+{
+}
 
 #endif // SVLBTLMISSILETASK_HPP

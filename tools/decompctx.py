@@ -66,10 +66,10 @@ def import_c_file(in_file: str) -> str:
     out_text = ""
 
     try:
-        with open(in_file, encoding="utf-8") as file:
+        with open(os.path.join(root_dir, in_file), encoding="utf-8") as file:
             out_text += process_file(in_file, list(file))
-    except Exception:
-        with open(in_file) as file:
+    except UnicodeDecodeError:
+        with open(os.path.join(root_dir, in_file), encoding="shift_jis") as file:
             out_text += process_file(in_file, list(file))
     return out_text
 
@@ -146,6 +146,13 @@ def main():
         action="append",
     )
     parser.add_argument(
+        "-p",
+        "--prefix",
+        help="PCH source header to expand before the translation unit (not the compiled .mch)",
+        action="append",
+        default=[],
+    )
+    parser.add_argument(
         "-D",
         "--define",
         help="""Macro definition""",
@@ -161,6 +168,8 @@ def main():
     exclude_globs = args.exclude or []
     prelude_defines = args.define or []
     output = generate_prelude(prelude_defines)
+    for prefix in args.prefix:
+        output += import_c_file(prefix)
     output += import_c_file(args.c_file)
 
     with open(os.path.join(root_dir, args.output), "w", encoding="utf-8") as f:

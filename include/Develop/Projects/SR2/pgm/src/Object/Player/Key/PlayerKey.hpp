@@ -55,8 +55,32 @@ public:
 
     clsPlayerKey();
     virtual ~clsPlayerKey();
+    virtual void requestRumble(u32 u32Param) = 0;
+    virtual void playSfSe_User(s32 s32Param) = 0;
+    virtual void playSfSe_Com(s32 s32Param) = 0;
+    virtual void playSfPadSe(s32 s32Param) = 0;
+    virtual void stopSfPadSe(s32 s32Param) = 0;
     virtual void reset();
+    virtual void updateKey() = 0;
 
+    void update()
+    {
+        m_u32OldState = m_sKeyData.u32KeyState;
+        m_s8OldLeverX = m_sKeyData.s8LeverX;
+        m_s8OldLeverY = m_sKeyData.s8LeverY;
+        if (m_bValidFlag) {
+            updateKey();
+            m_sKeyData.u32KeyState &= ~m_u32KeyMask;
+            if (m_u32KeyMask & 0xf) {
+                m_sKeyData.s8LeverX *= (m_u32KeyMask & 3) == 0;
+                m_sKeyData.s8LeverY *= (m_u32KeyMask & 0xc) == 0;
+            }
+        } else {
+            m_sKeyData.u32KeyState = 0;
+            m_sKeyData.s8LeverX = 0;
+            m_sKeyData.s8LeverY = 0;
+        }
+    }
     void SetExtType(u8 param);
 
     void setKeyMask(u32 param) { m_u32KeyMask = param; }
@@ -65,7 +89,7 @@ public:
     s8 GetOldLeverX() const { return m_s8OldLeverX; }
     _KeyBuf GetState() const { return m_sKeyData; }
     const stcExtensionData* getExtensionDataPtr() const { return &m_sExtension; }
-    void setValidFlag(bool param) { m_bValidFlag = (u8)param; }
+    void setValidFlag(bool param) { m_bValidFlag = param; }
     void setStiffFrame(f32 param1, enmStiffType param2) {}
 
     static stcExtensionData t_osExtensionTable[3];

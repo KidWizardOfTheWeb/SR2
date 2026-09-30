@@ -10,14 +10,14 @@
 
 class clsSe3DControl;
 
-enum enmPutCarMode {
-    MODE_INIT = 0,
-    MODE_MAIN = 1,
-};
-
 // total size: 0xE0
 class clsPutCar_Obj : public clsRigidBodyGimmickObj {
 public:
+    enum enmPutCarMode {
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
+    };
+
     inline clsPutCar_Obj() : clsRigidBodyGimmickObj() {}
     virtual ~clsPutCar_Obj() {}
 

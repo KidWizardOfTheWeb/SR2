@@ -28,10 +28,10 @@ void clsUfoCatcher::execute()
 }
 
 void clsUfoCatcher::draw(clsUfoCatcherModels& rcModel,
-                         f32 (*psMtxPal)[4][4],
+                         NNS_MATRIX* psMtxPal,
                          u32* psNodeStat,
-                         const f32 (*opaNnViewMtx)[4][4],
-                         f32 (*psMtxWork)[4][4],
+                         const NNS_MATRIX* opaNnViewMtx,
+                         NNS_MATRIX* psMtxWork,
                          u32 u32ViewNo,
                          u32 NodeStatus)
 {
@@ -71,7 +71,7 @@ void clsUfoCatcher_Obj::openDoor(f32 f32Distx2, clsPlayerTask* pcPlayer)
 
 clsUfoCatcher* clsUfoCatcher_Obj::getStateCmp(clsUfoCatcher::enmState eState)
 {
-    return 0;
+    return NULL;
 }
 
 void clsUfoCatcher_Obj::execute()
@@ -79,10 +79,10 @@ void clsUfoCatcher_Obj::execute()
 }
 
 void clsUfoCatcher_Obj::draw(clsUfoCatcherModels& rcModel,
-                             f32 (*psMtxPal)[4][4],
+                             NNS_MATRIX* psMtxPal,
                              u32* psNodeStat,
-                             const f32 (*opaNnViewMtx)[4][4],
-                             f32 (*psMtxWork)[4][4],
+                             const NNS_MATRIX* opaNnViewMtx,
+                             NNS_MATRIX* psMtxWork,
                              u32 u32ViewNo)
 {
 }
@@ -100,13 +100,5 @@ void clsUfoCatcher_Task::execute()
 }
 
 void clsUfoCatcher_Task::draw()
-{
-}
-
-clsUfoCatcher_Task::clsUfoCatcher_Task(u32 u32ObjectAreaNum) : clsBaseGimmickBody(0, 0)
-{
-}
-
-clsUfoCatcher_Task::~clsUfoCatcher_Task()
 {
 }

@@ -34,7 +34,7 @@ void clsPutCanoe_Obj::callbackCrashEvent()
 
 clsPutCanoe_Task::clsPutCanoe_Task(u32 u32ObjectAreaNum)
     : clsSingleModelGimmick_Task<clsPutCanoe_Task, clsPutCanoe_Obj, clsModelType_OB_TX>(
-          u32ObjectAreaNum, 0)
+          u32ObjectAreaNum, 101000)
 {
 }
 

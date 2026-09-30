@@ -1,6 +1,7 @@
 #ifndef PUTGRAVITYOBJ2_HPP
 #define PUTGRAVITYOBJ2_HPP
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 #include "types.h"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 #include "usr/local/sega/nn/src/Object/nnobject.h"
@@ -15,19 +16,20 @@ class clsSe3DControl;
 class clsPutGravityObj2_Task;
 class hkShape;
 
-#ifndef ENM_PUT_GRAVITY_OBJ_MODE_DECLARED
-#define ENM_PUT_GRAVITY_OBJ_MODE_DECLARED
-enum enmPutGravityObjMode {
-    MODE_INIT = 0,
-    MODE_MAIN = 1,
-};
-#endif
-
 // total size: 0xF0
 class clsPutGravityObj2_Obj : public clsRigidBodyGimmickObj {
 public:
-    clsPutGravityObj2_Obj() {}
-    virtual ~clsPutGravityObj2_Obj() {}
+    enum enmPutGravityObjMode {
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
+    };
+
+    clsPutGravityObj2_Obj()
+        : m_ePutGravityObjMode(MODE_INIT), m_psFloatingParticle(NULL), m_pcSe3DControl(NULL),
+          m_u32ParticleType(0)
+    {
+    }
+    virtual ~clsPutGravityObj2_Obj() { destroyData(); }
 
     virtual void setData();
     virtual void createData();
@@ -49,10 +51,10 @@ public:
     virtual void createSe();
 
     void draw(clsModelType_OB_TX* pcModels,
-              f32 (*psMtxPal)[4][4],
+              NNS_MATRIX* psMtxPal,
               u32* psNodeStat,
-              const f32 (*opaNnViewMtx)[4][4],
-              f32 (*psMtxWork)[4][4],
+              const NNS_MATRIX* opaNnViewMtx,
+              NNS_MATRIX* psMtxWork,
               u32 u32ViewNo,
               clsPutGravityObj2_Task* pcTask);
     void createDebris(NNS_OBJECT* psObject, u32 u32DebrisStartNodeNum, f32 f32LimitFrame);
@@ -74,7 +76,13 @@ class clsPutGravityObj2_Task : public clsMultiShape,
                                                                 clsPutGravityObj2_Obj,
                                                                 clsMultiObTxModels> {
 public:
-    clsPutGravityObj2_Task(u32 param);
+    clsPutGravityObj2_Task(u32 u32ObjectAreaNum)
+        : clsMultiShape(u32ObjectAreaNum),
+          clsMultiModelGimmick_Task<clsPutGravityObj2_Task,
+                                    clsPutGravityObj2_Obj,
+                                    clsMultiObTxModels>(u32ObjectAreaNum, 101000)
+    {
+    }
     virtual ~clsPutGravityObj2_Task();
 
     virtual void init();
@@ -82,5 +90,9 @@ public:
     virtual void execute();
     virtual void draw();
 };
+
+inline clsPutGravityObj2_Task::~clsPutGravityObj2_Task()
+{
+}
 
 #endif // PUTGRAVITYOBJ2_HPP

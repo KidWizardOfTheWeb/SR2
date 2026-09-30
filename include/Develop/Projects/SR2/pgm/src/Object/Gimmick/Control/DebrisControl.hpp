@@ -8,15 +8,20 @@
 // total size: 0x20
 class clsDebrisControl {
 public:
-    ~clsDebrisControl();
+    ~clsDebrisControl()
+    {
+        delete[] m_apcDebris;
+        delete[] m_pcDebris;
+    }
     u8 isBreak() const { return m_bBreak; }
     void reset()
     {
         m_bBreak = 0;
-        if (m_apcDebris != 0) {
+        if (m_apcDebris != NULL) {
             s32 i = 0;
             do {
-                m_apcDebris[i]->reset();
+                clsDebriPartsBase* const pcDebris = m_apcDebris[i];
+                pcDebris->reset();
                 ++i;
             } while (i < m_s32Num);
         }

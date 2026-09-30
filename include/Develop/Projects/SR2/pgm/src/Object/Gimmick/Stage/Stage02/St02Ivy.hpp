@@ -11,16 +11,16 @@
 class clsIvy_Obj;
 class clsPlayerTask;
 
-enum enmIvyMode {
-    MODE_INIT = 0,
-    MODE_MAIN = 1,
-    MODE_MOVE = 2,
-    MODE_WAIT = 3,
-};
-
 class clsIvy_Obj : public clsPhantomGimmickObject {
 public:
-    clsIvy_Obj(u32 u32ObjectAreaNum);
+    enum enmIvyMode {
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
+        MODE_MOVE = 2,
+        MODE_WAIT = 3,
+    };
+
+    clsIvy_Obj();
     virtual ~clsIvy_Obj();
     virtual void reset();
     virtual void createData();
@@ -31,7 +31,6 @@ public:
     void shootPlayerToGround();
     void contactTriggerEvent(hkContactPoint* pcObject, clsObject* pParam2);
 
-    // Members
     NNS_VECTORFAST m_sRollNrmVecFast; // offset 0x60, size 0x10
     enmIvyMode m_eIvyMode;            // offset 0x70, size 0x4
     clsPlayerTask* m_pcPlayer;        // offset 0x74, size 0x4

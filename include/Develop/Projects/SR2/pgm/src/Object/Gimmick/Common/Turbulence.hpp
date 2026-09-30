@@ -1,6 +1,7 @@
 #ifndef TURBULENCE_HPP
 #define TURBULENCE_HPP
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 #include "types.h"
 #include "Develop/Projects/SR2/pgm/src/Havok/HavokHeap.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
@@ -53,13 +54,41 @@ public:
 // total size: 0x100
 class clsTurbulence_Obj : public clsPhantomGimmickObject {
 public:
+    typedef std::vector<clsTurbThroughColli*, std::allocator<clsTurbThroughColli*> >
+        TurbThroughVector;
     struct stcTurbInfo {
         u32 u32Index;                 // offset 0x0, size 0x4
         clsTurbulence_Obj* pcTurbObj; // offset 0x4, size 0x4
     };
 
-    inline clsTurbulence_Obj() : clsPhantomGimmickObject() {}
-    virtual ~clsTurbulence_Obj() {}
+    clsTurbulence_Obj()
+        : clsPhantomGimmickObject(), m_eMode(MODE_INIT), m_pcRigidBody(NULL), m_pf32Alpha(NULL),
+          m_pu32ActiveCnt(NULL), m_u32ColliNum(0), m_u32StartIdx(0), m_u32VisibleWaitIdx(0),
+          m_u32EnableWaitFrm(0), m_u32RemoveCnt(0), m_psMaterials(NULL), m_psTurbInfo(NULL),
+          m_vecpcTurbThroughColli(), m_u8MatFlg(0)
+    {
+    }
+    virtual ~clsTurbulence_Obj()
+    {
+        if (m_pf32Alpha != NULL)
+            delete[] m_pf32Alpha;
+        if (m_pu32ActiveCnt != NULL)
+            delete[] m_pu32ActiveCnt;
+        for (u32 u32Index = 0; u32Index < m_u32ColliNum; ++u32Index) {
+            delete[] reinterpret_cast<u8*>(m_psMaterials[u32Index].pMaterial);
+        }
+        if (m_psMaterials != NULL)
+            delete[] m_psMaterials;
+        if (m_psTurbInfo != NULL)
+            delete[] m_psTurbInfo;
+
+        for (TurbThroughVector::iterator it = m_vecpcTurbThroughColli.begin();
+             it != m_vecpcTurbThroughColli.end();
+             ++it)
+        {
+            delete *it;
+        }
+    }
 
     enum enmTurbMode {
         MODE_INIT = 0,
@@ -71,28 +100,28 @@ public:
         MODE_FIN = 6,
     };
 
-    enmTurbMode m_eMode;                   // offset 0x60, size 0x4
-    NNS_VECTORFAST m_sPosVF;               // offset 0x70, size 0x10
-    NNS_VECTORFAST m_sScaleVF;             // offset 0x80, size 0x10
-    NNS_VECTORFAST m_sInitPosVF;           // offset 0x90, size 0x10
-    NNS_QUATERNION m_sRotQ;                // offset 0xA0, size 0x10
-    clsPlayerTask* m_pcPlayerTask;         // offset 0xB0, size 0x4
-    clsRigidBody* m_pcRigidBody;           // offset 0xB4, size 0x4
-    vector* m_pvecpcRigid;                 // offset 0xB8, size 0x4
-    vector* m_pvecpcWallRigid;             // offset 0xBC, size 0x4
-    f32* m_pf32Alpha;                      // offset 0xC0, size 0x4
-    u32* m_pu32ActiveCnt;                  // offset 0xC4, size 0x4
-    u32 m_u32ColliNum;                     // offset 0xC8, size 0x4
-    u32 m_u32StartIdx;                     // offset 0xCC, size 0x4
-    u32 m_u32VisibleWaitIdx;               // offset 0xD0, size 0x4
-    u32 m_u32EnableWaitIdx;                // offset 0xD4, size 0x4
-    u32 m_u32EnableWaitFrm;                // offset 0xD8, size 0x4
-    u32 m_u32RemoveCnt;                    // offset 0xDC, size 0x4
-    NNS_MATERIALPTR* m_psMaterials;        // offset 0xE0, size 0x4
-    NNS_MATERIALPTR* m_psOriginalMaterial; // offset 0xE4, size 0x4
-    stcTurbInfo* m_psTurbInfo;             // offset 0xE8, size 0x4
-    vector m_vecpcTurbThroughColli;        // offset 0xEC, size 0xC
-    u8 m_u8MatFlg;                         // offset 0xF8, size 0x1
+    enmTurbMode m_eMode;                       // offset 0x60, size 0x4
+    NNS_VECTORFAST m_sPosVF;                   // offset 0x70, size 0x10
+    NNS_VECTORFAST m_sScaleVF;                 // offset 0x80, size 0x10
+    NNS_VECTORFAST m_sInitPosVF;               // offset 0x90, size 0x10
+    NNS_QUATERNION m_sRotQ;                    // offset 0xA0, size 0x10
+    clsPlayerTask* m_pcPlayerTask;             // offset 0xB0, size 0x4
+    clsRigidBody* m_pcRigidBody;               // offset 0xB4, size 0x4
+    vector* m_pvecpcRigid;                     // offset 0xB8, size 0x4
+    vector* m_pvecpcWallRigid;                 // offset 0xBC, size 0x4
+    f32* m_pf32Alpha;                          // offset 0xC0, size 0x4
+    u32* m_pu32ActiveCnt;                      // offset 0xC4, size 0x4
+    u32 m_u32ColliNum;                         // offset 0xC8, size 0x4
+    u32 m_u32StartIdx;                         // offset 0xCC, size 0x4
+    u32 m_u32VisibleWaitIdx;                   // offset 0xD0, size 0x4
+    u32 m_u32EnableWaitIdx;                    // offset 0xD4, size 0x4
+    u32 m_u32EnableWaitFrm;                    // offset 0xD8, size 0x4
+    u32 m_u32RemoveCnt;                        // offset 0xDC, size 0x4
+    NNS_MATERIALPTR* m_psMaterials;            // offset 0xE0, size 0x4
+    NNS_MATERIALPTR* m_psOriginalMaterial;     // offset 0xE4, size 0x4
+    stcTurbInfo* m_psTurbInfo;                 // offset 0xE8, size 0x4
+    TurbThroughVector m_vecpcTurbThroughColli; // offset 0xEC, size 0xC
+    u8 m_u8MatFlg;                             // offset 0xF8, size 0x1
 
     static u32 TURB_RIGID_KEY;
     static f32 CLIP_DISTx2;
@@ -106,9 +135,9 @@ public:
     virtual void execute();
     virtual void draw(clsModelType_OB_TX_MO_MA& rcObj,
                       clsModelType_OB_TX_MO_MA& rcAObj,
-                      f32 (*psMtxPal)[4][4],
+                      NNS_MATRIX* psMtxPal,
                       u32* psNodeStat,
-                      const f32 (*opaNnViewMtx)[4][4]);
+                      const NNS_MATRIX* opaNnViewMtx);
     virtual void createData();
     virtual void destroyData();
     inline nspPackId::enm getPackId() const { return nspPackId::ST01_TURB_COL_11210; }
@@ -119,10 +148,11 @@ class clsTurbulence_Task
     : public clsBaseGimmickBody<clsTurbulence_Task, clsTurbulence_Obj, clsModelType_OB_TX_MO_MA> {
 public:
     virtual ~clsTurbulence_Task() {}
-    clsTurbulence_Task(u32 param_1)
-        : clsBaseGimmickBody<clsTurbulence_Task, clsTurbulence_Obj, clsModelType_OB_TX_MO_MA>(0, 0)
+    clsTurbulence_Task(u32 u32Num)
+        : clsBaseGimmickBody<clsTurbulence_Task, clsTurbulence_Obj, clsModelType_OB_TX_MO_MA>(
+              u32Num, 101010)
     {
-    } // [verify params from ASM]
+    }
 
     virtual void execute();
     virtual void draw();
@@ -138,30 +168,53 @@ public:
                          clsTurbulence_Obj::stcTurbInfo* psTurbInfo,
                          u8 u8IsCreateThrough);
 
-    vector m_vecvecpcRigid;     // offset 0xAC, size 0xC
-    vector m_vecvecpcWallRigid; // offset 0xB8, size 0xC
-    vector m_veccObject;        // offset 0xC4, size 0xC
-    vector m_veccAObject;       // offset 0xD0, size 0xC
-    vector m_vecu32ColliNum;    // offset 0xDC, size 0xC
-};
-
-// Enum used by clsPutTurbulence_Obj
-enum enmPutTurbMode {
-    MODE_INIT = 0,
-    MODE_WAIT = 1,
-    MODE_SLEEP = 2,
-    MODE_START = 3,
-    MODE_GROW = 4,
-    MODE_MOVE = 5,
-    MODE_STOP = 6,
-    MODE_FIN = 7,
+    std::vector<std::vector<clsRigidBody*, std::allocator<clsRigidBody*> >,
+                std::allocator<std::vector<clsRigidBody*, std::allocator<clsRigidBody*> > > >
+        m_vecvecpcRigid; // offset 0xAC, size 0xC
+    std::vector<std::vector<clsRigidBody*, std::allocator<clsRigidBody*> >,
+                std::allocator<std::vector<clsRigidBody*, std::allocator<clsRigidBody*> > > >
+        m_vecvecpcWallRigid; // offset 0xB8, size 0xC
+    std::vector<clsModelType_OB_TX_MO_MA, std::allocator<clsModelType_OB_TX_MO_MA> >
+        m_veccObject; // offset 0xC4, size 0xC
+    std::vector<clsModelType_OB_TX_MO_MA, std::allocator<clsModelType_OB_TX_MO_MA> >
+        m_veccAObject;                                       // offset 0xD0, size 0xC
+    std::vector<u32, std::allocator<u32> > m_vecu32ColliNum; // offset 0xDC, size 0xC
 };
 
 // total size: 0x130
 class clsPutTurbulence_Obj : public clsPhantomGimmickObject {
 public:
-    clsPutTurbulence_Obj() : clsPhantomGimmickObject() {}
-    virtual ~clsPutTurbulence_Obj() {}
+    enum enmPutTurbMode {
+        MODE_INIT = 0,
+        MODE_WAIT = 1,
+        MODE_SLEEP = 2,
+        MODE_START = 3,
+        MODE_GROW = 4,
+        MODE_MOVE = 5,
+        MODE_STOP = 6,
+        MODE_FIN = 7,
+    };
+
+    clsPutTurbulence_Obj() : clsPhantomGimmickObject()
+    {
+        m_eMode = MODE_INIT;
+        m_ppcRigidBody = NULL;
+        m_ppcRigidGuide = NULL;
+        m_ppcRigidBack = NULL;
+        m_pu32ActiveCnt = NULL;
+        m_f32MotFrameA = 0.0f;
+        m_f32MotFrameC = 0.0f;
+        m_f32MatFrame = 0.0f;
+        m_u32StartIdx = 0;
+        m_u32ActiveNum = 0;
+        m_f32TailBodyLen = 0.0f;
+    }
+    virtual ~clsPutTurbulence_Obj()
+    {
+        if (m_pu32ActiveCnt != NULL) {
+            delete[] m_pu32ActiveCnt;
+        }
+    }
 
     enmPutTurbMode m_eMode;         // offset 0x60, size 0x4
     NNS_VECTORFAST m_sPosVF;        // offset 0x70, size 0x10
@@ -197,16 +250,16 @@ public:
     virtual void clearCol();
     virtual void execute();
     virtual void draw(stcSt04TurbModel& rcObj,
-                      f32 (*psMtxPal)[4][4],
+                      NNS_MATRIX* psMtxPal,
                       u32* psNodeStat,
-                      const f32 (*opaNnViewMtx)[4][4]);
+                      const NNS_MATRIX* opaNnViewMtx);
     virtual void createData();
     virtual void destroyData();
     virtual void reset();
     virtual nspPackId::enm getPackId() const
     {
         return nspPackId::ST01_TURB_COL_11210;
-    } // [ASM-derived guess — verify]
+    } // RECONSTRUCTED.
 };
 
 // total size: 0xC0
@@ -214,11 +267,16 @@ class clsPutTurbulence_Task : public clsBaseGimmickBody<clsPutTurbulence_Task,
                                                         clsPutTurbulence_Obj,
                                                         clsModelType_OB_TX_MO_MA> {
 public:
-    clsPutTurbulence_Task(u32 u32ObjectAreaNum);
+    clsPutTurbulence_Task(u32 u32Num)
+        : clsBaseGimmickBody<clsPutTurbulence_Task, clsPutTurbulence_Obj, clsModelType_OB_TX_MO_MA>(
+              u32Num, 101000)
+    {
+    }
     virtual ~clsPutTurbulence_Task() {}
 
-    u32 m_u32ColBaseNum;        // offset 0xAC, size 0x4
-    vector m_veccObject;        // offset 0xB0, size 0xC
+    u32 m_u32ColBaseNum; // offset 0xAC, size 0x4
+    std::vector<stcSt04TurbModel, std::allocator<stcSt04TurbModel> >
+        m_veccObject;           // offset 0xB0, size 0xC
     clsRigidBody*** m_ppcRigid; // offset 0xBC, size 0x4
 
     virtual void reset();

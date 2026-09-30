@@ -1,6 +1,7 @@
 #ifndef PATH_HPP
 #define PATH_HPP
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 #include "types.h"
 #include "Develop/Projects/SR2/pgm/src/Data/PathData.hpp"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
@@ -8,11 +9,19 @@
 // total size: 0x60
 class clsPath {
 public:
-    clsPath() {}
+    clsPath()
+        : m_psLine(NULL), m_f32LengthRate(0.0f), m_f32Length(0.0f), m_u16HitBit(0), m_u16PointNo(0),
+          m_s16PathNo(-1), m_u16SearchHitBit(0)
+    {
+        nnSetUpVectorFast(&m_sUpVecFast, 0.0f, 0.0f, 0.0f);
+        nnSetUpVectorFast(&m_sDirVecFast, 0.0f, 0.0f, 0.0f);
+        nnSetUpVectorFast(&m_sCrossVecFast, 0.0f, 0.0f, 0.0f);
+        nnSetUpVectorFast(&m_sMoveVecFast, 0.0f, 0.0f, 0.0f);
+    }
     clsPath(const clsPath& rParam1) {}
     ~clsPath() {}
 
-    void calcPathTrsMatrix(f32 (*psDstMtx)[4][4], const NNS_VECTORFAST* opsPosVecFast);
+    void calcPathTrsMatrix(NNS_MATRIX* psDstMtx, const NNS_VECTORFAST* opsPosVecFast);
     void getPathPointToRate(f32 of32LengthRate, NNS_VECTORFAST* psVecFast);
     f32 getDistanceLR(const NNS_VECTORFAST* opsPosVecFast);
     u8 searchPoint(const clsPathData::stcLine* opcLine,
@@ -73,19 +82,13 @@ public:
 
     clsPathData::stcLine* getLine() const { return m_psLine; }
     s16 getPathNo() const { return m_s16PathNo; }
-    NNS_VECTORFAST* getUpVecFastRef() const { return const_cast<NNS_VECTORFAST*>(&m_sUpVecFast); }
-    NNS_VECTORFAST* getMoveVecFastRef() const
-    {
-        return const_cast<NNS_VECTORFAST*>(&m_sMoveVecFast);
-    }
-    NNS_VECTORFAST* getDirVecFastRef() const { return const_cast<NNS_VECTORFAST*>(&m_sDirVecFast); }
+    const NNS_VECTORFAST* getUpVecFastRef() const { return &m_sUpVecFast; }
+    const NNS_VECTORFAST* getMoveVecFastRef() const { return &m_sMoveVecFast; }
+    const NNS_VECTORFAST* getDirVecFastRef() const { return &m_sDirVecFast; }
     u16 getHitBit() const { return m_u16HitBit; }
     u16 getSearchHitBit() const { return m_u16SearchHitBit; }
     void reset() {}
-    NNS_VECTORFAST* getCrossVecFastRef() const
-    {
-        return const_cast<NNS_VECTORFAST*>(&m_sCrossVecFast);
-    }
+    const NNS_VECTORFAST* getCrossVecFastRef() const { return &m_sCrossVecFast; }
     f32 getLengthRate() const { return m_f32LengthRate; }
     f32 getLength() const { return m_f32Length; }
 

@@ -4,6 +4,8 @@
 #include "types.h"
 #include "Develop/Projects/SR2/pgm/src/Object/Object.hpp"
 #include "Develop/Projects/SR2/pgm/src/Data/Pack.hpp"
+#include "Develop/Projects/SR2/pgm/src/Data/GlobalData.hpp"
+#include "Develop/Projects/SR2/pgm/src/Game/BaseRace.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/FrameControl.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/HaveGimmickRigidBody.hpp"
 #include "usr/local/sega/nn/src/Object/nnobject.h"
@@ -16,7 +18,13 @@ class clsGravityActionControl;
 // total size: 0x50
 class clsGimmickObj : public clsObject {
 public:
-    clsGimmickObj() {}
+    clsGimmickObj() : m_psSetDataDetail(NULL), m_u32State(0), m_u8DrawFlg(0), m_bEffective(1)
+    {
+        nnSetUpVectorFast(&m_sPosVecFast, 0.0f, 0.0f, 0.0f);
+        nnMakeUnitQuaternion(&m_sRotQuat);
+        u8 oau8ViewFlgTbl[6] = {0, 1, 3, 7, 15};
+        m_u8DrawFlg = oau8ViewFlgTbl[nspGlobal::sTask.pcBaseRace->getViewNum()];
+    }
     virtual ~clsGimmickObj();
 
     NNS_VECTORFAST m_sPosVecFast;              // offset 0x10, size 0x10
@@ -47,10 +55,10 @@ public:
     void setSetData(const stcSetDataDetail& orsSetDataDetailI);
     const stcSetDataDetail* getSetDataDetail() const { return m_psSetDataDetail; }
     void setPortalNo(u8 ou8PortalNo) { m_u8PortalNo = ou8PortalNo; }
-    NNS_VECTORFAST& getPositionRef() const { return const_cast<NNS_VECTORFAST&>(m_sPosVecFast); }
-    NNS_QUATERNION& getRotQuatRef() const { return const_cast<NNS_QUATERNION&>(m_sRotQuat); }
+    const NNS_VECTORFAST& getPositionRef() const { return m_sPosVecFast; }
+    const NNS_QUATERNION& getRotQuatRef() const { return m_sRotQuat; }
     u32 getAttribute() const { return m_u32Attr; }
-    NNS_VECTOR& getScaleRef() const { return const_cast<NNS_VECTOR&>(m_sScaleVec); }
+    const NNS_VECTOR& getScaleRef() const { return m_sScaleVec; }
     u8 getPortalNo() const { return m_u8PortalNo; }
     u8 getEffective() { return m_bEffective; }
     void clearDrawFlg(u32 u32ViewNo) { m_u8DrawFlg &= ~u32ViewNo; }
@@ -83,5 +91,9 @@ public:
         return m_enClipRet;
     }
 };
+
+inline clsGimmickObj::~clsGimmickObj()
+{
+}
 
 #endif // GIMMICKOBJ_HPP

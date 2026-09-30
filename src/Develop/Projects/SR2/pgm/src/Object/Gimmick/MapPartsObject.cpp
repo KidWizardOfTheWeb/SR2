@@ -35,14 +35,14 @@ void clsMapPartsObject::createBaseMapParts(hkShape* pcShape, f32 f32Weight)
     if (f32Weight > clsHavok::t_of32WeightTypeGround) {
         cRigidBodyInfo.m_motionType.m_storage = hkMotion::MOTION_DYNAMIC;
     } else {
-        cRigidBodyInfo.m_motionType.m_storage = hkMotion::MOTION_CHARACTER;
+        cRigidBodyInfo.m_motionType.m_storage = hkMotion::MOTION_FIXED;
     }
     cRigidBodyInfo.m_collisionFilterInfo = 1;
 
     clsGimmickRigidBody* pcRigidBody =
         new (HK_MEMORY_CLASS_ENTITY) clsGimmickRigidBody(cRigidBodyInfo, this);
     pcRigidBody->setCollisionInfo(&m_sColInfo);
-    pcRigidBody->setMotionType(hkMotion::MOTION_CHARACTER,
+    pcRigidBody->setMotionType(hkMotion::MOTION_FIXED,
                                HK_ENTITY_ACTIVATION_DO_ACTIVATE,
                                HK_UPDATE_FILTER_ON_ENTITY_FULL_CHECK);
     clsHavok::GS()->m_pcWorld->addEntity(pcRigidBody, HK_ENTITY_ACTIVATION_DO_ACTIVATE);

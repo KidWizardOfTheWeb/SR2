@@ -13,20 +13,10 @@
 class clsSe3DControl;
 class hkContactImpulseLimitBreachedListener;
 
-enum enmCogwheelState {
-    STATE_STARTWAIT = 0,
-    STATE_MAIN = 1,
-    STATE_SLOW_INIT = 2,
-    STATE_SLOW = 3,
-    STATE_SLEEP = 4,
-};
-
-// Forward declarations for circular references
 class clsCogwheel_Obj;
 class clsCogwheel_Task;
 
 // total size: 0x14
-// Note: original source has spelling error — "clsCogWhellModel" (f64-l)
 class clsCogWhellModel {
 public:
     clsCogWhellModel() {}
@@ -39,10 +29,10 @@ public:
 // total size: 0xF0
 class clsCogwheel_Parts : public clsRigidBodyGimmickObj {
 public:
-    // Note: enmMode collision with global enmMode from Game.hpp — nested for safety
+    // RECONSTRUCTED: enum scope.
     enum enmMode {
         MODE_MAIN = 0,
-        MDOE_BREAK = 1, // typo preserved from original
+        MDOE_BREAK = 1,
         MODE_DIE = 2,
     };
 
@@ -69,7 +59,14 @@ public:
 // total size: 0xBD0
 class clsCogwheel_Obj : public clsGimmickObj {
 public:
-    // enmCogwheelMode — nested: setMode is Q2-mangled as clsCogwheel_Obj::enmCogwheelMode
+    enum enmCogwheelState {
+        STATE_STARTWAIT = 0,
+        STATE_MAIN = 1,
+        STATE_SLOW_INIT = 2,
+        STATE_SLOW = 3,
+        STATE_SLEEP = 4,
+    };
+
     enum enmCogwheelMode {
         MODE_INIT = 0,
         MODE_MAIN = 1,
@@ -87,7 +84,7 @@ public:
     inline void setMode(enmCogwheelMode mode) { m_eCogwheelMode = mode; }
     void executeParts() {}
     void reset() {}
-    void stepMotoinFrame() {} // typo preserved from original
+    void stepMotoinFrame() {}
     void init() {}
     void resetPartsParam() {}
 
@@ -107,8 +104,6 @@ public:
 // total size: 0x14
 class clsCogwheelThroughCollision : public clsBaseThroughCollision {
 public:
-    // enmMode — nested: createThroughCollision parameter is Q2-mangled as
-    // clsCogwheelThroughCollision::enmMode
     enum enmMode {
         MODE_START = 0,
         MODE_STOP = 1,
@@ -134,9 +129,9 @@ public:
 
 // total size: 0x138
 class clsCogwheel_Task
-    : public clsSingleModelGimmick_Task<clsCogwheel_Task, clsCogwheel_Obj, clsCogWhellModel> {
+    : public clsBaseGimmickBody<clsCogwheel_Task, clsCogwheel_Obj, clsCogWhellModel> {
 public:
-    // Note: enmState collision with St07MapPartsFloorSwitch.hpp — nested for safety
+    // RECONSTRUCTED: enum scope.
     enum enmState {
         STATE_START = 0,
         STATE_STOP = 1,

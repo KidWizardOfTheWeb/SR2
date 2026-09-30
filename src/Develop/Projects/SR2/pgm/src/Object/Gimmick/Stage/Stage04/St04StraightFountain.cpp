@@ -37,7 +37,7 @@ void clsStraightFountain_Obj::setMist(bool bFlg)
 }
 
 clsStraightFountain_Task::clsStraightFountain_Task(u32 u32ObjectAreaNum)
-    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 0)
+    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 101000)
 {
 }
 

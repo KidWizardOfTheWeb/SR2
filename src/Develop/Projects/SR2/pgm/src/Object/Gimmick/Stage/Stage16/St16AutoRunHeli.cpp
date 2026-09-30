@@ -47,10 +47,10 @@ void clsAutoRunHeli::execute()
 }
 
 u8 clsAutoRunHeli::draw(clsAutoRunHeliModel& rcModel,
-                        f32 (*psMtxPal)[4][4],
+                        NNS_MATRIX* psMtxPal,
                         u32* psNodeStat,
-                        const f32 (*opaNnViewMtx)[4][4],
-                        f32 (*psMtxWork)[4][4],
+                        const NNS_MATRIX* opaNnViewMtx,
+                        NNS_MATRIX* psMtxWork,
                         u32 u32ViewNo,
                         u32 NodeStatus)
 {
@@ -79,7 +79,7 @@ void clsAutoRunHeli_Obj::contactTriggerEvent(hkContactPoint* pcObject, clsObject
 
 clsAutoRunHeli* clsAutoRunHeli_Obj::getMoveModeCmp(clsAutoRunHeli::enmMoveMode eMoveMode)
 {
-    return 0;
+    return NULL;
 }
 
 void clsAutoRunHeli_Task::reset()
@@ -95,10 +95,6 @@ void clsAutoRunHeli_Task::execute()
 }
 
 void clsAutoRunHeli_Task::draw()
-{
-}
-
-clsAutoRunHeli_Task::clsAutoRunHeli_Task(u32 u32ObjectAreaNum) : clsBaseGimmickBody(0, 0)
 {
 }
 

@@ -42,12 +42,3 @@ void clsPathTrain_Task::execute()
 void clsPathTrain_Task::draw()
 {
 }
-
-clsPathTrain_Task::clsPathTrain_Task(u32 param)
-    : clsBaseGimmickBody<clsPathTrain_Task, clsPathTrainManager_Obj, clsModelType_OB_TX_MO_MA>(0, 0)
-{
-}
-
-clsPathTrain_Task::~clsPathTrain_Task()
-{
-}

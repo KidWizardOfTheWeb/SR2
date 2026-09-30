@@ -11,12 +11,6 @@ class clsPlayerTask;
 class hkBoxShape;
 class hkSphereShape;
 
-enum enmSetCamColliMode {
-    MODE_INIT = 0,
-    MODE_WAIT = 1,
-    MODE_SLEEP = 2,
-};
-
 enum enmSCamType {
     SCAM_TYPE_LOOKTGT = 0,
     SCAM_TYPE_CHGMAXSPEED = 1,
@@ -79,6 +73,12 @@ struct stcSCamVector {
 // total size: 0x50
 class clsSetCamColli_Obj : public clsBaseThroughCollision {
 public:
+    enum enmSetCamColliMode {
+        MODE_INIT = 0,
+        MODE_WAIT = 1,
+        MODE_SLEEP = 2,
+    };
+
     clsSetCamColli_Obj() {}
     virtual ~clsSetCamColli_Obj() {}
 

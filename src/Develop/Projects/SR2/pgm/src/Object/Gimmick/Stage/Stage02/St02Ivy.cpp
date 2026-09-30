@@ -24,7 +24,8 @@ void clsIvy_Obj::setLandingGround()
 {
 }
 
-clsIvy_Task::clsIvy_Task(u32 u32ObjectAreaNum) : clsSingleModelGimmick_Task(0, 0)
+clsIvy_Task::clsIvy_Task(u32 u32ObjectAreaNum)
+    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 101000)
 {
 }
 
@@ -44,7 +45,7 @@ void clsIvy_Task::shootPlayerToIvy(clsPlayerTask* pcPlayerTask)
 {
 }
 
-clsIvy_Obj::clsIvy_Obj(u32 u32ObjectAreaNum)
+clsIvy_Obj::clsIvy_Obj()
 {
 }
 

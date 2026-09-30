@@ -14,14 +14,6 @@ void clsPutFixedMotMatObj_Task::reset()
 {
 }
 
-clsPutFixedMotMatObj_Obj::clsPutFixedMotMatObj_Obj()
-{
-}
-
-clsPutFixedMotMatObj_Obj::~clsPutFixedMotMatObj_Obj()
-{
-}
-
 void clsPutFixedMotMatObj_Obj::draw(clsModelType_OB_TX_MO_MA* pModel,
                                     f32* pfMatA,
                                     u32* pu32NodeCount,

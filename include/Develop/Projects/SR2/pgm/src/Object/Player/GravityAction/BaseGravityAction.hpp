@@ -27,8 +27,8 @@ public:
     f32 getUsedRate() const { return m_f32UsedRate; }
     f32 getRange() const { return m_f32Range; }
 
-    static f32 t_of32DefaultRange;
-    static f32 t_of32DefaultUsedRate;
+    static const f32 t_of32DefaultRange;
+    static const f32 t_of32DefaultUsedRate;
 };
 
 #endif // BASEGRAVITYACTION_HPP

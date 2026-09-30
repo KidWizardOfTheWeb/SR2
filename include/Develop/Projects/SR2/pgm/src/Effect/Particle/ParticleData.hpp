@@ -9,7 +9,6 @@ void setUnionData(u8* pu8Param1, u32* pu32Param2, u16 u16Param3, u32 u32Param4);
 void setGameData(u8* pu8Param1, u32* pu32Param2, u16 u16Param3, u32 u32Param4);
 void setModeData(u8* pu8Param1, u32* pu32Param2, u16 u16Param3, u32 u32Param4);
 void setSetData(u8* pu8Param1, u32* pu32Param2, u16 u16Param3, u32 u32Param4);
-void* getSetDataStart();
 
 extern u16 u16NumUnion;
 extern u16 u16NumGame;
@@ -19,6 +18,11 @@ extern void* apvUnionDataAdr[100];
 extern void* apvGameDataAdr[100];
 extern void* apvModeDataAdr[50];
 extern void* apvSetDataAdr[100];
+
+inline u16 getSetDataStart()
+{
+    return u16NumUnion + u16NumGame + u16NumMode;
+}
 } // namespace nspParticleData
 
 // total size: 0x14

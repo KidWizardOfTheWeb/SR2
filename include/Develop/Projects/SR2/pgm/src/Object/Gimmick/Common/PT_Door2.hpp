@@ -6,16 +6,16 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/RigidBodyGimmickObj.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 
-enum enmPT_Door2Mode {
-    MODE_INIT = 0,
-    MODE_MAIN = 1,
-};
-
 class clsPT_Door2_Obj : public clsRigidBodyGimmickObj {
 public:
+    enum enmPT_Door2Mode {
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
+    };
+
     clsPT_Door2_Obj();
 
-    virtual ~clsPT_Door2_Obj() {}
+    virtual ~clsPT_Door2_Obj() { destroyData(); }
     virtual nspPackId::enm getPackId() const { return nspPackId::PT_DOOR_2081; }
     virtual void main() {}
 
@@ -34,7 +34,7 @@ class clsPT_Door2_Task
 public:
     clsPT_Door2_Task(u32 u32ObjectAreaNum)
         : clsSingleModelGimmick_Task<clsPT_Door2_Task, clsPT_Door2_Obj, clsModelType_OB_TX>(
-              u32ObjectAreaNum, 0)
+              u32ObjectAreaNum, 101000)
     {
     }
     virtual ~clsPT_Door2_Task() {}

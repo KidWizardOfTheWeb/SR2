@@ -10,6 +10,12 @@
 // total size: 0xE0
 class clsPlant2_Obj : public clsRigidBodyGimmickObj {
 public:
+    enum enmPlantMode {
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
+        MODE_BLINK = 2,
+    };
+
     clsPlant2_Obj() {}
     virtual ~clsPlant2_Obj() {}
 

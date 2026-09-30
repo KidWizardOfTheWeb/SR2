@@ -20,8 +20,6 @@ public:
 // total size: 0x7AD0
 class clsPfCamera : public clsOOCamera {
 public:
-    typedef f32 (*MtxPtr)[4];
-
     clsPfCamera();
     virtual void setNo(u32 u32Param1)
     {
@@ -39,8 +37,8 @@ public:
     void invalidateOrthoMtx();
     void DebugCamera();
     void DebugCameraDome();
-    MtxPtr getViewMtx() const { return const_cast<MtxPtr>(m_sViewMtx); }
-    NNS_VECTORFAST* getPosFast() const { return const_cast<NNS_VECTORFAST*>(&m_sCameraPosVF); }
+    const NNS_MATRIX* getViewMtx() const { return &m_sViewMtx; }
+    const NNS_VECTORFAST* getPosFast() const { return &m_sCameraPosVF; }
     u8 getDebugDomeMode() const { return m_u8DomeCamera; }
     u8 getDebugLookMode() const { return m_u8LookPlayer; }
     void setAspect(f32 f32Param1) { m_sCamera.Aspect = f32Param1; }
@@ -52,20 +50,20 @@ public:
     void setPos(const NNS_VECTOR* opsVector) { m_sCamera.Position = *opsVector; }
 
     clsOOCameraDebug m_cCamDebug;         // offset 0x8, size 0x7814
-    f32 m_sViewMtx[4][4];                 // offset 0x7820, size 0x40
-    f32 m_sBillBoardMtx[4][4];            // offset 0x7860, size 0x40
-    f32 m_sYBillBoardMtx[4][4];           // offset 0x78A0, size 0x40
-    f32 m_sPrjMtx[4][4];                  // offset 0x78E0, size 0x40
-    f32 m_sOrthoMtx[4][4];                // offset 0x7920, size 0x40
-    f32 m_sClipMtx[4][4];                 // offset 0x7960, size 0x40
+    NNS_MATRIX m_sViewMtx;                // offset 0x7820, size 0x40
+    NNS_MATRIX m_sBillBoardMtx;           // offset 0x7860, size 0x40
+    NNS_MATRIX m_sYBillBoardMtx;          // offset 0x78A0, size 0x40
+    NNS_MATRIX m_sPrjMtx;                 // offset 0x78E0, size 0x40
+    NNS_MATRIX m_sOrthoMtx;               // offset 0x7920, size 0x40
+    NNS_MATRIX m_sClipMtx;                // offset 0x7960, size 0x40
     NNS_CAMERA_TARGET_UPVECTOR m_sCamera; // offset 0x79A0, size 0x38
     clsCamMixer* m_pcMixer;               // offset 0x79D8, size 0x4
     NNS_VECTORFAST m_sAxisX;              // offset 0x79E0, size 0x10
     NNS_VECTORFAST m_sAxisY;              // offset 0x79F0, size 0x10
     NNS_VECTORFAST m_sAxisZ;              // offset 0x7A00, size 0x10
     NNS_VECTORFAST m_sCameraPosVF;        // offset 0x7A10, size 0x10
-    f32 m_sBkupViewMtx[4][4];             // offset 0x7A20, size 0x40
-    f32 m_sBkupPrjMtx44[4][4];            // offset 0x7A60, size 0x40
+    NNS_MATRIX m_sBkupViewMtx;            // offset 0x7A20, size 0x40
+    NNS_MATRIX m_sBkupPrjMtx44;           // offset 0x7A60, size 0x40
     f32 m_f32Left;                        // offset 0x7AA0, size 0x4
     f32 m_f32Right;                       // offset 0x7AA4, size 0x4
     f32 m_f32Top;                         // offset 0x7AA8, size 0x4

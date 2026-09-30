@@ -1,10 +1,14 @@
 #ifndef GRAVITYDIVE_HPP
 #define GRAVITYDIVE_HPP
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 #include "types.h"
-#include "Develop/Projects/SR2/pgm/src/Object/Player/GravityAction/GravityActionManager.hpp"
+#include "Develop/Projects/SR2/pgm/lib/OO/nn/NNUtil.hpp"
+#include "usr/local/sega/nn/src/Matrix/nnmakematrix.h"
+#include "Develop/Projects/SR2/pgm/src/Config/nspGDive.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Player/GravityAction/BaseGravityAction.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Player/GravityAction/GravityDivePathRange.hpp"
-#include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickPath.hpp"
+#include "Develop/Projects/SR2/pgm/src/Data/Path.hpp"
 
 class clsSimpleShapePhantom;
 class clsBaseGravityLinkObject;
@@ -13,23 +17,27 @@ class clsTask;
 // total size: 0x1D0
 class clsGravityDive : public clsBaseGravityAction {
 public:
-    // Note: enmType — name collision possible with other enmType enums
     enum enmType {
-        TYPE_FRONT = 0,
-        TYPE_BACK = 1,
+        TYPE_RISE = 0,
+        TYPE_MOVE = 1,
+        TYPE_LINK = 2,
+        TYPE_RING = 3,
+        TYPE_DASH = 4,
+        TYPE_AUTO_RISE = 5,
+        TYPE_AUTO_RISE_MOVE = 6,
+        TYPE_AUTO_FALL = 7,
+        TYPE_AUTO_CANCEL = 8,
     };
 
-    // Note: enmStatus — name collision with Motion.hpp enmStatus (different values)
     enum enmStatus {
-        STATUS_NONE = 0,
-        STATUS_EXECUTE = 1,
-        STATUS_CRASH = 2,
-        STATUS_BREAK = 3,
+        STATUS_NORMAL = 0,
+        STATUS_AUTO = 1,
+        STATUS_FALL = 2,
     };
 
     static f32 t_f32SystemReadyFrame;
 
-    f32 m_sDirMtx[4][4];                      // offset 0x20, size 0x40
+    NNS_MATRIX m_sDirMtx;                     // offset 0x20, size 0x40
     NNS_VECTORFAST m_sLocalVecFast;           // offset 0x60, size 0x10
     clsPath m_cPath;                          // offset 0x70, size 0x60
     clsGravityDivePathRange m_cPathRange;     // offset 0xD0, size 0xD0
@@ -46,8 +54,16 @@ public:
     f32 m_f32GDiveTrigConsumption;            // offset 0x1C8, size 0x4
     f32 m_f32GDiveBetaConsumption;            // offset 0x1CC, size 0x4
 
-    clsGravityDive(clsGravityActionManager* p1);
-    virtual ~clsGravityDive() {}
+    clsGravityDive(clsGravityActionManager* pcManager)
+        : clsBaseGravityAction(pcManager), m_pcPhantom(NULL), m_pcLinkObject(NULL),
+          m_pcDiveHole(NULL), m_eType(TYPE_RISE), m_f32Frame(0.0f), m_eControlFlag(0),
+          m_bAutoDiveCancel(0), m_f32MaxSpeed(nspGDive::tof32_3rdSpeed),
+          m_f32GDiveTrigConsumption(5.0f), m_f32GDiveBetaConsumption(0.26666668f)
+    {
+        nnMakeUnitMatrix(&m_sDirMtx);
+        nnCopyVectorFast(&m_sLocalVecFast, &nspNnUtil::tosZeroVecFast);
+    }
+    virtual ~clsGravityDive();
     virtual void cancel();
     virtual void reset();
     virtual void init();
@@ -66,5 +82,9 @@ public:
     void initCommon();
     void cancelAutoDive();
 };
+
+inline clsGravityDive::~clsGravityDive()
+{
+}
 
 #endif // GRAVITYDIVE_HPP

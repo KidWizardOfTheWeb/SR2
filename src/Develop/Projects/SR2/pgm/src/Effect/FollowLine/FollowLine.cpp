@@ -1,4 +1,5 @@
 #include "Develop/Projects/SR2/pgm/src/Effect/FollowLine/FollowLine.hpp"
+#include "usr/local/sce/ee/gcc/ee/lib/libc/memset.h"
 
 static u8 chk__AdvantageS_SizeCheck_[1];
 static u8 chk__AirShip_SizeCheck_[1];
@@ -91,6 +92,42 @@ static clsBackLineEffectTask::stcParam oasLineParamTest = {0,
                                                            {0.0f, 0.0f, 0.0f, 0.0f}};
 
 NNS_VECTORFAST clsBackLineEffectTask::m_asLastViewPosFast[5];
+
+clsBackLineEffectTask::clsBackLineEffectTask(u8 u8Type, const stcParam* opsParam, s32 s32SubNo)
+    : clsTask(496100, 5), m_u32LineColor(0), m_f32GctrlWaitFrame(0.0f), m_opsNoMovePosFastAdr(NULL),
+      m_opsCompPosFastAdr(NULL), m_opsNoMoveMtx(NULL), m_opsParam(opsParam),
+      m_opsTrickSubParam(NULL), m_opsGimickSubParam(NULL)
+{
+    if (opsParam == NULL) {
+        m_opsParam = &oasLineParamTest;
+    }
+
+    memset(&m_sStatus, 0, sizeof(m_sStatus));
+    memset(&m_sGimickParam, 0, sizeof(m_sGimickParam));
+    memset(&m_sNoMovePosFast, 0, sizeof(m_sNoMovePosFast));
+    memset(&m_sLastBasePosFast, 0, sizeof(m_sLastBasePosFast));
+    m_sStatus.u8Type = u8Type;
+    m_sStatus.s16SubNo = s32SubNo;
+
+    m_psTexList = nspFollowLine::psTexList_Union;
+
+    switch (m_sStatus.u8Type) {
+    case 0:
+        break;
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+        addFlg(1);
+        break;
+    case 5:
+        addFlg(1);
+        if (nspFollowLine::psTexList_Gimick != NULL) {
+            m_psTexList = nspFollowLine::psTexList_Gimick;
+        }
+        break;
+    }
+}
 
 void clsBackLineEffectTask::execute()
 {

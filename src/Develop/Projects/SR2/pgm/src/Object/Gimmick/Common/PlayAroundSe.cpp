@@ -26,7 +26,7 @@ void clsPlayAroundSe_Obj::execute()
 }
 
 clsPlayAroundSe_Task::clsPlayAroundSe_Task(u32 u32ObjectAreaNum)
-    : clsSingleModelGimmick_Task(0, u32ObjectAreaNum)
+    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 101000)
 {
 }
 

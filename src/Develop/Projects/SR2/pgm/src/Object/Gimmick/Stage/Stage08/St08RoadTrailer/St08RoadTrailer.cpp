@@ -44,17 +44,17 @@ void clsRoadTrailer_Obj::execute()
 }
 
 void clsRoadTrailer_Obj::draw(clsModelType_OB_TX& rcObj,
-                              f32 (*psMtxPal)[4][4],
+                              NNS_MATRIX* psMtxPal,
                               u32* psNodeStat,
-                              const f32 (*opaNnViewMtx)[4][4],
-                              f32 (*psMtxWork)[4][4],
+                              const NNS_MATRIX* opaNnViewMtx,
+                              NNS_MATRIX* psMtxWork,
                               u32 u32ViewNo)
 {
 }
 
 clsRoadTrailer_Task::clsRoadTrailer_Task(u32 u32ObjectAreaNum)
     : clsMultiModelGimmick_Task<clsRoadTrailer_Task, clsRoadTrailer_Obj, clsMultiObTxModels>(
-          u32ObjectAreaNum, 0)
+          u32ObjectAreaNum, 101000)
 {
 }
 

@@ -25,7 +25,12 @@ class clsSe3DControl {
 public:
     clsSe3DControl(u8 u8Param1) : m_u8SeNum(u8Param1) {}
 
-    virtual ~clsSe3DControl() {}
+    virtual ~clsSe3DControl()
+    {
+        stopAll();
+        delete[] m_apsSeData;
+        m_apsSeData = NULL;
+    }
 
     void play(u8 u8SeNum, const NNS_VECTORFAST& rsPosVecFast);
     void setParam(u8 u8SeNum, const NNS_VECTORFAST& rsPosVecFast);

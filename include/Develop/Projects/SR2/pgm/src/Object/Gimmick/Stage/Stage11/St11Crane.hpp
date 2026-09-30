@@ -1,10 +1,14 @@
 #ifndef ST11CRANE_HPP
 #define ST11CRANE_HPP
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickAutoRunObj.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GmkBurnLight.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/PhantomGimmickObject.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/PendulumControl.hpp"
+#include "Develop/Projects/SR2/pgm/src/Data/Sound/PlaySe_2D.hpp"
 #include "types.h"
 
 class clsCrane;
@@ -14,6 +18,8 @@ class clsPlayerTask;
 class hkContactPoint;
 class clsObject;
 
+class clsCrane_Task;
+
 // total size: 0x80
 class clsCrane_Obj : public clsPhantomGimmickObject {
 public:
@@ -22,8 +28,8 @@ public:
         MODE_MAIN = 1,
     };
 
-    clsCrane_Obj() {}
-    virtual ~clsCrane_Obj() {}
+    clsCrane_Obj() : m_eMode(MODE_INIT) {}
+    virtual ~clsCrane_Obj() { destroyData(); }
     virtual void contactTriggerEvent(hkContactPoint* pcObject, clsObject* pParam2);
     virtual void createData();
     virtual void destroyData();
@@ -42,17 +48,23 @@ public:
     };
 
     clsCrane();
-    virtual ~clsCrane();
+    virtual ~clsCrane() { destroy(); }
     inline void setMoveMode(enmMoveMode param) { m_eMoveMode = param; }
     inline enmMoveMode getMoveMode() const { return m_eMoveMode; }
-    inline void destroy() {}
+    inline void destroy()
+    {
+        delete m_pcPendulumControl;
+        m_pcPendulumControl = NULL;
+        delete m_pcPlaySe2D;
+        m_pcPlaySe2D = NULL;
+    }
     static void start(clsPlayerTask* pcPlayerTask, clsCrane_Obj* pcObj);
     virtual void execute();
     virtual u8 draw(clsModelType_OB_TX& rcModel,
-                    f32 (*psMtxPal)[4][4],
+                    NNS_MATRIX* psMtxPal,
                     u32* psNodeStat,
-                    const f32 (*opaNnViewMtx)[4][4],
-                    f32 (*psMtxWork)[4][4],
+                    const NNS_MATRIX* opaNnViewMtx,
+                    NNS_MATRIX* psMtxWork,
                     u32 u32ViewNo,
                     u32 NodeStatus);
 
@@ -77,6 +89,12 @@ public:
         : clsSingleModelGimmick_Task<clsCrane_Task, clsCrane_Obj, clsModelType_OB_TX>(
               u32ObjectAreaNum, 0x18703)
     {
+        hkVector4 cBox(5.0f, 5.0f, 1.0f, 0.0f);
+        m_pcPhantomShape = new hkBoxShape(cBox, hkConvexShapeDefaultRadius);
+        u32ObjectAreaNum *= nspGlobal::sTask.pcBaseRace->getPlayerNum() + 1;
+        clsModelType_OB_TX& rcModel = m_cModel;
+        pcGmkBurnLight_Task = new (16, 2, (u32ObjectAreaNum + 1) * 64)
+            clsGmkBurnLight_Task<clsModelType_OB_TX>(rcModel, u32ObjectAreaNum + 1, 1);
     }
     virtual ~clsCrane_Task() {}
 

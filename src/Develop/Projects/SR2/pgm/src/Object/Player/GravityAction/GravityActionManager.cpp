@@ -1,6 +1,6 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Player/GravityAction/GravityActionManager.hpp"
 
-f32 clsGravityActionManager::t_of32InvalidGCtrlFrame = 60.0f;
+const f32 clsGravityActionManager::t_of32InvalidGCtrlFrame = 60.0f;
 
 void clsGravityActionManager::setType(enmType eType)
 {

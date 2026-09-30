@@ -14,7 +14,7 @@ f32 clsPrfm::t_of32FlightFloatingBaseRate = 0.75f;
 f32 clsPrfm::t_of32FlightFloatingDiffRate = 0.25f;
 extern f32 t_of32InfiniGpLimitFrame;
 extern f32 t_of32InfiniGpCheckUsed;
-f32 clsPrfm::t_of32InfiniGpCheckNotUse = -10.0f;
+const f32 clsPrfm::t_of32InfiniGpCheckNotUse = -10.0f;
 
 namespace nspAgp {
 const f32 toaf32GpUsedRate[5] = {1.0f, 0.9f, 1.1f, 1.0f, 1.0f};
@@ -197,7 +197,7 @@ void clsPrfm::updateData()
         }
     }
 
-    if (clsGameMgr::GS()->m_eMode != GAME_MODE___SURVIVAL_BATTLE) {
+    if (clsGameMgr::GS()->getGameMode() != GAME_MODE___SURVIVAL_BATTLE) {
         Limit(m_sData);
     }
 
@@ -223,12 +223,12 @@ void clsPrfm::updateFrame()
     }
 }
 
-clsPrfm::stcData* clsPrfm::getDataPtr() const
+const clsPrfm::stcData* clsPrfm::getDataPtr() const
 {
     if (m_pcGearCtrl->m_eCtrlMode != clsGearCtrl::CTRL_MODE_WALK) {
-        return const_cast<stcData*>(&m_sData);
+        return &m_sData;
     }
-    return const_cast<stcData*>(&m_sWalk);
+    return &m_sWalk;
 }
 
 void clsPrfm::setup(clsCharacter* pcChara, clsGearCtrl* pcGearCtrl)
@@ -259,7 +259,7 @@ void clsPrfm::setup(clsCharacter* pcChara, clsGearCtrl* pcGearCtrl)
     m_sWalk.f32GDiveGpUseRate = 1.0f;
     m_sWalk.u32Ability = 0;
 
-    if (clsGameMgr::GS()->m_eMode != GAME_MODE___SURVIVAL_BATTLE) {
+    if (clsGameMgr::GS()->getGameMode() != GAME_MODE___SURVIVAL_BATTLE) {
         Limit(m_sWalk);
     }
 
@@ -289,12 +289,12 @@ void clsPrfm::setup(clsCharacter* pcChara, clsGearCtrl* pcGearCtrl)
     m_sBase.f32GCtrlDischargeSpeed = clsGravityControl::t_sCommonSetting.f32MaxSpeed;
     m_sBase.f32GDiveSpeedRate = 1.0f;
 
-    if (clsGameMgr::GS()->m_eMode == GAME_MODE___FREE_RACE ||
-        clsGameMgr::GS()->m_eMode == GAME_MODE___SURVIVAL_RELAY)
+    if (clsGameMgr::GS()->getGameMode() == GAME_MODE___FREE_RACE ||
+        clsGameMgr::GS()->getGameMode() == GAME_MODE___SURVIVAL_RELAY)
     {
         s8 s8Agp;
 
-        if (clsGameMgr::GS()->m_eMode == GAME_MODE___FREE_RACE) {
+        if (clsGameMgr::GS()->getGameMode() == GAME_MODE___FREE_RACE) {
             s8Agp = clsGameMgr::GS()->getFreeAgp_Option();
         } else {
             s8Agp = clsGameMgr::GS()->getRelayAgp_Option();
@@ -316,7 +316,7 @@ void clsPrfm::setup(clsCharacter* pcChara, clsGearCtrl* pcGearCtrl)
         }
     }
 
-    if (clsGameMgr::GS()->m_eMode != GAME_MODE___SURVIVAL_BATTLE) {
+    if (clsGameMgr::GS()->getGameMode() != GAME_MODE___SURVIVAL_BATTLE) {
         Limit(m_sBase);
     }
 

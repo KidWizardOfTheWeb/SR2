@@ -8,11 +8,6 @@
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 
-enum enmGateMode {
-    MODE_INIT = 0,
-    MODE_MAIN = 1,
-};
-
 class clsPT_Wall_Obj;
 
 // total size: 0x110
@@ -40,11 +35,8 @@ public:
     virtual void main();
     virtual void createData();
     virtual void destroyData();
-    virtual void draw(clsModelType_OB_TX& rParam1,
-                      f32 (*)[4][4],
-                      u32* pParam3,
-                      const f32 (*)[4][4],
-                      f32 (*)[4][4]);
+    virtual void draw(
+        clsModelType_OB_TX& rParam1, NNS_MATRIX*, u32* pParam3, const NNS_MATRIX*, NNS_MATRIX*);
     virtual void callbackGravityEvent();
     virtual void contactTriggerEvent(hkContactPoint* pParam1, clsObject* pParam2);
     virtual void requestDrawBreakEffect();
@@ -53,6 +45,11 @@ public:
 // total size: 0x4B0
 class clsPT_Wall_Obj : public clsGimmickObj {
 public:
+    enum enmGateMode {
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
+    };
+
     clsPT_Wall_Obj() {}
     virtual ~clsPT_Wall_Obj() {}
     virtual void setData();

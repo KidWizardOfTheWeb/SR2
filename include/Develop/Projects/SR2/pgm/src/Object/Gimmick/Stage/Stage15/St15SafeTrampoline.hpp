@@ -7,15 +7,15 @@
 
 class hkContactPoint;
 
-enum enmSafeTMode {
-    MODE_INIT = 0,
-    MODE_MAIN = 1,
-};
-
 class clsSafeTrampoline_Obj : public clsPhantomGimmickObject {
 public:
-    clsSafeTrampoline_Obj();
-    virtual ~clsSafeTrampoline_Obj();
+    enum enmSafeTMode {
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
+    };
+
+    clsSafeTrampoline_Obj() {}
+    virtual ~clsSafeTrampoline_Obj() { destroyData(); }
 
     virtual void createData();
     virtual void destroyData();
@@ -30,6 +30,7 @@ public:
 };
 
 // total size: 0x90
+
 class clsSafeTrampoline_Task : public clsSingleModelGimmick_Task<clsSafeTrampoline_Task,
                                                                  clsSafeTrampoline_Obj,
                                                                  clsModelType_OB> {
@@ -39,6 +40,8 @@ public:
                                      clsSafeTrampoline_Obj,
                                      clsModelType_OB>(u32Param1, 0x18A88)
     {
+        hkVector4 cVec(20.0f, 2.0f, 40.0f, 0.0f);
+        m_pcPhantomShape = new hkBoxShape(cVec, hkConvexShapeDefaultRadius);
     }
     virtual ~clsSafeTrampoline_Task() {}
 

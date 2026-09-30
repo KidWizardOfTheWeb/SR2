@@ -2,6 +2,10 @@
 #define BASERACE_HPP
 
 #include "types.h"
+#include "Develop/Projects/SR2/pgm/lib/OO/core/OOMainHeap.hpp"
+#include "Develop/Projects/SR2/pgm/lib/OO/nn/NNUtil_PS2.hpp"
+#include "usr/local/sega/nn/src/Material/nnmaterialmotion.h"
+#include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickManager.hpp"
 #include "Develop/Projects/SR2/pgm/src/Data/Pack.hpp"
 #include "Develop/Projects/SR2/pgm/src/Game/Game.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Player/Data/GameData.hpp"
@@ -20,14 +24,6 @@ class clsGravityGimmickManager;
 class clsStageName2D_Task;
 class clsBlur_Task;
 struct stcBinDataDetail;
-
-// total size: 0x18
-class clsGmkManager : public clsSingleton<clsGmkManager> {
-public:
-    virtual ~clsGmkManager() {}
-
-    clsOOList m_tdpcGimmick; // offset 0x4, size 0x14
-};
 
 namespace nspChara {
 enum enmCharaType {
@@ -116,7 +112,40 @@ public:
     clsModelType_OB_TX_MO_MA* getLandingModel() { return &m_cLandig_Model; }
     clsModelType_OB_TX_MO_MA* getLandingWaterJumpModel() { return &m_cLandingWaterJump_Model; }
     clsModelType_OB_TX_MO_MA* getLandingWaterTrickModel() { return &m_cLandingWaterTrick_Model; }
-    void copyMorphMotObj(clsModelType_OB_TX_MO_MA_MF* pcParam1, clsPack::stcBinInfo* psParam2) {}
+    void copyMorphMotObj(clsModelType_OB_TX_MO_MA_MF* pcModel, clsPack::stcBinInfo* psBinInfo)
+    {
+        void* pvBin = const_cast<u8*>(psBinInfo->opu8Bin[0]);
+        u32 u32Size = nspNnUtil::BinGetBinaryDataSize(pvBin);
+        void* pvCopy = clsOOMainHeap::getInstance()->_MallocLo(u32Size, 128);
+        nspNnUtil::BinSetUpObjectCopy(&pcModel->m_psObject, NULL, pvCopy, pvBin);
+        pvBin = const_cast<u8*>(psBinInfo->opu8Bin[3]);
+        u32Size = nspNnUtil::BinGetBinaryDataSize(pvBin);
+        pvCopy = clsOOMainHeap::getInstance()->_MallocLo(u32Size, 128);
+        nspNnUtil::BinSetUpMotionCopy(&pcModel->m_psMatMotion, pvCopy, pvBin);
+        pcModel->m_psMatMotObj = static_cast<NNS_OBJECT*>(clsOOMainHeap::getInstance()->_MallocLo(
+            nnCalcMaterialMotionObjectBufferSize(pcModel->m_psObject, pcModel->m_psMatMotion),
+            128));
+        nnInitMaterialMotionObject(
+            pcModel->m_psMatMotObj, pcModel->m_psObject, pcModel->m_psMatMotion);
+        pcModel->m_psMatStatus = static_cast<u32*>(clsOOMainHeap::getInstance()->_MallocLo(
+            pcModel->m_psObject->nMaterial * sizeof(u32), clsOOHeapFragment::m_tos32DefAlign));
+        pvBin = const_cast<u8*>(psBinInfo->opu8Bin[4]);
+        u32Size = nspNnUtil::BinGetBinaryDataSize(pvBin);
+        pvCopy = clsOOMainHeap::getInstance()->_MallocLo(u32Size, 128);
+        nspNnUtil::BinSetUpMorphMotionCopy(&pcModel->m_psMorphMotion, pvCopy, pvBin);
+        pvBin = const_cast<u8*>(psBinInfo->opu8Bin[5]);
+        u32Size = nspNnUtil::BinGetBinaryDataSize(pvBin);
+        pvCopy = clsOOMainHeap::getInstance()->_MallocLo(u32Size, 128);
+        nspNnUtil::BinSetUpMorphTargetListCopy(&pcModel->m_psMorphTargetList, pvCopy, pvBin);
+        pcModel->m_psMorphObj = static_cast<NNS_OBJECT*>(clsOOMainHeap::getInstance()->_MallocLo(
+            nnCalcMorphObjectBufferSize(
+                pcModel->m_psMatMotObj, pcModel->m_psMorphTargetList, 0x3ff),
+            128));
+        pcModel->m_pf32MorphWaitPallet = static_cast<f32*>(clsOOMainHeap::getInstance()->_MallocLo(
+            pcModel->m_psMorphTargetList->nMorphTarget * sizeof(f32), 128));
+        nnInitMorphObject(
+            pcModel->m_psMorphObj, pcModel->m_psMatMotObj, pcModel->m_psMorphTargetList, 0x3ff);
+    }
     clsModelType_OB_TX_MO_MA* getDashModel() { return &m_cDash_Model; }
     clsModelType_OB_TX_MO_MA* getBossAppearModel() { return &m_cBossAppear_Model; }
     clsModelType_OB_TX_MO_MA* getRoboCurvModel() { return &m_cRoboCurv_Model; }
@@ -329,6 +358,13 @@ public:
     virtual void Main() {}
     virtual void requestReadEtc();
 
+    // RECONSTRUCTED: helper name.
+    void setStartCamMotionData(enmCamMotionNo eNo, NNS_CAMERAPTR* psDataPtr, NNS_MOTION* psMotion)
+    {
+        m_apsBaseCam[eNo] = psDataPtr;
+        m_apsCamMotion[eNo] = psMotion;
+    }
+
     void setStoryUnlock();
     void setComPlannedRank();
     void setGoalComPlayer();
@@ -358,7 +394,7 @@ public:
     s8 getOmoteUraStageNo() const { return m_s8OmoteUraStageNo; }
     bool isUra() const { return m_bUra; }
     clsOOClock* getClock_CountDown() { return &m_cClock_CountDown; }
-    s32 getCountDownMaxSecond() { return 5; }
+    u32 getCountDownMaxSecond() { return 5; }
     enmRaceInfo getRaceInfo() const { return m_eRaceInfo; }
     s32 getViewNum() const { return m_s32ViewNum; }
 };

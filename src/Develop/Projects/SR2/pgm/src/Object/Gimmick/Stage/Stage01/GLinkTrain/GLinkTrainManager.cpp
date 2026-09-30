@@ -7,10 +7,10 @@ void clsGLinkTrainManager_Object::execute()
 }
 
 void clsGLinkTrainManager_Object::draw(NNS_OBJECT* psObject,
-                                       f32 (*psMtxPal)[4][4],
+                                       NNS_MATRIX* psMtxPal,
                                        u32* psNodeStat,
-                                       const f32 (*opaNnViewMtx)[4][4],
-                                       f32 (*psMtxWork)[4][4],
+                                       const NNS_MATRIX* opaNnViewMtx,
+                                       NNS_MATRIX* psMtxWork,
                                        u32 u32ViewNo)
 {
 }
@@ -41,14 +41,4 @@ void clsGLinkTrainManager_Object::start()
 
 void clsGLinkTrainManager_Object::drawCollision()
 {
-}
-
-nspPackId::enm clsGLinkTrainManager_Object::getPackId() const
-{
-    return nspPackId::ST01_GLINK_TRAIN_11200;
-}
-
-u32 clsGLinkTrainManager_Object::getMultiDrawNum() const
-{
-    return m_s32TrainNum;
 }

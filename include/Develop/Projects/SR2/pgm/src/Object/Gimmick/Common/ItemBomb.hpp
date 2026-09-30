@@ -9,12 +9,6 @@
 class clsSe3DControl;
 class clsModelType_OB_TX_MO_MA;
 
-enum enmItemBombMode {
-    MODE_INIT = 0,
-    MODE_MAIN = 1,
-    MODE_EXP = 2,
-};
-
 class clsItemBomb_Obj;
 
 // total size: 0x58
@@ -33,7 +27,7 @@ public:
     virtual void draw();
     virtual void reset();
 
-    void registModel(stcBinInfo& rParam1);
+    static void registModel(stcBinInfo& rParam1);
 
     clsItemBomb_Obj* m_pcObj; // offset 0x54, size 0x4
 };
@@ -41,6 +35,12 @@ public:
 // total size: 0x190
 class clsItemBomb_Obj : public clsRigidBodyGimmickObj {
 public:
+    enum enmItemBombMode {
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
+        MODE_EXP = 2,
+    };
+
     static f32 tof32ClipSqDist;
 
     clsItemBomb_Obj(clsItemBomb_Task* pParam1,
@@ -59,10 +59,10 @@ public:
     virtual void contactInterraction(clsRigidBodyGimmickObj* pParam1);
 
     void draw(clsModelType_OB_TX_MO_MA& rParam1,
-              f32 (*)[4][4],
+              NNS_MATRIX*,
               u32* pParam3,
-              const f32 (*)[4][4],
-              f32 (*)[4][4],
+              const NNS_MATRIX*,
+              NNS_MATRIX*,
               u32 u32Param6);
     void searchObj();
     void CalcNonGravityVelocity(NNS_VECTORFAST* pParam1);
@@ -72,7 +72,7 @@ public:
     clsItemBomb_Task* m_pcTask; // offset 0xD0, size 0x4
     enmItemBombMode m_eMode;    // offset 0xD4, size 0x4
     u8 m_bIsExp;                // offset 0xD8, size 0x1
-    // gap 0xD9–0xDB (alignment padding)
+    // gap 0xD9-0xDB (alignment padding)
     hkSimpleShapePhantom* m_pcPhantom; // offset 0xDC, size 0x4
     clsRetPath m_cRetPath;             // offset 0xE0, size 0x20
     clsPath m_cPath;                   // offset 0x100, size 0x60
@@ -83,10 +83,10 @@ public:
     f32 m_f32ExpScale;                 // offset 0x170, size 0x4
     f32 m_f32ExpAddScale;              // offset 0x174, size 0x4
     s16 m_s16InitPathNo;               // offset 0x178, size 0x2
-    // gap 0x17A–0x17B (alignment padding)
+    // gap 0x17A-0x17B (alignment padding)
     f32 m_f32OldDistx2; // offset 0x17C, size 0x4
     u8 m_bSearchCourse; // offset 0x180, size 0x1
-    // gap 0x181–0x18F (trailing padding)
+    // gap 0x181-0x18F (trailing padding)
 };
 
 #endif // ITEMBOMB_HPP

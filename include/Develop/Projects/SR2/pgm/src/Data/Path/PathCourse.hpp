@@ -9,6 +9,15 @@ class clsPlayerTask;
 // total size: 0x80
 class clsPathCourse : public clsPathPoint {
 public:
+    clsPathCourse()
+    {
+        nnSetUpVectorFast(&m_sStartLinePos, 0.0f, 0.0f, 0.0f);
+        nnSetUpVectorFast(&m_sStartLineDir, 0.0f, 0.0f, 0.0f);
+        nnSetUpVectorFast(&m_sFirstLineDir, 0.0f, 0.0f, 0.0f);
+        nnSetUpVectorFast(&m_sGoalLinePos, 0.0f, 0.0f, 0.0f);
+        nnSetUpVectorFast(&m_sGoalLineDir, 0.0f, 0.0f, 0.0f);
+        nnSetUpVectorFast(&m_sLastLineDir, 0.0f, 0.0f, 0.0f);
+    }
     virtual ~clsPathCourse() {}
     virtual void setBinDataAttribute();
     virtual s32 checkGoalLine(clsPlayerTask* pcPlayer, f32* pf32DepthIO, s32 s32Flags);
@@ -18,8 +27,7 @@ public:
     f32 calcRankingPointDepth(clsPlayerTask* pcPlayer);
     s32 serarchActiveNextLine(clsRetPath* pcRetIO);
     void calcOnLinePlayerPos(clsPlayerTask* pcPlayer, NNS_VECTORFAST& rsDstPos);
-    const u32* getUserData(
-        const _LineData* psLineI) const; // [ASM-derived guess — verify return type]
+    const u32* getUserData(const _LineData* psLineI) const; // RECONSTRUCTED: return type.
 
     NNS_VECTORFAST m_sGoalLinePos;  // offset 0x20, size 0x10
     NNS_VECTORFAST m_sGoalLineDir;  // offset 0x30, size 0x10

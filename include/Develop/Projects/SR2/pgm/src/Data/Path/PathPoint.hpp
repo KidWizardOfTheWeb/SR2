@@ -2,10 +2,10 @@
 #define PATHPOINT_HPP
 
 #include "types.h"
+#include "usr/local/sce/ee/gcc/ee/lib/libc/memset.h"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 
 class clsBaseStage_Task;
-struct _BinData;
 
 // total size: 0x4
 struct _stcEndPosList {
@@ -25,6 +25,7 @@ public:
 // total size: 0x14
 class clsPathPoint : public clsPathBase {
 public:
+    clsPathPoint() : m_pPathData(NULL), m_calculated_capsule(NULL) {}
     // total size: 0x40
     struct _LineData {
         u16 u16StartPointNo;  // offset 0x0, size 0x2
@@ -39,9 +40,33 @@ public:
         u32 au32UserData[8];  // offset 0x20, size 0x20
     };
 
+    // total size: 0x28
+    struct _BinData {
+        c8 c8Type[4];             // offset 0x0, size 0x4
+        s32 s32Ver;               // offset 0x4, size 0x4
+        NNS_VECTORFAST* psVector; // offset 0x8, size 0x4
+        _LineData* psLine;        // offset 0xC, size 0x4
+        _stcEndPosList* psEPList; // offset 0x10, size 0x4
+        f32 f32MaxLineDepth;      // offset 0x14, size 0x4
+        f32 f32MainLength;        // offset 0x18, size 0x4
+        s32 s32PointNum;          // offset 0x1C, size 0x4
+        s32 s32LineNum;           // offset 0x20, size 0x4
+        u8 u8LineType;            // offset 0x24, size 0x1
+        u8 u8PathType;            // offset 0x25, size 0x1
+        u8 u8Padding[2];          // offset 0x26, size 0x2
+    };
+
     // total size: 0x20
     class clsRetPath {
     public:
+        clsRetPath() : m_u16LineNum(0), m_u16ActiveLineNo(0), m_u16OldLineNo(0)
+        {
+            memset(m_u16LineNo, 0, sizeof(m_u16LineNo));
+        }
+
+        u16 getActiveLineNo() const { return m_u16ActiveLineNo; }
+        f32 getDotPro() const { return m_f32DotPro; }
+
         u16 m_u16LineNo[8];    // offset 0x0, size 0x10
         u16 m_u16LineNum;      // offset 0x10, size 0x2
         u16 m_u16ActiveLineNo; // offset 0x12, size 0x2
@@ -50,8 +75,23 @@ public:
         f32 m_f32DotPro_Deg;   // offset 0x1C, size 0x4
     };
 
-    virtual ~clsPathPoint() {}
-    virtual void loadBinaryData(u8* pu8DataI, clsBaseStage_Task* pcStageI, s32 s32FlagI);
+    virtual ~clsPathPoint() { FreeCalculateCapsule(); }
+    virtual void loadBinaryData(u8* pu8DataI, clsBaseStage_Task* pcStageI, s32 s32FlagI)
+    {
+        m_pcOwnerStage = pcStageI;
+        _BinData* psData = reinterpret_cast<_BinData*>(pu8DataI);
+        m_pPathData = psData;
+        psData->psVector = reinterpret_cast<NNS_VECTORFAST*>(
+            reinterpret_cast<u8*>(psData->psVector) + reinterpret_cast<u32>(pu8DataI));
+        psData->psLine = reinterpret_cast<_LineData*>(reinterpret_cast<u8*>(psData->psLine) +
+                                                      reinterpret_cast<u32>(pu8DataI));
+        psData->psEPList = reinterpret_cast<_stcEndPosList*>(
+            reinterpret_cast<u8*>(psData->psEPList) + reinterpret_cast<u32>(pu8DataI));
+        setBinDataAttribute();
+        m_s32FilseSize_Debug = s32FlagI;
+        FreeCalculateCapsule();
+        AllocAndCalculateCapsule();
+    }
     virtual void setBinDataAttribute() {}
 
     void DrawLine_Debug(bool bIsDrawSphere, s32 s32NonDrawLineNoI);
@@ -66,10 +106,9 @@ public:
                      const NNS_VECTORFAST* psDirNrmVecFast,
                      u32 u32DisableType) const;
 
-    const _LineData* getLineData(u16 u16LineNoI) const; // [ASM-derived guess — verify return type]
-    const NNS_VECTORFAST* getPoint(
-        u32 u32PointNoI) const; // [ASM-derived guess — verify return type]
-    _BinData* getPathData() const { return m_pPathData; } // [ASM-derived guess — verify]
+    const _LineData* getLineData(u16 u16LineNoI) const;    // RECONSTRUCTED: return type.
+    const NNS_VECTORFAST* getPoint(u32 u32PointNoI) const; // RECONSTRUCTED: return type.
+    _BinData* getPathData() const { return m_pPathData; }  // RECONSTRUCTED.
 
     _BinData* m_pPathData;             // offset 0x8, size 0x4
     NNS_CAPSULE* m_calculated_capsule; // offset 0xC, size 0x4
@@ -80,21 +119,5 @@ public:
 
 typedef clsPathPoint::_LineData _LineData;
 typedef clsPathPoint::clsRetPath clsRetPath;
-
-// total size: 0x28
-struct _BinData {
-    c8 c8Type[4];             // offset 0x0, size 0x4
-    s32 s32Ver;               // offset 0x4, size 0x4
-    NNS_VECTORFAST* psVector; // offset 0x8, size 0x4
-    _LineData* psLine;        // offset 0xC, size 0x4
-    _stcEndPosList* psEPList; // offset 0x10, size 0x4
-    f32 f32MaxLineDepth;      // offset 0x14, size 0x4
-    f32 f32MainLength;        // offset 0x18, size 0x4
-    s32 s32PointNum;          // offset 0x1C, size 0x4
-    s32 s32LineNum;           // offset 0x20, size 0x4
-    u8 u8LineType;            // offset 0x24, size 0x1
-    u8 u8PathType;            // offset 0x25, size 0x1
-    u8 u8Padding[2];          // offset 0x26, size 0x2
-};
 
 #endif // PATHPOINT_HPP

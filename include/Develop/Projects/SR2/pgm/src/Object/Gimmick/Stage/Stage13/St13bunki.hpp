@@ -24,20 +24,17 @@ public:
     clsBunki_Obj* m_pcBunki; // offset 0x8, size 0x4
 };
 
-// Enum used by clsBunki_Obj — global scope per DWARF
-enum enmBunkiMode {
-    MODE_INIT = 0,
-    MODE_MAIN = 1,
-};
-
 // total size: 0x180
 class clsBunki_Obj : public clsRigidBodyGimmickObj {
 public:
+    enum enmBunkiMode {
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
+    };
+
     clsBunki_Obj() {}
     virtual ~clsBunki_Obj() {}
-
-    // Name collision with other TUs — nested inside class per scaffold rule
-    // Note: enmAiMode name collision — other TUs declare different values at global scope
+    // RECONSTRUCTED: enum scope.
     enum enmAiMode {
         AIMODE_MAIN = 0,
         AIMODE_MOVE = 1,

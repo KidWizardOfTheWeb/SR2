@@ -31,11 +31,9 @@ void* PXLockVB(struct PXS_VERTEXBUFFER* vb, unsigned int flag)
 void PXUnlockVB(struct PXS_VERTEXBUFFER* vb, void* p)
 {
     if (((int)p & 0xF) != 0) {
-        if (((int)p & 0xF) != 0) {
-            do {
-                *(int*)p = 0;
-                ((int*)p)++;
-            } while ((int)p & 0xF);
+        while ((int)p & 0xF) {
+            *(int*)p = 0;
+            ((int*)p)++;
         }
     }
 

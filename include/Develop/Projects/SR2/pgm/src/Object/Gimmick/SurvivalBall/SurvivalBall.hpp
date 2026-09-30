@@ -62,7 +62,7 @@ public:
     void execute();
 
     u8 m_u8HitFlag; // offset 0x8, size 0x1
-    // gap 0x9–0xB (alignment padding)
+    // gap 0x9-0xB (alignment padding)
     clsSurvivalBallBall_Obj* m_pcSurvivalBallBall_Obj; // offset 0xC, size 0x4
 };
 
@@ -91,7 +91,7 @@ public:
     virtual void execute();
 
     void drawGyro(clsModelType_OB_TX_MO_MA& rParam1, clsModelType_OB_TX_MO_MA& rParam2);
-    void drawBall(clsModelType_OB_TX_MO_MA& rParam1, f32 (*)[4][4]);
+    void drawBall(clsModelType_OB_TX_MO_MA& rParam1, NNS_MATRIX*);
     void draw(clsSurvivalBallBallModels& rParam1);
     void searchPointRing();
 
@@ -119,14 +119,14 @@ public:
     clsRetPath m_cRetCoursePath;               // offset 0x15C, size 0x20
     clsSe3DControl* m_pcSe3DControl;           // offset 0x17C, size 0x4
     u8 m_bSePlayFlg;                           // offset 0x180, size 0x1
-    // gap 0x181–0x183 (alignment padding)
+    // gap 0x181-0x183 (alignment padding)
     f32 m_f32SeBlingFrame; // offset 0x184, size 0x4
 };
 
 // total size: 0x1A0
-class clsSurvivalBallBall_Task : public clsSingleModelGimmick_Task<clsSurvivalBallBall_Task,
-                                                                   clsSurvivalBallBall_Obj,
-                                                                   clsSurvivalBallBallModels> {
+class clsSurvivalBallBall_Task : public clsBaseGimmickBody<clsSurvivalBallBall_Task,
+                                                           clsSurvivalBallBall_Obj,
+                                                           clsSurvivalBallBallModels> {
 public:
     clsSurvivalBallBall_Task(u32 u32Param1);
     virtual ~clsSurvivalBallBall_Task() {}

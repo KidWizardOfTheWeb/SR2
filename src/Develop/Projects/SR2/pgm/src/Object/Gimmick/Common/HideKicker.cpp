@@ -1,9 +1,10 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/HideKicker.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Collision/GroundCollision.hpp"
 
 f32 clsHideKicker_Obj::m_tof32ClipSqDist;
 
 namespace nspHideKicker {
-static stcInfo toasGroundInfo[1];
+static clsGroundCollision::stcInfo toasGroundInfo[1];
 static NNS_VECTOR toasBoxSize[1] = {{3.1f, 1.0f, 3.8f}};
 static f32 toaf32Vertices[16];
 static f32 toaf32PlaneEquations[8][4];

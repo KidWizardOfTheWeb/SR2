@@ -241,7 +241,7 @@ void clsGearSpThrottle::eventGearChange()
 //     }
 // }
 
-stcAddPrfm& clsGearSpThrottle::getPrfm() const
+const stcAddPrfm& clsGearSpThrottle::getPrfm() const
 {
     return m_rsGearPrfm;
 }

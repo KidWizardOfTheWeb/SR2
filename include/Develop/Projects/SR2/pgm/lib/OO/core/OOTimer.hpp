@@ -11,6 +11,10 @@ public:
     virtual s32 TickDiff2MicroSec(s32 s32Tick) const;
     virtual s32 TickDiff2MicroSec(s32 s32TickA, s32 s32TickB) const { return 0; }
 
+    // RECONSTRUCTED: names; the inlined bodies call through this base.
+    void beginCpu() { m_s32BeginCpuTick = getTick(); }
+    void endCpu() { m_s32CpuMicroSec = TickDiff2MicroSec(getTick() - m_s32BeginCpuTick); }
+
     static clsOOTimer* t_cInstance;
 
     s32 m_s32CpuMicroSec;       // offset 0x4, size 0x4

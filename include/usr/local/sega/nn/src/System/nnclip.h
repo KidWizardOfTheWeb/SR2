@@ -49,18 +49,26 @@ extern struct NNS_CLIP nngClip3d;
 extern struct NNS_CLIP_PLANE nngClipPlane;
 extern struct NNS_CLIP_PLANE nngClipPlaneGs;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 unsigned int nnCalcClipBox(
-    struct NNS_VECTOR* center, float sx, float sy, float sz, float (*mtx)[4][4]);
-unsigned int nnCalcClipCore(struct NNS_VECTOR* center, float radius, float (*mtx)[4][4]);
-unsigned int nnCalcClip(struct NNS_VECTOR* center, float radius, float (*mtx)[4][4]);
+    struct NNS_VECTOR* center, float sx, float sy, float sz, NNS_MATRIX* mtx);
+unsigned int nnCalcClipCore(struct NNS_VECTOR* center, float radius, NNS_MATRIX* mtx);
+unsigned int nnCalcClip(struct NNS_VECTOR* center, float radius, NNS_MATRIX* mtx);
 void nnCalcClipSetNodeStatus(unsigned int* pNodeStatList,
                              struct NNS_NODE* pNodeList,
                              signed int nodeIdx,
-                             float (*pNodeMtx)[4][4],
+                             NNS_MATRIX* pNodeMtx,
                              float rootscale,
                              unsigned int flag);
 void nnSetUpNodeStatusListFlag(signed int nodeidx, unsigned int flag);
-unsigned int nnCheckObjectClip(struct NNS_OBJECT* obj, float (*basemtx)[4][4]);
-float nnEstimateMatrixScaling(float (*mtx)[4][4]);
+unsigned int nnCheckObjectClip(const struct NNS_OBJECT* obj, const NNS_MATRIX* basemtx);
+float nnEstimateMatrixScaling(NNS_MATRIX* mtx);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // NNCLIP_H

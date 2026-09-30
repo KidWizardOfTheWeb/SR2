@@ -28,7 +28,7 @@ public:
         m_s32BlinkFrame = 300;
         m_s32BlinkInterval = 4;
     }
-    ~clsBreakControl();
+    ~clsBreakControl() {}
 
     void reset()
     {
@@ -47,8 +47,8 @@ public:
     }
     void startRebirth() { m_cRebirthFrame.m_f32Frame = m_cRebirthFrame.m_f32CountFrame; }
     f32 getLimitFrameRate() { return 0.0f; }
-    u8 isBreak() const { return m_eMode == 2; }
-    u8 isExecute() const { return m_eMode == 1; }
+    u8 isBreak() const { return m_eMode == MODE_BREAK; }
+    u8 isExecute() const { return m_eMode == MODE_EXECUTE; }
     void setBreakInfo(s32 s32ContactNum,
                       f32 f32ContactFrame,
                       f32 f32LimitFrame,

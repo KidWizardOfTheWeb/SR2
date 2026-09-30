@@ -5,13 +5,18 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/PhantomGimmickObject.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
-#include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage14/St14Laser.hpp" // provides enmLaserMode
 
 class hkContactPoint;
 
 // total size: 0x80
 class clsLaser_Obj : public clsPhantomGimmickObject {
 public:
+    enum enmLaserMode {
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
+        MODE_WAIT = 2,
+    };
+
     clsLaser_Obj() {}
     virtual ~clsLaser_Obj() {}
     virtual void contactTriggerEvent(hkContactPoint* pcObject, clsObject* pParam2);

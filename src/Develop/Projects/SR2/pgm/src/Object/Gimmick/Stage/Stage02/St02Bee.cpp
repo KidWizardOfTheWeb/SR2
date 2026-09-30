@@ -73,7 +73,7 @@ static u32 toau32PointNumTable[12] = {4, 5, 4, 5, 4, 5, 4, 5, 5, 5, 5, 5};
 } // namespace
 
 clsBeeRobo_Task::clsBeeRobo_Task(u32 u32ObjectAreaNum)
-    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 0)
+    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 101000)
 {
 }
 

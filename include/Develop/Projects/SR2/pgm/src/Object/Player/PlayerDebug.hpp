@@ -16,6 +16,9 @@ public:
 };
 
 class clsPlayerDebug {
+    // RECONSTRUCTED: Player access to debug settings.
+    friend class clsPlayerTask;
+
 public:
     enum enmMode {
         MODE_NORMAL = 0,
@@ -24,8 +27,19 @@ public:
     };
 
     enum enmFlag {
-        FLAG_CLEAR = 0,
-        FLAG_NOT_GRAVITY = 1,
+        FLAG_NULL = 0,
+        FLAG_DRAW_COL = 1,
+        FLAG_DRAW_MOV_LINE = 2,
+        FLAG_DRAW_PST_LINE = 4,
+        FLAG_DRAW_VLC_LINE = 8,
+        FLAG_DRAW_GRAVITY = 16,
+        FLAG_DRAW_GRID = 32,
+        FLAG_INFINI_AGP = 64,
+        FLAG_FREE_GEARCHANGE = 128,
+        FLAG_CHANGE_COM = 256,
+        FLAG_STOP = 512,
+        FLAG_UPDATE_TIMER = 268435456,
+        FLAG_DEFAULT = 0,
     };
 
     clsPlayerDebug(clsPlayerTask* param_1);
@@ -37,9 +51,10 @@ public:
     void test();
 
     clsPlayerTask* getPlayerTaskPtr();
+    bool isFlag(enmFlag eFlag) const { return ((m_eFlag | m_eAllFlag) & eFlag) != 0; }
 
 private:
-    f32 m_sDrawSphereMtx[4][4];          // offset 0x0, size 0x40
+    NNS_MATRIX m_sDrawSphereMtx;         // offset 0x0, size 0x40
     NNS_VECTORFAST m_sFixPosVecFast;     // offset 0x40, size 0x10
     NNS_VECTORFAST m_sDistVecFast[2];    // offset 0x50, size 0x20
     NNS_VECTOR m_asNrmLineBuff[512][2];  // offset 0x70, size 0x3000

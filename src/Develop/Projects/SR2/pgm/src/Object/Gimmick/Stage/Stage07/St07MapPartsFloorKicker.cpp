@@ -10,7 +10,7 @@ void clsMapPartsFloorKicker_Object::createData()
 clsMapPartsFloorKicker_Task::clsMapPartsFloorKicker_Task(u32 u32ObjectAreaNum)
     : clsSingleModelGimmick_Task<clsMapPartsFloorKicker_Task,
                                  clsMapPartsFloorKicker_Object,
-                                 clsModelType_OB_TX>(u32ObjectAreaNum, 0x18702)
+                                 clsModelType_OB_TX>(u32ObjectAreaNum, 101000)
 {
 }
 

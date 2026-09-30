@@ -14,14 +14,6 @@ void clsPutFixedMotObj_Task::draw()
 {
 }
 
-clsPutFixedMotObj_Obj::clsPutFixedMotObj_Obj()
-{
-}
-
-clsPutFixedMotObj_Obj::~clsPutFixedMotObj_Obj()
-{
-}
-
 void clsPutFixedMotObj_Obj::draw(clsModelType_OB_TX_MO* pModel,
                                  f32* pfMatA,
                                  u32* pu32NodeCount,

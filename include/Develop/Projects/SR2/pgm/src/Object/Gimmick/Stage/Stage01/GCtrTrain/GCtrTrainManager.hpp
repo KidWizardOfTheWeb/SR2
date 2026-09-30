@@ -2,6 +2,11 @@
 #define GCTRTRAINMANAGER_HPP
 
 #include "types.h"
+#include "Develop/Projects/SR2/pgm/src/System/NewDelete.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GmkBurnLight.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage01/GLinkTrain/GLinkTrainTask.hpp"
+#include "Develop/Projects/SR2/pgm/src/Havok/HavokHeap.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage01/GCtrTrain/GCtrTrain.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Collision/BaseThroughCollision.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickObj.hpp"
@@ -28,21 +33,32 @@ public:
 // total size: 0x80
 class clsGCtrlTrainManager_Obj : public clsGimmickObj {
 public:
-    // Note: enmMode collision with Game.hpp and other owners; nested for this layout.
+    // RECONSTRUCTED: enum scope.
     enum enmMode {
-        MODE_START = 0,
+        MODE_INIT = 0,
         MODE_MAIN = 1,
         MODE_WAIT = 2,
     };
 
-    clsGCtrlTrainManager_Obj() {}
-    virtual ~clsGCtrlTrainManager_Obj() {}
+    clsGCtrlTrainManager_Obj()
+    {
+        m_cThroughCol.m_pcManager = this;
+        m_cThroughCol.m_f32WaitFrame = 0.0f;
+        m_eMode = MODE_INIT;
+        m_s32TrainNum = 0;
+        m_s32VehiclesNum = 0;
+        m_f32Speed = 1.0f;
+        m_psSetData = NULL;
+        m_psTrainData = NULL;
+        m_pcTrainObj = NULL;
+    }
+    virtual ~clsGCtrlTrainManager_Obj();
 
     virtual void setData();
     virtual void createData();
     virtual void destroyData();
     virtual nspPackId::enm getPackId() const { return nspPackId::ST01_PATH_TRAIN_11040; }
-    virtual u32 getMultiDrawNum() const { return m_s32VehiclesNum; }
+    virtual u32 getMultiDrawNum() const { return m_s32TrainNum * m_s32VehiclesNum; }
 
     void start();
     void execute();
@@ -62,18 +78,34 @@ public:
 };
 
 class clsGCtrlTrain_Task
-    : public clsBaseGimmickBody<clsGCtrlTrain_Task, clsGCtrlTrain_Obj, clsModelType_OB_TX> {
+    : public clsBaseGimmickBody<clsGCtrlTrain_Task, clsGCtrlTrainManager_Obj, clsModelType_OB_TX> {
 public:
-    // stub (header): clsGCtrlTrain_Task::clsGCtrlTrain_Task(u32 u32ObjectAreaNum) :
-    // clsBaseGimmickBody<clsGCtrlTrain_Task, clsGCtrlTrainManager_Obj, clsModelType_OB_TX>(0, 0) {}
-    clsGCtrlTrain_Task(u32 u32ObjectAreaNum) : clsBaseGimmickBody(0, 0) {}
-    virtual ~clsGCtrlTrain_Task() {}
+    clsGCtrlTrain_Task(u32 u32ObjectAreaNum)
+        : clsBaseGimmickBody<clsGCtrlTrain_Task, clsGCtrlTrainManager_Obj, clsModelType_OB_TX>(
+              u32ObjectAreaNum, 101000)
+    {
+        hkVector4 cVec(4.5f, 2.6f, 12.0f, 0.0f);
+        m_pcRigidShape = new hkBoxShape(cVec, hkConvexShapeDefaultRadius);
+        clsModelType_OB_TX& rcModel = clsGLinkTrain_Task::GS()->m_cModel;
+        pcGmkBurnLight_Task = new (16, 2, (u32ObjectAreaNum + 1) * 64)
+            clsGmkBurnLight_Task<clsModelType_OB_TX>(rcModel, u32ObjectAreaNum + 1, 1);
+    }
+    virtual ~clsGCtrlTrain_Task();
 
-    void createModel(stcBinInfo& rParam1);
+    virtual void createModel(stcBinInfo& rParam1) { m_ePackId = nspPackId::ST01_GCTRL_TRAIN_11220; }
 
     virtual void reset();
     virtual void execute();
     virtual void draw();
 };
+
+inline clsGCtrlTrain_Task::~clsGCtrlTrain_Task()
+{
+}
+
+inline clsGCtrlTrainManager_Obj::~clsGCtrlTrainManager_Obj()
+{
+    destroyData();
+}
 
 #endif // GCTRTRAINMANAGER_HPP

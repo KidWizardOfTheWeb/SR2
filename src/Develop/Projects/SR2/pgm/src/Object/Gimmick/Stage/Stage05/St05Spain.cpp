@@ -1,8 +1,9 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage05/St05Spain.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Collision/GroundCollision.hpp"
 
 namespace nspSpain {
 
-stcInfo oasGroundInfo[1];
+clsGroundCollision::stcInfo oasGroundInfo[1];
 
 } // namespace nspSpain
 

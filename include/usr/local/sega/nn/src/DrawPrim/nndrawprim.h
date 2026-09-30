@@ -1,6 +1,8 @@
 #ifndef NNDRAWPRIM_H
 #define NNDRAWPRIM_H
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
+
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 #include "usr/local/sega/nn/src/Texture/nntexture.h"
 #include "usr/local/sce/ee/lib/eestruct.h"
@@ -157,6 +159,12 @@ struct NNS_PRIM2D_P {
     struct NNS_VECTOR2D Pos; // offset 0x0, size 0x8
 };
 
+// total size: 0xC
+struct NNS_PRIM2D_PC {
+    struct NNS_VECTOR2D Pos; // offset 0x0, size 0x8
+    unsigned int Col;        // offset 0x8, size 0x4
+};
+
 // total size: 0x14
 struct NNS_PRIM2D_PCT {
     struct NNS_VECTOR2D Pos; // offset 0x0, size 0x8
@@ -208,7 +216,7 @@ extern struct NNS_GSTEST nngGsTest;
 extern struct NNS_GSZBUF nngGsZbuf;
 extern struct NNS_PRIM2D_PARAM nngPrim2dParam;
 extern unsigned long nngPrimBlendGsAlpha64;
-extern float nngPrimMtx[4][4];
+extern NNS_MATRIX nngPrimMtx;
 extern enum NNE_PROJECTION_TYPE nngProjectionType;
 
 #include "usr/local/sega/nn/src/Material/nnmatdata.h"
@@ -225,6 +233,10 @@ extern enum NNE_PRIM_TEXWRAP nngPrimTexWrapU;
 extern enum NNE_PRIM_TEXWRAP nngPrimTexWrapV;
 extern signed int (*nngPutTextureFunc)(struct _NNS_TEXINFO**, signed int);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void nnSetPrimitiveBlend(enum NNE_PRIM_BLEND blend);
 void nnSetPrimitiveTexNum(struct _NNS_TEXLIST* texlist, signed int num);
 void nnSetPrimitiveTexState(enum NNE_PRIM_TEXBLEND blend,
@@ -234,12 +246,16 @@ void nnSetPrimitiveTexState(enum NNE_PRIM_TEXBLEND blend,
 void nnBeginDrawPrimitive2D(enum NNE_PRIM2D_FMT fmt, enum NNE_PRIM_ALPHABLEND blend);
 void nnDrawPrimitive2D(enum NNE_PRIM_TRIANGLE type, void* vtx, signed int count, float pri);
 void nnEndDrawPrimitive2D(void);
-void nnSetPrimitive3DMatrix(float (*mtx)[4][4]);
+void nnSetPrimitive3DMatrix(const NNS_MATRIX* mtx);
 void nnBeginDrawPrimitive3D(enum NNE_PRIM3D_FMT fmt,
                             enum NNE_PRIM_ALPHABLEND blend,
                             enum NNE_PRIM_LIGHT light,
                             enum NNE_PRIM_CULL cull);
 void nnDrawPrimitive3D(enum NNE_PRIM_TRIANGLE type, void* vtx, signed int count);
 void nnEndDrawPrimitive3D(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // NNDRAWPRIM_H

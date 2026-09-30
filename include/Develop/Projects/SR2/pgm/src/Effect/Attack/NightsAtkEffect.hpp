@@ -12,8 +12,8 @@ public:
     clsNightsAtkEffect(clsPlayerTask* pcPlayer, f32 f32FrameI);
     virtual ~clsNightsAtkEffect();
 
-    virtual void reset();
-    virtual void draw();
+    void reset();
+    void draw();
 
     clsPlayerTask* m_pcPlayer;      // offset 0x4, size 0x4
     s16 m_s16Alpha;                 // offset 0x8, size 0x2

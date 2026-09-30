@@ -80,7 +80,7 @@ void clsCogwheel_Obj::debugDrawCollision()
 }
 
 clsCogwheel_Task::clsCogwheel_Task(u32 packId)
-    : clsSingleModelGimmick_Task<clsCogwheel_Task, clsCogwheel_Obj, clsCogWhellModel>(packId, 0)
+    : clsBaseGimmickBody<clsCogwheel_Task, clsCogwheel_Obj, clsCogWhellModel>(packId, 0)
 {
 }
 

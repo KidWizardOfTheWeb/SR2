@@ -13,7 +13,7 @@ class clsRainDrops_Task;
 class clsCharaSilver : public clsCharaNodeBase {
 public:
     clsCharaSilver(clsPlayerTask* pcPlayer, u8 u8ModelType);
-    virtual ~clsCharaSilver() {}
+    virtual ~clsCharaSilver() { m_pcLineTask->setMode(0); }
 
     virtual f32 getCollisionRadius() const { return tof32CollisionRadius; }
     virtual f32 getDrawOffset() const { return 0.0f; }
@@ -29,8 +29,8 @@ public:
     static f32 tof32CollisionRadius;
 
     clsBackLineEffectTask* m_pcLineTask;  // offset 0x60, size 0x4
-    f32 m_sLMtx[4][4];                    // offset 0x70, size 0x40
-    f32 m_sRMtx[4][4];                    // offset 0xB0, size 0x40
+    NNS_MATRIX m_sLMtx;                   // offset 0x70, size 0x40
+    NNS_MATRIX m_sRMtx;                   // offset 0xB0, size 0x40
     NNS_VECTORFAST m_asParticlePos[2];    // offset 0xF0, size 0x20
     NNS_VECTORFAST m_asDFieldPosVF[2];    // offset 0x110, size 0x20
     clsTask* m_apcParticleTask[2];        // offset 0x130, size 0x8

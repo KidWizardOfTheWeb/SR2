@@ -25,10 +25,10 @@ void clsMissionPathTarget_Obj::calcPathPostural()
 }
 
 void clsMissionPathTarget_Obj::draw(clsModelType_OB_TX& rcObj,
-                                    f32 (*psMtxPal)[4][4],
+                                    NNS_MATRIX* psMtxPal,
                                     u32* psNodeStat,
-                                    const f32 (*opaNnViewMtx)[4][4],
-                                    f32 (*psMtxWork)[4][4],
+                                    const NNS_MATRIX* opaNnViewMtx,
+                                    NNS_MATRIX* psMtxWork,
                                     u32 u32Param6)
 {
 }
@@ -45,7 +45,7 @@ void clsMissionPathTarget_Obj::main()
 clsMissionPathTarget_Task::clsMissionPathTarget_Task(u32 u32ObjectAreaNum)
     : clsSingleModelGimmick_Task<clsMissionPathTarget_Task,
                                  clsMissionPathTarget_Obj,
-                                 clsModelType_OB_TX>(0, 0)
+                                 clsModelType_OB_TX>(u32ObjectAreaNum, 101000)
 {
 }
 
@@ -56,7 +56,7 @@ s32 clsMissionPathTarget_Task::getPathPoint()
 
 NNS_VECTORFAST* clsMissionPathTarget_Task::getPosVecFastPtr()
 {
-    return 0;
+    return NULL;
 }
 
 void clsMissionPathTarget_Task::reset()

@@ -6,6 +6,7 @@
 
 class clsStage09_Task : public clsDivStage_Task {
 public:
+    clsStage09_Task(stcBinInfo& rsBinInfoI) : clsDivStage_Task(rsBinInfoI) {}
     virtual ~clsStage09_Task() {}
 
     virtual void reset();

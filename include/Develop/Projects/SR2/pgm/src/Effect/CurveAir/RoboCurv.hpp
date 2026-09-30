@@ -15,8 +15,8 @@ public:
     virtual void execute();
     virtual void draw();
 
-    NNS_VECTORFAST* m_opsFollowPosVecFast; // offset 0xD0, size 0x4
-    NNS_QUATERNION* m_opsFollowQuat;       // offset 0xD4, size 0x4
+    const NNS_VECTORFAST* m_opsFollowPosVecFast; // offset 0xD0, size 0x4
+    const NNS_QUATERNION* m_opsFollowQuat;       // offset 0xD4, size 0x4
 };
 
 #endif // ROBOCURV_HPP

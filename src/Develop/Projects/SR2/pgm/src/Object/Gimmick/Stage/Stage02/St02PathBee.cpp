@@ -49,7 +49,7 @@ void clsPathBee_Obj::main()
 }
 
 clsPathBee_Task::clsPathBee_Task(u32 u32Param1)
-    : clsMultiModelGimmick_Task<clsPathBee_Task, clsPathBee_Obj, clsModelType_OB_TX>(u32Param1, 1)
+    : clsBaseGimmickBody<clsPathBee_Task, clsPathBee_Obj, clsModelType_OB_TX>(u32Param1, 1)
 {
 }
 

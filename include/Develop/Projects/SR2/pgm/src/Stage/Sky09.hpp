@@ -1,6 +1,7 @@
 #ifndef SKY09_HPP
 #define SKY09_HPP
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 #include "Develop/Projects/SR2/pgm/src/Data/Pack.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 #include "Develop/Projects/SR2/pgm/src/Task/TaskManager.hpp"
@@ -15,7 +16,7 @@ struct stcThunderFogRange {
 // total size: 0xE0
 class clsSky09_Task : public clsTask {
 public:
-    // Note: DWARF flattens several incompatible stcDetail layouts; Sky09 uses the 0x3 variant.
+    // RECONSTRUCTED: nested detail type.
     struct stcDetail {
         u8 u8BackUpFogNo; // offset 0x0, size 0x1
         u8 u8ThundeMode;  // offset 0x1, size 0x1
@@ -28,7 +29,7 @@ public:
     virtual void execute();
     virtual void draw();
 
-    f32 m_sTrsMtx[4][4];                 // offset 0x60, size 0x40
+    NNS_MATRIX m_sTrsMtx;                // offset 0x60, size 0x40
     clsModelType_OB_TX_MO_MA m_cModel;   // offset 0xA0, size 0x20
     clsBaseRace_Task* m_pcBaseRace_Task; // offset 0xC0, size 0x4
     stcDetail m_asDetail[4];             // offset 0xC4, size 0xC

@@ -72,7 +72,7 @@ void clsMapPartsFloorSwitch_Object::extensionActiveFrame()
 }
 
 clsMapPartsFloorSwitch_Task::clsMapPartsFloorSwitch_Task(u32 u32ObjectAreaNum)
-    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 0)
+    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 101010)
 {
 }
 

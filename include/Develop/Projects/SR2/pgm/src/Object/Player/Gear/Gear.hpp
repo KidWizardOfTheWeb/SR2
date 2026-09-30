@@ -80,8 +80,7 @@ struct stcGearData {
 class clsGear {
 public:
     clsGear(clsGearCtrl* pcGearCtrl, const stcGearData& rsGearData, const stcAddPrfm& rsGearPrfm)
-        : m_pcGearCtrl(pcGearCtrl), m_rsGearData(const_cast<stcGearData&>(rsGearData)),
-          m_rsGearPrfm(const_cast<stcAddPrfm&>(rsGearPrfm))
+        : m_pcGearCtrl(pcGearCtrl), m_rsGearData(rsGearData), m_rsGearPrfm(rsGearPrfm)
     {
     }
 
@@ -93,7 +92,7 @@ public:
 
     virtual f32 getAlphaRate(f32 f32Alpha) const { return f32Alpha; }
 
-    virtual stcAddPrfm& getPrfm() const { return m_rsGearPrfm; }
+    virtual const stcAddPrfm& getPrfm() const { return m_rsGearPrfm; }
 
     virtual u32 getGearAbility() const { return m_rsGearData.u32AddAbility; }
 
@@ -109,16 +108,16 @@ public:
 
     virtual void draw(const f32 (*psGearMtx)[4][4], f32 f32Alpha, u32 u32AddDrawFlag);
 
-    clsGearCtrl* m_pcGearCtrl;      // offset 0x4, size 0x4
-    stcGearData& m_rsGearData;      // offset 0x8, size 0x4
-    stcAddPrfm& m_rsGearPrfm;       // offset 0xC, size 0x4
-    clsModelType_OB_TX m_sModel;    // offset 0x10, size 0x8
-    clsModelType_OB m_sShadowModel; // offset 0x18, size 0x4
-    NNS_VECTORFAST m_sActionTrans;  // offset 0x20, size 0x10
-    NNS_ROTATE m_sActionRot;        // offset 0x30, size 0xC
-    NNS_VECTOR m_sActionScale;      // offset 0x3C, size 0xC
-    f32 m_f32ActionAlpha;           // offset 0x48, size 0x4
-    u32 m_u32ActionCnt;             // offset 0x4C, size 0x4
+    clsGearCtrl* m_pcGearCtrl;       // offset 0x4, size 0x4
+    const stcGearData& m_rsGearData; // offset 0x8, size 0x4
+    const stcAddPrfm& m_rsGearPrfm;  // offset 0xC, size 0x4
+    clsModelType_OB_TX m_sModel;     // offset 0x10, size 0x8
+    clsModelType_OB m_sShadowModel;  // offset 0x18, size 0x4
+    NNS_VECTORFAST m_sActionTrans;   // offset 0x20, size 0x10
+    NNS_ROTATE m_sActionRot;         // offset 0x30, size 0xC
+    NNS_VECTOR m_sActionScale;       // offset 0x3C, size 0xC
+    f32 m_f32ActionAlpha;            // offset 0x48, size 0x4
+    u32 m_u32ActionCnt;              // offset 0x4C, size 0x4
 };
 
 #endif // GEAR_HPP

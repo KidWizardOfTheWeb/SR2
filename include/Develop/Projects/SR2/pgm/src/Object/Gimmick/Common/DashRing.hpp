@@ -1,6 +1,7 @@
 #ifndef DASHRING_HPP
 #define DASHRING_HPP
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 #include "types.h"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/ItemBox.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/PhantomGimmickObject.hpp"
@@ -18,7 +19,7 @@ extern f32 tof32CLIP_DISTx2[17];
 class clsDashRing_Obj : public clsPhantomGimmickObject {
 public:
     inline clsDashRing_Obj() : clsPhantomGimmickObject() {}
-    virtual ~clsDashRing_Obj() {}
+    virtual ~clsDashRing_Obj() { destroyData(); }
 
     u32 m_u32RingNo;        // offset 0x60, size 0x4
     f32 m_f32Scale;         // offset 0x64, size 0x4
@@ -32,24 +33,28 @@ public:
     virtual void destroyData();
     virtual nspPackId::enm getPackId() const;
     virtual void draw(clsModelType_OB_TX& rcObj,
-                      f32 (*psMtxPal)[4][4],
+                      NNS_MATRIX* psMtxPal,
                       u32* psNodeStat,
-                      const f32 (*opaNnViewMtx)[4][4],
-                      f32 (*psMtxWork)[4][4]);
+                      const NNS_MATRIX* opaNnViewMtx,
+                      NNS_MATRIX* psMtxWork);
     virtual void contactTriggerEvent(hkContactPoint* pParam1, clsObject* pcObject);
 };
 
 // total size: 0xB0
+
 class clsDashRing_Task
     : public clsMultiShape,
       public clsSingleModelGimmick_Task<clsDashRing_Task, clsDashRing_Obj, clsModelType_OB_TX>,
       public clsGimmickCommon {
 public:
     clsDashRing_Task(u32 u32ObjectAreaNum)
-        : clsSingleModelGimmick_Task<clsDashRing_Task, clsDashRing_Obj, clsModelType_OB_TX>(
+        : clsMultiShape(u32ObjectAreaNum),
+          clsSingleModelGimmick_Task<clsDashRing_Task, clsDashRing_Obj, clsModelType_OB_TX>(
               u32ObjectAreaNum, 0x18A88),
-          m_psFlushLightTexIdx(0), m_pf32FlushLightTexCoordV(0)
+          m_psFlushLightTexIdx(NULL), m_pf32FlushLightTexCoordV(NULL)
     {
+        clsDashRing_Obj::m_tf32CLIP_DISTx2 =
+            nspDashRing::tof32CLIP_DISTx2[nspGlobal::sTask.pcBaseRace->getStageNo()];
     }
     virtual ~clsDashRing_Task() {}
 

@@ -158,7 +158,7 @@ public:
 
     virtual enmDraw2DType getDraw2DType() const { return m_eDraw2DType; }
     virtual f32 getDraw2DRate() const;
-    virtual stcAddPrfm& getPrfm() const;
+    virtual const stcAddPrfm& getPrfm() const;
     virtual void eventGearChange();
     virtual void draw(const f32 (*pParam1)[4][4], f32 f32Param2, u32 u32Param3) {}
     void copy(const clsGearSpThrottle* pcGear);

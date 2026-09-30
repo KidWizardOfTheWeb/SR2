@@ -16,12 +16,11 @@ public:
     virtual void reset();
     virtual void execute();
     virtual void draw();
-    virtual void registModel(stcBinInfo& rsBinInfoI);
+    static void registModel(stcBinInfo& rsBinInfoI);
     virtual enmType getType() const;
 
     void setCharaNo(u32 u32CharaNo);
 
-    // Members
     NNS_VECTORFAST* m_opsPosVecFast; // offset 0x54, size 0x4
     u32 m_u32ViewNo;                 // offset 0x58, size 0x4
     f32 m_f32MotFrame;               // offset 0x5C, size 0x4

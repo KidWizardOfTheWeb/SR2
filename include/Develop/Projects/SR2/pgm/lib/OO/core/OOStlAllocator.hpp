@@ -2,14 +2,8 @@
 #define OOSTLALLOCATOR_HPP
 
 #include "Develop/Projects/SR2/pgm/lib/OO/core/OOHeapFragment.hpp"
+#include "Develop/Projects/SR2/pgm/src/System/NewDelete.hpp"
 
-// total size: 0x4
-class clsOOStlAllocator {
-public:
-    clsOOHeapFragment* m_pcHeap; // offset 0x0, size 0x4
-};
-
-// Template stub for function-signature mangling only (namespace-qualified form).
 namespace oostd {
 template <class T>
 class clsOOStlAllocator {
@@ -29,10 +23,10 @@ public:
     {
     }
 
-    T* allocate(u32 count)
+    // RECONSTRUCTED: optional alignment argument.
+    T* allocate(u32 count, s32 alignment = clsOOHeapFragment::m_tos32DefAlign)
     {
-        return static_cast<T*>(
-            m_pcHeap->_MallocHi(sizeof(T) * count, clsOOHeapFragment::m_tos32DefAlign));
+        return static_cast<T*>(m_pcHeap->_MallocHi(sizeof(T) * count, alignment));
     }
 
     clsOOHeapFragment* getHeap() const { return m_pcHeap; }
@@ -41,17 +35,12 @@ public:
 
     void deallocate(T* ptr, u32)
     {
-        if (ptr != 0) {
-            getHeap()->___FreeHi(ptr);
+        if (ptr != NULL) {
+            m_pcHeap->___FreeHi(ptr);
         }
     }
 
-    void construct(T* ptr, const T& value)
-    {
-        if (ptr != 0) {
-            *ptr = value;
-        }
-    }
+    void construct(T* ptr, const T& value) { new (ptr) T(value); }
     void destroy(T* ptr) { ptr->~T(); }
 };
 } // namespace oostd

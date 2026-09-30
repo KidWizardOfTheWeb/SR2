@@ -26,7 +26,7 @@ public:
 
     void codeShow2D(u8* pu8Ptr, clsScript_Task* pcTask);
     void releaseData();
-    void initData();
+    static void initData();
 
     u32 m_u32Flg;        // offset 0x54, size 0x4
     s32 m_s322DFrame;    // offset 0x58, size 0x4

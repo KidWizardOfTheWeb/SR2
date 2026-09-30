@@ -35,7 +35,7 @@ inline void clsOOMainMenu::addSubMenu(const c8* opc8NameI, const s32 (*oFuncI)(s
 {
     tcOOSubMenu.m_opc8Name = opc8NameI;
     tcOOSubMenu.m_oFunc = oFuncI;
-    m_cSubMenu.insert(m_cSubMenu.end_ptr(), 1, tcOOSubMenu);
+    m_cSubMenu.push_back(tcOOSubMenu);
     ++m_s8SubMenuNum;
 }
 
@@ -44,7 +44,7 @@ const u32 clsOODebugMenu::tou32DetailDrawOffX;
 void clsOODebugMenu::addMainMenu(const c8* opc8NameI)
 {
     tcOOMainMenu.m_opc8Name = opc8NameI;
-    m_cMainMenu.insert(m_cMainMenu.end_ptr(), 1, tcOOMainMenu);
+    m_cMainMenu.push_back(tcOOMainMenu);
     m_s8MainMenuNum++;
 }
 

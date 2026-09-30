@@ -2,6 +2,7 @@
 #define PERFORMANCE_HPP
 
 #include "types.h"
+#include "usr/local/sce/ee/gcc/ee/lib/libc/memset.h"
 #include "Develop/Projects/SR2/pgm/src/Object/Player/GravityAction/GravityControl.hpp"
 #include "Develop/Projects/SR2/pgm/src/Game/Game.hpp"
 
@@ -25,7 +26,7 @@ enum enmWalkType {
     MAX_WALK_PRFM_NUM = 4,
 };
 
-// Reconstructed ability flags from nspGear::oasGearData; names are not present in DWARF.
+// RECONSTRUCTED: flag names.
 enum enmAbility {
     ABILITY_GP_INFINITY = 8,
     ABILITY_AUTO_WALL_RUN = 16,
@@ -98,13 +99,20 @@ public:
         s8 s8ItemRank;              // offset 0x53, size 0x1
     };
 
-    clsPrfm() {}
+    clsPrfm()
+        : m_pcGearCtrl(NULL), m_f32WeightRate(0.0f), m_f32InfiniGpFrame(t_of32InfiniGpCheckNotUse),
+          m_f32AdjustSpeedRate(1.0f), m_f32AdjustAcceleRate(1.0f)
+    {
+        memset(&m_sBase, 0, sizeof(m_sBase));
+        memset(&m_sWalk, 0, sizeof(m_sWalk));
+        memset(&m_sData, 0, sizeof(m_sData));
+    }
 
     const stcData* getGearDataPtr() const { return &m_sData; }
     u32 getGearAbility() const { return m_sData.u32Ability; }
     u32 getAbility() const { return m_sData.u32Ability | m_sBase.u32Ability; }
 
-    stcData* getDataPtr() const;
+    const stcData* getDataPtr() const;
     void setMaxAgp(f32 f32MaxAGP);
     void setRingCapacity(s16 s16Ring);
     void setup(clsCharacter* pcChara, clsGearCtrl* pcGearCtrl);
@@ -113,12 +121,12 @@ public:
     void Limit(stcData& rsData);
     void reset();
 
-    static f32 t_of32FLightMaxSpeed;         // address: 0x00664D50
-    static f32 t_of32FlightMinSpeed;         // address: 0x00664D58
-    static f32 t_of32FlightResistanceRate;   // address: 0x00664D60
-    static f32 t_of32FlightFloatingBaseRate; // address: 0x00664D68
-    static f32 t_of32FlightFloatingDiffRate; // address: 0x00664D70
-    static f32 t_of32InfiniGpCheckNotUse;    // address: 0x00664D78
+    static f32 t_of32FLightMaxSpeed;            // address: 0x00664D50
+    static f32 t_of32FlightMinSpeed;            // address: 0x00664D58
+    static f32 t_of32FlightResistanceRate;      // address: 0x00664D60
+    static f32 t_of32FlightFloatingBaseRate;    // address: 0x00664D68
+    static f32 t_of32FlightFloatingDiffRate;    // address: 0x00664D70
+    static const f32 t_of32InfiniGpCheckNotUse; // address: 0x00664D78
 
     stcData m_sBase;           // offset 0x0, size 0x54
     stcData m_sWalk;           // offset 0x54, size 0x54
@@ -128,6 +136,6 @@ public:
     f32 m_f32InfiniGpFrame;    // offset 0x104, size 0x4
     f32 m_f32AdjustSpeedRate;  // offset 0x108, size 0x4
     f32 m_f32AdjustAcceleRate; // offset 0x10C, size 0x4
-}; // total size: 0x110
+};                             // total size: 0x110
 
 #endif // PERFORMANCE_HPP

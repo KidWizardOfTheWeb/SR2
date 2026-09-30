@@ -38,4 +38,5 @@ void clsCharaAmy::loadAdditionalData(stcBinInfo& rParam)
 
 clsCharaAmy::~clsCharaAmy()
 {
+    m_pcLineTask->setMode(0);
 }

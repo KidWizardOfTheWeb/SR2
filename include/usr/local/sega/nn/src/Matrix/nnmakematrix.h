@@ -8,7 +8,7 @@ extern "C" {
 #endif
 
 void nnMakeUnitMatrix(NNS_MATRIX* dst);
-void nnMakeQuaternionMatrix(NNS_MATRIX* dst, struct NNS_QUATERNION* quat);
+void nnMakeQuaternionMatrix(NNS_MATRIX* dst, const struct NNS_QUATERNION* quat);
 void nnMakeRotateXMatrix(NNS_MATRIX* dst, signed int ax);
 void nnMakeRotateYMatrix(NNS_MATRIX* dst, signed int ay);
 void nnMakeRotateZMatrix(NNS_MATRIX* dst, signed int az);

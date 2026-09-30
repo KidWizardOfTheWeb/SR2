@@ -37,17 +37,17 @@ void clsGLinkSignBoard_Obj::main()
 }
 
 void clsGLinkSignBoard_Obj::draw(clsModelType_OB_TX* apcModel,
-                                 f32 (*psMtxPal)[4][4],
+                                 NNS_MATRIX* psMtxPal,
                                  u32* psNodeStat,
-                                 const f32 (*opaNnViewMtx)[4][4],
-                                 f32 (*psMtxWork)[4][4],
+                                 const NNS_MATRIX* opaNnViewMtx,
+                                 NNS_MATRIX* psMtxWork,
                                  u32 u32ViewNo)
 {
 }
 
 clsGLinkSignBoard_Task::clsGLinkSignBoard_Task(u32 u32ObjectAreaNum)
     : clsMultiModelGimmick_Task<clsGLinkSignBoard_Task, clsGLinkSignBoard_Obj, clsSignBoardModel>(
-          u32ObjectAreaNum, 0x18A88)
+          u32ObjectAreaNum, 99999)
 {
 }
 

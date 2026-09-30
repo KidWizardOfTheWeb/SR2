@@ -4,9 +4,9 @@
 #include "types.h"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 #include "Develop/Projects/SR2/pgm/src/Data/Path/PathPoint.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Collision/GroundCollision.hpp"
 
 class clsPlayerTask;
-struct stcInfo;
 
 namespace nspTrick {
 enum enmKicker {
@@ -115,44 +115,44 @@ public:
     void debugTrickRank();
     void reset();
 
-    NNS_VECTORFAST m_sDirVecFast;           // offset 0x10, size 0x10
-    stcBingoControl m_sBingoControl;        // offset 0x20, size 0x4
-    clsPlayerTask* m_pcPlayer;              // offset 0x24, size 0x4
-    void* m_pvTrickMotionData;              // offset 0x28, size 0x4
-    stcInfo* m_psColInfo;                   // offset 0x2C, size 0x4
-    clsRetPath m_cRetCoursePath;            // offset 0x30, size 0x20
-    f32 m_f32UpAccele;                      // offset 0x50, size 0x4
-    f32 m_f32Frame;                         // offset 0x54, size 0x4
-    f32 m_f32RotRadRate;                    // offset 0x58, size 0x4
-    f32 m_f32StepFrame;                     // offset 0x5C, size 0x4
-    f32 m_f32QuickSlowRate;                 // offset 0x60, size 0x4
-    nspTrick::enmKicker m_eKickerType;      // offset 0x64, size 0x4
-    enmStartType m_eStartType;              // offset 0x68, size 0x4
-    enmRank m_eBaseRank;                    // offset 0x6C, size 0x4
-    enmRank m_eRank;                        // offset 0x70, size 0x4
-    s8 m_s8MotionStep;                      // offset 0x74, size 0x1
-    s8 m_s8RotDir;                          // offset 0x75, size 0x1
-    s8 m_as8KeyDir[4];                      // offset 0x76, size 0x4
-    s8 m_s8KeySaveCount;                    // offset 0x7A, size 0x1
-    f32 m_f32BonusSpeed;                    // offset 0x7C, size 0x4
-    u8 m_bEnableKickerDebug;                // offset 0x80, size 0x1
-    f32 m_f32DebugSpeed;                    // offset 0x84, size 0x4
-    f32 m_f32DebugGravity;                  // offset 0x88, size 0x4
-    f32 m_f32DebugJump;                     // offset 0x8C, size 0x4
-    s32 m_s32EnableAcceleKickerDebug;       // offset 0x90, size 0x4
-    f32 m_f32DebugUpSpeed;                  // offset 0x94, size 0x4
-    f32 m_f32DebugUpAccele;                 // offset 0x98, size 0x4
-    f32 m_f32DebugDownSpeed;                // offset 0x9C, size 0x4
-    f32 m_f32DebugDownAccele;               // offset 0xA0, size 0x4
-    f32 m_f32DebugVelocityY;                // offset 0xA4, size 0x4
-    f32 m_f32DebugUpGravityAccele;          // offset 0xA8, size 0x4
-    f32 m_f32DebugDownGravityAccele;        // offset 0xAC, size 0x4
-    f32 m_f32DebugFrame;                    // offset 0xB0, size 0x4
-    u8 m_bEnableTrickDebug;                 // offset 0xB4, size 0x1
-    u8 m_bTrickRecordDispDebug;             // offset 0xB5, size 0x1
-    nspTrick::enmKicker m_eDebugKickerType; // offset 0xB8, size 0x4
-    enmRank m_eDebugTrickRank;              // offset 0xBC, size 0x4
-    s8 m_s8DebugKeyDir;                     // offset 0xC0, size 0x1
+    NNS_VECTORFAST m_sDirVecFast;             // offset 0x10, size 0x10
+    stcBingoControl m_sBingoControl;          // offset 0x20, size 0x4
+    clsPlayerTask* m_pcPlayer;                // offset 0x24, size 0x4
+    void* m_pvTrickMotionData;                // offset 0x28, size 0x4
+    clsGroundCollision::stcInfo* m_psColInfo; // offset 0x2C, size 0x4
+    clsRetPath m_cRetCoursePath;              // offset 0x30, size 0x20
+    f32 m_f32UpAccele;                        // offset 0x50, size 0x4
+    f32 m_f32Frame;                           // offset 0x54, size 0x4
+    f32 m_f32RotRadRate;                      // offset 0x58, size 0x4
+    f32 m_f32StepFrame;                       // offset 0x5C, size 0x4
+    f32 m_f32QuickSlowRate;                   // offset 0x60, size 0x4
+    nspTrick::enmKicker m_eKickerType;        // offset 0x64, size 0x4
+    enmStartType m_eStartType;                // offset 0x68, size 0x4
+    enmRank m_eBaseRank;                      // offset 0x6C, size 0x4
+    enmRank m_eRank;                          // offset 0x70, size 0x4
+    s8 m_s8MotionStep;                        // offset 0x74, size 0x1
+    s8 m_s8RotDir;                            // offset 0x75, size 0x1
+    s8 m_as8KeyDir[4];                        // offset 0x76, size 0x4
+    s8 m_s8KeySaveCount;                      // offset 0x7A, size 0x1
+    f32 m_f32BonusSpeed;                      // offset 0x7C, size 0x4
+    u8 m_bEnableKickerDebug;                  // offset 0x80, size 0x1
+    f32 m_f32DebugSpeed;                      // offset 0x84, size 0x4
+    f32 m_f32DebugGravity;                    // offset 0x88, size 0x4
+    f32 m_f32DebugJump;                       // offset 0x8C, size 0x4
+    s32 m_s32EnableAcceleKickerDebug;         // offset 0x90, size 0x4
+    f32 m_f32DebugUpSpeed;                    // offset 0x94, size 0x4
+    f32 m_f32DebugUpAccele;                   // offset 0x98, size 0x4
+    f32 m_f32DebugDownSpeed;                  // offset 0x9C, size 0x4
+    f32 m_f32DebugDownAccele;                 // offset 0xA0, size 0x4
+    f32 m_f32DebugVelocityY;                  // offset 0xA4, size 0x4
+    f32 m_f32DebugUpGravityAccele;            // offset 0xA8, size 0x4
+    f32 m_f32DebugDownGravityAccele;          // offset 0xAC, size 0x4
+    f32 m_f32DebugFrame;                      // offset 0xB0, size 0x4
+    u8 m_bEnableTrickDebug;                   // offset 0xB4, size 0x1
+    u8 m_bTrickRecordDispDebug;               // offset 0xB5, size 0x1
+    nspTrick::enmKicker m_eDebugKickerType;   // offset 0xB8, size 0x4
+    enmRank m_eDebugTrickRank;                // offset 0xBC, size 0x4
+    s8 m_s8DebugKeyDir;                       // offset 0xC0, size 0x1
 };
 
 #endif // TRICKPARAM_HPP

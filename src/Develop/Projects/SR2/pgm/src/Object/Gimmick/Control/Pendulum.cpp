@@ -25,7 +25,3 @@ clsPendulum::clsPendulum(u8 u8Param1,
                          const NNS_QUATERNION& rsRotQuat)
 {
 }
-
-clsPendulum::~clsPendulum()
-{
-}

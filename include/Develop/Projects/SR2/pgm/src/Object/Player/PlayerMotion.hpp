@@ -2,7 +2,7 @@
 #define PLAYERMOTION_HPP
 
 #include "types.h"
-#include "Develop/Projects/SR2/pgm/src/Havok/Havok.hpp"
+#include "Develop/Projects/SR2/pgm/src/Havok/hkBaseObject.hpp"
 #include "Develop/Projects/SR2/pgm/src/Havok/hkArray.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Player/Data/GameData.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Player/Motion.hpp"
@@ -26,6 +26,9 @@ class hkSimplexSolverOutput;
 class hkSurfaceConstraintInfo;
 class hkTriangleShape;
 class hkCriticalSection;
+class hkBroadPhaseHandle;
+class hkBroadPhaseHandlePair;
+struct hkAabb;
 class clsPlayerTask;
 
 // total size: 0x4
@@ -34,18 +37,14 @@ public:
     virtual ~hkEntityListener() {}
 };
 
-// total size: 0x4
-class hkPhantomListener {
-public:
-    virtual ~hkPhantomListener() {}
-};
-
 // total size: 0x1
 class hkCriticalSection {};
 
 // total size: 0x8
 class hkMultiThreadCheck {
 public:
+    hkMultiThreadCheck() : m_threadId(-47), m_markCount(0) {}
+
     void disableChecks();
 
     u32 m_threadId;     // offset 0x0, size 0x4
@@ -62,6 +61,23 @@ public:
 
     hkBroadPhase();
     virtual ~hkBroadPhase();
+    virtual s32 getType() const = 0;
+    virtual void addObject(hkBroadPhaseHandle* pParam1,
+                           const hkAabb& rParam2,
+                           hkArray<hkBroadPhaseHandlePair>& rParam3) = 0;
+    virtual void addObjectBatch(hkArray<hkBroadPhaseHandle*>& rParam1,
+                                hkArray<hkAabb>& rParam2,
+                                hkArray<hkBroadPhaseHandlePair>& rParam3) = 0;
+    virtual void removeObject(hkBroadPhaseHandle* pParam1,
+                              hkArray<hkBroadPhaseHandlePair>& rParam2) = 0;
+    virtual void removeObjectBatch(hkArray<hkBroadPhaseHandle*>& rParam1,
+                                   hkArray<hkBroadPhaseHandlePair>& rParam2) = 0;
+    virtual s32 getNumObjects() = 0;
+    virtual void updateAabbs(hkBroadPhaseHandle** pParam1,
+                             const hkAabb* pParam2,
+                             s32 s32Param3,
+                             hkArray<hkBroadPhaseHandlePair>& rParam4,
+                             hkArray<hkBroadPhaseHandlePair>& rParam5) = 0;
 
     void lockImplementation();
     void unlockImplementation();
@@ -80,7 +96,12 @@ public:
     const hkVector4& getColumn(s32 s32Param1) const { return (&m_col0)[s32Param1]; }
     void getRow(s32 s32Param1, hkVector4& rParam2) const {}
     void setIdentity() {}
-    void setZero() {}
+    void setZero()
+    {
+        m_col0.setZero4();
+        m_col1.setZero4();
+        m_col2.setZero4();
+    }
     void transpose();
     void setTranspose(const hkMatrix3& rParam1);
     void setMul(const hkMatrix3& rParam1, const hkMatrix3& rParam2);
@@ -103,10 +124,29 @@ public:
     s32 isOrthonormal(f32 f32Param1) const;
 };
 
+inline void hkVector4::setMul3(const hkMatrix3& rParam1, const hkVector4& rParam2)
+{
+    const f32 x0 = rParam2.x;
+    const f32 y0 = rParam2.y;
+    const f32 z0 = rParam2.z;
+    x = x0 * rParam1.m_col0.x + y0 * rParam1.m_col1.x + z0 * rParam1.m_col2.x;
+    y = x0 * rParam1.m_col0.y + y0 * rParam1.m_col1.y + z0 * rParam1.m_col2.y;
+    z = x0 * rParam1.m_col0.z + y0 * rParam1.m_col1.z + z0 * rParam1.m_col2.z;
+    w = 0.0f;
+}
+
+extern f32 hkTransformIdentity[];
+
 // total size: 0x40
 class hkTransform {
 public:
     hkTransform() {}
+
+    // RECONSTRUCTED: accessor name.
+    static const hkTransform& getIdentity()
+    {
+        return *reinterpret_cast<const hkTransform*>(hkTransformIdentity);
+    }
 
     const hkVector4& getColumn(s32 s32Param1) const { return (&m_rotation.m_col0)[s32Param1]; }
     const hkRotation& getRotation() const { return m_rotation; }
@@ -136,67 +176,6 @@ public:
     u8 m_maxDimB;      // offset 0xB, size 0x1
 };
 
-// total size: 0xC0
-class hkCharacterProxy : public hkReferencedObject,
-                         public hkEntityListener,
-                         public hkPhantomListener {
-public:
-    hkCharacterProxy(const hkCharacterProxyCinfo& rParam1);
-    virtual ~hkCharacterProxy();
-
-    void updateFromCinfo(const hkCharacterProxyCinfo& rParam1);
-    void integrateWithCollectors(const hkStepInfo& rParam1,
-                                 const hkVector4& rParam2,
-                                 hkAllCdPointCollector& rParam3,
-                                 hkAllCdPointCollector& rParam4);
-    void moveToLinearCastHitPosition(const hkSimplexSolverOutput& rParam1,
-                                     const hkAllCdPointCollector& rParam2,
-                                     const hkLinearCastInput& rParam3,
-                                     hkVector4& rParam4);
-    void refreshManifold(hkAllCdPointCollector& rParam1);
-    void extractSurfaceConstraintInfo(const hkRootCdPoint& rParam1,
-                                      hkSurfaceConstraintInfo& rParam2,
-                                      f32 f32Param3) const;
-    void findSurface(const hkRootCdPoint& rParam1) const;
-    void updateManifold(const hkAllCdPointCollector& rParam1, const hkAllCdPointCollector& rParam2);
-    void applySurfaceInteractions(const hkStepInfo& rParam1, const hkVector4& rParam2);
-    const hkVector4& getPosition() const;
-    void setPosition(const hkVector4& rParam1);
-    void setLinearVelocity(const hkVector4& rParam1);
-    hkShapePhantom* getShapePhantom();
-    void fireConstraintsProcessed(const hkArray<hkRootCdPoint>& rParam1,
-                                  hkSimplexSolverInput& rParam2) const;
-    void fireContactAdded(const hkRootCdPoint& rParam1) const;
-    void fireContactRemoved(const hkRootCdPoint& rParam1) const;
-    void entityRemovedCallback(hkEntity* pParam1);
-    void phantomRemovedCallback(hkPhantom* pParam1);
-    virtual void calcStatistics(hkStatisticsCollector* pParam1) const;
-
-    hkVector4 m_velocity;                           // offset 0x10, size 0x10
-    hkVector4 m_oldDisplacement;                    // offset 0x20, size 0x10
-    hkShapePhantom* m_shapePhantom;                 // offset 0x30, size 0x4
-    f32 m_dynamicFriction;                          // offset 0x34, size 0x4
-    f32 m_staticFriction;                           // offset 0x38, size 0x4
-    hkVector4 m_up;                                 // offset 0x40, size 0x10
-    f32 m_extraUpStaticFriction;                    // offset 0x50, size 0x4
-    f32 m_extraDownStaticFriction;                  // offset 0x54, size 0x4
-    f32 m_keepDistance;                             // offset 0x58, size 0x4
-    f32 m_keepContactTolerance;                     // offset 0x5C, size 0x4
-    f32 m_contactAngleSensitivity;                  // offset 0x60, size 0x4
-    s32 m_userPlanes;                               // offset 0x64, size 0x4
-    f32 m_maxCharacterSpeedForSolver;               // offset 0x68, size 0x4
-    f32 m_characterStrength;                        // offset 0x6C, size 0x4
-    f32 m_characterMass;                            // offset 0x70, size 0x4
-    hkArray<hkRootCdPoint> m_manifold;              // offset 0x74, size 0xC
-    hkArray<hkCharacterProxyListener*> m_listeners; // offset 0x80, size 0xC
-    hkArray<hkRigidBody*> m_bodies;                 // offset 0x8C, size 0xC
-    hkArray<hkPhantom*> m_phantoms;                 // offset 0x98, size 0xC
-    f32 m_maxSlopeCosine;                           // offset 0xA4, size 0x4
-    f32 m_penetrationRecoverySpeed;                 // offset 0xA8, size 0x4
-    s32 m_maxCastIterations;                        // offset 0xAC, size 0x4
-    u8 m_refreshManifoldInCheckSupport;             // offset 0xB0, size 0x1
-};
-
 // total size: 0x10
 class hkQuaternion {
 public:
@@ -206,7 +185,7 @@ public:
         set(f32Param1, f32Param2, f32Param3, f32Param4);
     }
 
-    hkVector4 getImag() const { return m_vec; }
+    const hkVector4& getImag() const { return m_vec; }
     void set(f32 f32Param1, f32 f32Param2, f32 f32Param3, f32 f32Param4)
     {
         m_vec.x = f32Param1;
@@ -294,9 +273,9 @@ public:
     void registBegin() {}
     s8 getOldBaseMotionType() const { return m_s8OldBaseMotionType; }
     void setBaseMotionType(s8 s8MotionType) { m_s8BaseMotionType = s8MotionType; }
-    nspGame::stcMotionTable** getMotionTablePtr() const
+    NNS_MOTION* getMotionTablePtr() const
     {
-        return const_cast<nspGame::stcMotionTable**>(m_apsMotionTable);
+        return m_apsMotionTable[m_s8MotionType]->aspTable[m_s8MotionNo];
     }
 
     void checkNodeMotion();

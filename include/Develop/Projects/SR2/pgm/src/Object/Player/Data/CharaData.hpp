@@ -8,7 +8,6 @@
 
 // total size: 0x10
 class Fuid {
-    // Members
 public:
     u32 m_0; // offset 0x0, size 0x4
     u32 m_1; // offset 0x4, size 0x4
@@ -18,7 +17,6 @@ public:
 namespace nspChara {
 // total size: 0x8
 struct stcMotionFlgs {
-    // Members
     u32 u32Flg[2]; // offset 0x0, size 0x8
 };
 } // namespace nspChara
@@ -37,7 +35,6 @@ enum enmModelType {
 
 // total size: 0x24
 struct stcData {
-    // Members
     s8 ac8Name_Debug[16]; // offset 0x0, size 0x10
     f32 f32Height;        // offset 0x10, size 0x4
     f32 f32Weight;        // offset 0x14, size 0x4
@@ -49,6 +46,8 @@ struct stcData {
     f32 f32AttackRFrame;  // offset 0x20, size 0x4
 };
 namespace nspChara {
+enmModelType getCharaModelType(u16 u16GearCtrlNo);
+
 extern f32 of32BaseHeight;                             // size: 0x4, address: 0x6651C0
 extern const stcBasePrfm oasBasePrfm[5];               // size: 0xDC, address: 0x6651D0
 extern const stcBasePrfm osWalkPrfm[4];                // size: 0xB0, address: 0x6652B0

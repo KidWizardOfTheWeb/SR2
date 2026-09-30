@@ -2,7 +2,13 @@
 #define SURVIVALBATTLEPARTS2D_HPP
 
 #include "types.h"
+#include "usr/local/sega/nn/src/Texture/nntexture.h"
 #include "Develop/Projects/SR2/pgm/src/2D/Score/ScoreParts2D.hpp"
+
+// RECONSTRUCTED: header placement.
+namespace nspSurvivalBattle2D {
+extern _NNS_TEXLIST* psTexList_SurvivalBattle2D;
+}
 
 class clsSurvivalBattleParts2D : public clsScoreParts2D {
 public:

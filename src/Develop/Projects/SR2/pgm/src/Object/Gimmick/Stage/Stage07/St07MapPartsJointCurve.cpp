@@ -7,7 +7,7 @@ void clsMapPartsJointCurve_Object::createData()
 }
 
 clsMapPartsJointCurve_Task::clsMapPartsJointCurve_Task(u32 u32ObjectAreaNum)
-    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 0)
+    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 100098)
 {
 }
 

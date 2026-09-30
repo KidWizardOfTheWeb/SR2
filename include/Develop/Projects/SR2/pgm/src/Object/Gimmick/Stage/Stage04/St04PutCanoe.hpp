@@ -6,13 +6,13 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/RigidBodyGimmickObj.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 
-enum enmPutCarMode {
-    MODE_INIT = 0,
-    MODE_MAIN = 1,
-};
-
 class clsPutCanoe_Obj : public clsRigidBodyGimmickObj {
 public:
+    enum enmPutCarMode {
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
+    };
+
     clsPutCanoe_Obj();
     virtual ~clsPutCanoe_Obj();
 
@@ -30,7 +30,6 @@ public:
     static u32 otau32Se_CanoeBreak[2];
     static u32 otau32Se_CanoeExp[2];
 
-    // Members
     enmPutCarMode m_eMode; // offset 0xD0, size 0x4
     u32 m_u32TexIdx;       // offset 0xD4, size 0x4
 };

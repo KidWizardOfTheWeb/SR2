@@ -3,20 +3,7 @@
 #include "Develop/Projects/SR2/pgm/lib/OO/PS2_nn/PS2NnCamera.hpp"
 #include "Develop/Projects/SR2/pgm/lib/OO/PS2_nn/PS2NnCameraMgr.hpp"
 #include "usr/local/sce/ee/lib/libkernl/kprintf2.h"
-
-#define TASK_MANAGER_ASSERT()                                                                      \
-    do {                                                                                           \
-        scePrintf("\n■■■■■■■\n");                                                                  \
-        scePrintf("SUPER ASSERTION→ <0x%08x> %s(%d) in %s()\n",                                    \
-                  0x30250201,                                                                      \
-                  "TaskManager.cpp",                                                               \
-                  __LINE__,                                                                        \
-                  __FUNCTION__);                                                                   \
-        scePrintf("[%s] : ", "nakawatari");                                                        \
-        scePrintf("不明なグループＩＤです。\n");                                                   \
-        scePrintf("■■■■■■■\n");                                                                    \
-        ABORT();                                                                                   \
-    } while (0)
+#include "macros.h"
 
 clsTaskManager::clsTaskManager(clsOOHeapFragment& rcWorkHeap)
     : clsOOTaskManager(rcWorkHeap), m_u32CurViewNo(0)
@@ -44,8 +31,7 @@ void clsTaskManager::beginTaskExecuteGroup(u32 u32GroupId, u32 u32LoopNum)
         clsPfSystem::GS()->setViewPort(4);
         break;
     default:
-#line 112
-        TASK_MANAGER_ASSERT();
+        SUPER_ASSERT(0x30250201, "TaskManager.cpp", 112, "不明なグループＩＤです。\n");
         break;
     }
 }
@@ -70,12 +56,9 @@ u8 clsTaskManager::endTaskExecuteGroup(u32 u32GroupId, u32 u32LoopNum)
     case 2:
         break;
     default:
-#line 168
-        TASK_MANAGER_ASSERT();
+        SUPER_ASSERT(0x30250201, "TaskManager.cpp", 168, "不明なグループＩＤです。\n");
         break;
     }
 
     return bRet;
 }
-
-#undef TASK_MANAGER_ASSERT

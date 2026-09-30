@@ -7,12 +7,6 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickPath.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 
-enum enmSCameraMode {
-    MODE_INIT = 0,
-    MODE_MAIN = 1,
-    MODE_BROKEN = 2,
-};
-
 enum enmSCameraStep {
     STEP_TURN = 0,
     STEP_WAIT = 1,
@@ -21,6 +15,12 @@ enum enmSCameraStep {
 // total size: 0xF0
 class clsSurveillanceCamera_Obj : public clsRigidBodyGimmickObj {
 public:
+    enum enmSCameraMode {
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
+        MODE_BREAK = 2,
+    };
+
     clsSurveillanceCamera_Obj();
     virtual ~clsSurveillanceCamera_Obj();
     virtual void init();

@@ -21,6 +21,7 @@
 #include "usr/local/sega/nn/src/Print/nnprint.h"
 
 #include "Develop/Projects/SR2/pgm/src/Havok/HavokBase.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Collision/GroundCollision.hpp"
 
 static inline void updateMissionBreak(clsRigidBodyGimmickObj* pcObj)
 {
@@ -41,7 +42,7 @@ static inline void updateMissionBreak(clsRigidBodyGimmickObj* pcObj)
     }
 }
 
-stcInfo clsRigidBodyGimmickObj::oasGroundInfo[4];
+clsGroundCollision::stcInfo clsRigidBodyGimmickObj::oasGroundInfo[4];
 
 void clsRigidBodyGimmickObj::resetBaseControl()
 {
@@ -128,7 +129,7 @@ void clsRigidBodyGimmickObj::execute()
     switch (m_eControlMode) {
     case CTRL_MODE_MAIN:
         main();
-        if (m_cContactControl.m_eMode == clsContactControl::MODE_EXECUTE) {
+        if (m_cContactControl.m_eMode == clsContactControl::MODE_CRASH) {
             startCrash(BREAK_TYPE_PLAYER);
             return;
         }
@@ -208,7 +209,7 @@ void clsRigidBodyGimmickObj::execute()
             break;
         case BREAK_TYPE_GRAVITY:
             if (m_pcGravityGimmickControl->m_pcPlayer != NULL) {
-                if (clsGameMgr::GS()->m_eMode == clsGameMgr::GAME_MODE___MISSION) {
+                if (clsGameMgr::GS()->getGameMode() == clsGameMgr::GAME_MODE___MISSION) {
                     clsMissionRace_Task* pcMission =
                         static_cast<clsMissionRace_Task*>(nspGlobal::sTask.pcBaseRace);
                     if (pcMission->m_sMissionParamTbl.u8RuleType == 11) {
@@ -216,7 +217,7 @@ void clsRigidBodyGimmickObj::execute()
                     }
                 }
                 ++m_pcGravityGimmickControl->m_pcPlayer->m_cGravityActionManager.m_s32BreakNum;
-                clsPrfm::stcData* psData =
+                const clsPrfm::stcData* psData =
                     m_pcGravityGimmickControl->m_pcPlayer->m_cPrfm.getDataPtr();
                 if ((psData->u32Ability & 0x2000) &&
                     m_pcGravityGimmickControl->m_eType == clsGravityActionControl::TYPE_CTRL)
@@ -251,7 +252,7 @@ void clsRigidBodyGimmickObj::execute()
 
     case CTRL_MODE_DEAD:
         mainDead();
-        if (clsGameMgr::GS()->m_eMode == clsGameMgr::GAME_MODE___MISSION) {
+        if (clsGameMgr::GS()->getGameMode() == clsGameMgr::GAME_MODE___MISSION) {
             clsPlayerTask* pcPlayer = nspGlobal::sTask.apcPlayer[0];
             u8 u8RuleType = static_cast<clsMissionRace_Task*>(nspGlobal::sTask.pcBaseRace)
                                 ->m_sMissionParamTbl.u8RuleType;
@@ -404,7 +405,7 @@ void clsRigidBodyGimmickObj::contactTriggerEvent(hkContactPoint* pcContact, clsO
     if (m_cContactControl.isBreak()) {
         return;
     }
-    if (m_cContactControl.isExecute()) {
+    if (m_cContactControl.isCrash()) {
         return;
     }
     if (!(m_eControlFlag & CTRL_FLAG_UPDATE_CONTACT)) {
@@ -412,9 +413,9 @@ void clsRigidBodyGimmickObj::contactTriggerEvent(hkContactPoint* pcContact, clsO
     }
 
     if (m_pcGravityGimmickControl != NULL &&
-        pcPlayer->m_cGravityActionManager.m_eType == clsGravityActionManager::TYPE_FRONT &&
+        pcPlayer->m_cGravityActionManager.m_eType == clsGravityActionManager::TYPE_NULL &&
         m_pcGravityGimmickControl->m_pcPlayer == pcPlayer &&
-        clsGameMgr::GS()->m_eMode != clsGameMgr::GAME_MODE___SURVIVAL_BALL)
+        clsGameMgr::GS()->getGameMode() != clsGameMgr::GAME_MODE___SURVIVAL_BALL)
     {
         startBreak(BREAK_TYPE_PLAYER);
         return;
@@ -422,7 +423,7 @@ void clsRigidBodyGimmickObj::contactTriggerEvent(hkContactPoint* pcContact, clsO
 
     m_cContactControl.updateContactPlayer(pcContact, m_pcRigidBody, pcPlayer);
 
-    if (m_cContactControl.m_eMode == clsContactControl::MODE_EXECUTE) {
+    if (m_cContactControl.m_eMode == clsContactControl::MODE_CRASH) {
         startCrash(BREAK_TYPE_PLAYER);
         requestPowerTypeSe(pcPlayer);
 
@@ -456,8 +457,8 @@ void clsRigidBodyGimmickObj::contactTriggerCallback(hkContactPointConfirmedEvent
             u8 u8MotionType = m_pcRigidBody->m_motion.m_type.m_storage;
             clsRigidBodyGimmickObj* pcRigidObject =
                 static_cast<clsRigidBodyGimmickObj*>(m_pcContactObject);
-            if (u8MotionType != hkMotion::MOTION_THIN_BOX_INERTIA &&
-                u8MotionType != hkMotion::MOTION_CHARACTER &&
+            if (u8MotionType != hkMotion::MOTION_KEYFRAMED &&
+                u8MotionType != hkMotion::MOTION_FIXED &&
                 (m_eControlFlag & CTRL_FLAG_INTERRACTION) &&
                 checkContactInterraction(pcRigidObject))
             {

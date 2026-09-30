@@ -74,11 +74,19 @@ enum PXE_CTX {
     PXE_CTX2 = 1,
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void PXInitContext(enum PXE_CTX context);
 void PXPutContext(enum PXE_CTX context);
 struct PXS_CONTEXTBUFFER* PXSetupCB(void* buf, unsigned int bufsize, signed int num);
 void PXReferCB(struct PXS_CONTEXTBUFFER* cb);
 void PXPutCB(struct PXS_CONTEXTBUFFER* cb);
 void PXSetCB(struct PXS_CONTEXTBUFFER* cb, signed int num, unsigned long addr, unsigned long data);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // PXCONTEXT_H

@@ -1,12 +1,15 @@
 #ifndef STARTGATE_HPP
 #define STARTGATE_HPP
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
+#include "usr/local/sce/ee/gcc/ee/lib/libc/memset.h"
 #include "types.h"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickObj.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/Se3DControl.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/SeIDControl.hpp"
+#include "Develop/Projects/SR2/pgm/lib/OO/PS2_CRI/PS2Cri.hpp"
 
 class clsStartGate_Obj;
 class clsPlayerTask;
@@ -20,21 +23,6 @@ public:
     clsModelType_OB_TX_MO_MA m_cGate;  // offset 0x0, size 0x20
     clsModelType_OB_TX_MO_MA m_cBlitz; // offset 0x20, size 0x20
     clsModelType_OB_TX m_cLine;        // offset 0x40, size 0x8
-};
-
-// total size: 0xD4
-class clsStartGate_Task
-    : public clsBaseGimmickBody<clsStartGate_Task, clsStartGate_Obj, clsStartGateModels> {
-public:
-    clsStartGate_Task()
-        : clsBaseGimmickBody<clsStartGate_Task, clsStartGate_Obj, clsStartGateModels>(0, 0)
-    {
-    }
-    virtual ~clsStartGate_Task() {}
-    virtual void execute();
-    virtual void draw();
-    virtual void reset() {}
-    virtual void createModel(stcBinInfo& rParam1);
 };
 
 struct stcStGateFrame {
@@ -56,8 +44,21 @@ struct stcStGateSeFrame {
 // total size: 0xA0
 class clsStartGate_Obj : public clsGimmickObj {
 public:
-    clsStartGate_Obj() {}
-    virtual ~clsStartGate_Obj() {}
+    clsStartGate_Obj() : m_f32MatMFrame(0.0f), m_u8ExecMode(0), m_pcSe3DControl(NULL)
+    {
+        memset(m_af32MtnFrame, 0, sizeof(m_af32MtnFrame));
+
+        clsPfCri* pcCri = clsPfCri::GS();
+        u32 u32UserNum = nspGlobal::sTask.pcBaseRace->m_s32UserNum;
+        s16* ps16SfID = m_SeIdControl.m_as16SfID;
+        u32 u32i = 0;
+        do {
+            *ps16SfID = pcCri->getSfFreeId(0x2701A9);
+            ++u32i;
+            ++ps16SfID;
+        } while (u32i < u32UserNum);
+    }
+    virtual ~clsStartGate_Obj() { destroyData(); }
     virtual nspPackId::enm getPackId() const { return nspPackId::START_GATE_2050; }
     virtual void createData();
     virtual void destroyData();
@@ -84,6 +85,21 @@ public:
     static f32 tof32DenkiScaleX[17];
     static f32 tof32LineScaleX[17];
     static stcStGateSeFrame t_sStGateSeFrame[17];
+};
+
+// total size: 0xD4
+class clsStartGate_Task
+    : public clsBaseGimmickBody<clsStartGate_Task, clsStartGate_Obj, clsStartGateModels> {
+public:
+    clsStartGate_Task()
+        : clsBaseGimmickBody<clsStartGate_Task, clsStartGate_Obj, clsStartGateModels>(1, 101010)
+    {
+    }
+    virtual ~clsStartGate_Task() {}
+    virtual void execute();
+    virtual void draw();
+    virtual void reset() {}
+    virtual void createModel(stcBinInfo& rParam1);
 };
 
 #endif // STARTGATE_HPP

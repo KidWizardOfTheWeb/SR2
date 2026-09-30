@@ -1,6 +1,7 @@
 #ifndef ST11FSECURITYGATE_HPP
 #define ST11FSECURITYGATE_HPP
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 #include "Develop/Projects/SR2/pgm/src/Data/Pack.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Collision/BaseThroughCollision.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
@@ -32,21 +33,21 @@ public:
     void* m_pvBin;                     // offset 0x20, size 0x4
 };
 
-enum enmFSecurityGateMode {
-    MODE_INIT = 0,
-    MODE_MAIN = 1,
-};
-
-enum enmFSecurityGateState {
-    STATE_NOT_NEXT = 0,
-    STATE_OPEN = 1,
-    STATE_CLOSE = 2,
-    STATE_SLEEP = 3,
-};
-
 // total size: 0x150
 class clsFSecurityGate_Obj : public clsRigidBodyGimmickObj {
 public:
+    enum enmFSecurityGateMode {
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
+    };
+
+    enum enmFSecurityGateState {
+        STATE_NOT_NEXT = 0,
+        STATE_OPEN = 1,
+        STATE_CLOSE = 2,
+        STATE_SLEEP = 3,
+    };
+
     clsFSecurityGate_Obj() {}
     virtual ~clsFSecurityGate_Obj() {}
 
@@ -86,10 +87,10 @@ public:
 
     void reset();
     void draw(clsModelType_OB_TX_MO_MA& rcModel,
-              f32 (*psMtxPal)[4][4],
+              NNS_MATRIX* psMtxPal,
               u32* psNodeStat,
-              const f32 (*opaNnViewMtx)[4][4],
-              f32 (*psMtxWork)[4][4],
+              const NNS_MATRIX* opaNnViewMtx,
+              NNS_MATRIX* psMtxWork,
               u32 u32ViewNo);
     void setPlayerFlg(u32 u32Param1) { m_u32PlayerFlg = u32Param1; }
     void setGateFlg(u8 u8Param1) { m_u8GateFlg = u8Param1; }

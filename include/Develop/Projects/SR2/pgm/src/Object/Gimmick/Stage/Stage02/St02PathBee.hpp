@@ -60,7 +60,7 @@ public:
     inline void setMode(enmPathBeeMode) {}
     inline void setAiMode(enmAiMode) {}
     inline enmAiMode getAiMode() const { return AIMODE_MOVE; }
-    inline clsPlayerTask* searchPlayer() { return 0; }
+    inline clsPlayerTask* searchPlayer() { return NULL; }
     inline void setLinearVelocity(const NNS_VECTORFAST& rParam1, f32 f32Param2) {}
     inline void getDirPlayer(NNS_VECTORFAST& rParam1) {}
     inline void clearVelocity() {}
@@ -74,7 +74,7 @@ public:
 
 // total size: 0x94
 class clsPathBee_Task
-    : public clsMultiModelGimmick_Task<clsPathBee_Task, clsPathBee_Obj, clsModelType_OB_TX> {
+    : public clsBaseGimmickBody<clsPathBee_Task, clsPathBee_Obj, clsModelType_OB_TX> {
 public:
     clsPathBee_Task(u32 u32Param1);
     virtual ~clsPathBee_Task() {}

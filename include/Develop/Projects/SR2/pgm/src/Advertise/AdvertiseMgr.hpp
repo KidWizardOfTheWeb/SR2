@@ -9,7 +9,7 @@
 #include "Develop/Projects/SR2/pgm/src/Game/Game.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Player/Player.hpp"
 
-// Forward declarations — pointer-only types
+// Forward declarations - pointer-only types
 class clsOOFlashPlayer;
 class clsOOFlashMovie;
 class clsModelType_OB_TX_MO_MA_MF;
@@ -50,7 +50,6 @@ struct stcDepthData {
     u32 u32InstructNum; // offset 0x4, size 0x4
 };
 
-// Global enums — DWARF stores these at global scope
 enum enmChildState {
     CHILD_STATE___MOVE_EX_00 = 0,
     CHILD_STATE___MOVE_EX_01 = 1,
@@ -89,7 +88,10 @@ public:
     virtual ~clsPfTexture() {}
     virtual void SetTexture(void* pvTex, bool bSetUp) { SetTexture_Base(pvTex, bSetUp); }
     virtual void SetDrawTexture(s32 s32Param1) {}
-    virtual void* GetSize(s32 s32Param1) const { return GetSize_Base(s32Param1); }
+    virtual const nspOOMisc::stcSize2d<s32>& GetSize(s32 s32Param1) const
+    {
+        return GetSize_Base(s32Param1);
+    }
 };
 
 // Flash sub-structs now in OOFlashParse.hpp (included above)
@@ -145,7 +147,6 @@ struct stcSubFlashData {
 // total size: 0x69C
 class clsAdvertiseMgr_Task : public clsTask {
 public:
-    // Virtual functions
     virtual ~clsAdvertiseMgr_Task(); // [vtable slot 2]
     virtual void execute();          // [vtable slot 3]
     virtual void draw();             // [vtable slot 4]
@@ -215,7 +216,6 @@ public:
     static enmMode m_teSelectedGameMode;
     static u32 tu32ResidenceTexSize;
 
-    // Members
     u8 m_bStartMovieEnd;                          // offset 0x54, size 0x1
     u8* m_pu8PackBufHi;                           // offset 0x58, size 0x4
     void* m_pvTexListBufHi;                       // offset 0x5C, size 0x4
@@ -249,9 +249,7 @@ public:
     clsModelType_OB_TX_MO_MA* m_pcShopChao_Model; // offset 0x668, size 0x4
     clsModelType_OB_TX_MO_MA* m_pcShopObj_Model;  // offset 0x66C, size 0x4
     _NNS_TEXLIST* m_psRTexList;                   // offset 0x670, size 0x4
-    // TODO: m_eOldMode — DWARF says MODE_INIT=0/MODE_MAIN=1, but
-    // enmMode is already declared in Game.hpp with GAME_MODE values. Resolve during
-    // function implementation.
+    // RECONSTRUCTED: enum ownership unresolved.
     enmMode m_eOldMode;        // offset 0x674, size 0x4
     enmHbMode m_eWgpMode;      // offset 0x678, size 0x4
     u32 m_u32UnlockMode;       // offset 0x67C, size 0x4

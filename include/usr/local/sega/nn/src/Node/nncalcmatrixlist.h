@@ -3,38 +3,46 @@
 
 #include "usr/local/sega/nn/src/Object/nnobject.h"
 
-void nnCalcMatrixList(float (*mtxlist)[4][4], struct NNS_OBJECT* obj, float (*basemtx)[4][4]);
-void nnCalcMatrixListMotionNode(float (*mtxlist)[4][4],
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void nnCalcMatrixList(NNS_MATRIX* mtxlist, struct NNS_OBJECT* obj, NNS_MATRIX* basemtx);
+void nnCalcMatrixListMotionNode(NNS_MATRIX* mtxlist,
                                 struct NNS_OBJECT* obj,
-                                float (*basemtx)[4][4],
+                                NNS_MATRIX* basemtx,
                                 struct NNS_MOTION* mot,
                                 float frame);
-void nnCalcMatrixListMotion(float (*mtxlist)[4][4],
+void nnCalcMatrixListMotion(NNS_MATRIX* mtxlist,
                             struct NNS_OBJECT* obj,
                             struct NNS_MOTION* mot,
                             float frame,
-                            float (*basemtx)[4][4]);
-void nnCalcMatrixListTRSList(float (*mtxlist)[4][4],
+                            NNS_MATRIX* basemtx);
+void nnCalcMatrixListTRSList(NNS_MATRIX* mtxlist,
                              struct NNS_OBJECT* obj,
                              struct NNS_TRS* trslist,
-                             float (*basemtx)[4][4]);
-void nnCalcMatrixPaletteMatrixList(float (*mtxpal)[4][4],
+                             NNS_MATRIX* basemtx);
+void nnCalcMatrixPaletteMatrixList(NNS_MATRIX* mtxpal,
                                    struct NNS_OBJECT* obj,
-                                   float (*mtxlist)[4][4],
-                                   float (*basemtx)[4][4]);
-void nnCalcMatrixListMotionNode1BoneSIIK(float (*mtxlist)[4][4],
+                                   NNS_MATRIX* mtxlist,
+                                   NNS_MATRIX* basemtx);
+void nnCalcMatrixListMotionNode1BoneSIIK(NNS_MATRIX* mtxlist,
                                          struct NNS_OBJECT* obj,
-                                         float (*basemtx)[4][4],
+                                         NNS_MATRIX* basemtx,
                                          signed int jnt1idx,
                                          signed int submotidx,
                                          struct NNS_MOTION* mot,
                                          float frame);
-void nnCalcMatrixListMotionNode2BoneSIIK(float (*mtxlist)[4][4],
+void nnCalcMatrixListMotionNode2BoneSIIK(NNS_MATRIX* mtxlist,
                                          struct NNS_OBJECT* obj,
-                                         float (*basemtx)[4][4],
+                                         NNS_MATRIX* basemtx,
                                          signed int jnt1idx,
                                          signed int submotidx,
                                          struct NNS_MOTION* mot,
                                          float frame);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // NNCALCMATRIXLIST_H

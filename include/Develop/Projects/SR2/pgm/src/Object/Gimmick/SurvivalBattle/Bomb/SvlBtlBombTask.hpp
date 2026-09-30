@@ -2,12 +2,15 @@
 #define SVLBTLBOMBTASK_HPP
 
 #include "types.h"
+#include "usr/local/sce/ee/gcc/ee/lib/libc/memset.h"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/SurvivalBattle/Bomb/SvlBtlBombObject.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 
 class clsLockOnAppoint3D_Task;
 class clsLockOnTarget2D_Task;
+
+class clsSvlBtlBomb_Task;
 
 // total size: 0xC
 struct stcPlayerBombData {
@@ -21,8 +24,18 @@ class clsSvlBtlBomb_Task : public clsSingleModelGimmick_Task<clsSvlBtlBomb_Task,
                                                              clsSvlBtlBomb_Object,
                                                              clsModelType_OB_TX> {
 public:
-    clsSvlBtlBomb_Task(const stcSetDataDetail& rParam1) : clsSingleModelGimmick_Task(0, 0) {}
-    virtual ~clsSvlBtlBomb_Task() {}
+    clsSvlBtlBomb_Task(const stcSetDataDetail& rParam1)
+        : clsSingleModelGimmick_Task<clsSvlBtlBomb_Task, clsSvlBtlBomb_Object, clsModelType_OB_TX>(
+              1, 0x18A88)
+    {
+        m_pcRigidShape = new hkSphereShape(clsSvlBtlBomb_Object::t_f32SphereRadius);
+        memset(m_asPlayerData, 0, sizeof(m_asPlayerData));
+        clsSvlBtlBomb_Object* pcObj = m_vecUnusedGmkObjArray.back();
+        m_vecUnusedGmkObjArray.pop_back();
+        m_vecGmkObjArray.push_back(pcObj);
+        pcObj->setSetData(rParam1);
+    }
+    virtual ~clsSvlBtlBomb_Task();
     virtual void execute();
     virtual void draw();
     virtual void reset();
@@ -37,5 +50,9 @@ public:
 
     stcPlayerBombData m_asPlayerData[4]; // offset 0x94, size 0x30
 };
+
+inline clsSvlBtlBomb_Task::~clsSvlBtlBomb_Task()
+{
+}
 
 #endif // SVLBTLBOMBTASK_HPP

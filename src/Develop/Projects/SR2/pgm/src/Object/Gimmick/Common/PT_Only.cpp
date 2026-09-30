@@ -42,14 +42,6 @@ void clsPT_Only_Task::draw()
 {
 }
 
-clsPT_Only_Obj::clsPT_Only_Obj()
-{
-}
-
-clsPT_Only_Obj::~clsPT_Only_Obj()
-{
-}
-
 nspPackId::enm clsPT_Only_Obj::getPackId() const
 {
     return nspPackId::PT_ONLY_2082;

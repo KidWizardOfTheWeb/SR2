@@ -18,13 +18,8 @@ struct _stcShapeInfo;
 class clsFanThroughCollision : public clsBaseThroughCollision {
 public:
     enum enmMode {
-        MODE_INIT = 0,
-        MODE_WAIT = 1,
-        MODE_RISE = 2,
-        MODE_FLOAT = 3,
-        MODE_MOVE_INIT = 4,
-        MODE_MOVE = 5,
-        MODE_END = 6,
+        MODE_START = 0,
+        MODE_STOP = 1,
     };
 
     clsFanThroughCollision() {}
@@ -47,16 +42,14 @@ public:
     void* m_pvBin;                  // offset 0x10, size 0x4
 };
 
-enum enmState {
-    STATE_MAIN = 0,
-    STATE_ACTION = 1,
-    STATE_WAIT = 2,
-    STATE_STOP = 3,
-};
-
 // total size: 0xEC
 class clsFan_Task : public clsBaseGimmickBody<clsFan_Task, clsFan_Obj, clsFanModel> {
 public:
+    enum enmState {
+        STATE_START = 0,
+        STATE_STOP = 1,
+    };
+
     clsFan_Task(u32 u32ObjectAreaNum);
     virtual ~clsFan_Task() {}
 
@@ -83,9 +76,9 @@ public:
 class clsFan_Parts : public clsRigidBodyGimmickObj {
 public:
     enum enmMode {
-        MODE_NONE = 0,
-        MODE_EXECUTE = 1,
-        MODE_BREAK = 2,
+        MODE_MAIN = 0,
+        MDOE_BREAK = 1,
+        MODE_DIE = 2,
     };
 
     clsFan_Parts() {}

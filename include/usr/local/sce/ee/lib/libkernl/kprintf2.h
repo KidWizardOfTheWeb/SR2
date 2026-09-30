@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 int scePrintf(const char* format, ...);
+int sceSnprintf(char* buffer, int size, const char* format, ...);
 
 #ifdef __cplusplus
 }

@@ -12,7 +12,7 @@ class clsContactControl {
 public:
     enum enmMode {
         MODE_NONE = 0,
-        MODE_EXECUTE = 1,
+        MODE_CRASH = 1,
         MODE_BREAK = 2,
     };
 
@@ -30,7 +30,7 @@ public:
         u8 eRigid;  // offset 0x1, size 0x1
     };
 
-    clsContactControl() : m_pcActiveContactStatus(0), m_eMode(MODE_NONE), m_s32ContactNum(0)
+    clsContactControl() : m_pcActiveContactStatus(NULL), m_eMode(MODE_NONE), m_s32ContactNum(0)
     {
         m_sContactStatus[0].ePlayer = 2;
         m_sContactStatus[0].eRigid = 0;
@@ -41,16 +41,16 @@ public:
         m_sContactStatus[3].ePlayer = 2;
         m_sContactStatus[3].eRigid = 1;
     }
-    ~clsContactControl();
+    ~clsContactControl() {}
 
     void reset()
     {
         m_eMode = MODE_NONE;
-        m_pcActiveContactStatus = 0;
+        m_pcActiveContactStatus = NULL;
         m_s32ContactNum = 0;
     }
     u8 isBreak() const { return m_eMode == MODE_BREAK; }
-    u8 isExecute() const { return m_eMode == MODE_EXECUTE; }
+    u8 isCrash() const { return m_eMode == MODE_CRASH; }
 
     void setContactStatus(enmContactPlayerType eType,
                           enmContactAction ePlayer,

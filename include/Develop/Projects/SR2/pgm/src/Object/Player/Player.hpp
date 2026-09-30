@@ -1,11 +1,15 @@
 #ifndef PLAYER_HPP
 #define PLAYER_HPP
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 #include "types.h"
+#include "Develop/Projects/SR2/pgm/lib/OO/core/OOFlag.hpp"
+#include "Develop/Projects/SR2/pgm/lib/OO/core/OOLibChecker.hpp"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 #include "Develop/Projects/SR2/pgm/src/Game/BaseRace.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Player/Motion.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Player/GravityAction/GravityActionManager.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionGearFly.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Player/Performance.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Player/Gear/Gear.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Player/Gear/GearCtrl.hpp"
@@ -22,6 +26,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Player/Trick/TrickManager.hpp"
 #include "Develop/Projects/SR2/pgm/src/Data/Sound/CharaVoice.hpp"
 #include "Develop/Projects/SR2/pgm/lib/OO/core/OOTask.hpp"
+#include "Develop/Projects/SR2/pgm/lib/OO/PS2/PS2Heap.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Player/Postural.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Object.hpp"
 #include "Develop/Projects/SR2/pgm/src/Task/TaskManager.hpp"
@@ -45,7 +50,6 @@ class clsComKey;
 class clsUserKey;
 class clsPlayerDebug;
 class clsPlayerMotion;
-struct stcInfo;
 class clsThroughCollision;
 class hkContactPoint;
 class clsModelType_OB_TX_MO_MA;
@@ -99,24 +103,6 @@ enum enmStatus {
     STATUS_NEXT_STOP = 128,
 };
 
-enum enmSystemFlag {
-    SYSTEM_FLAG__CLEAR = 0,
-    SYSTEM_FLAG__OBJ_PORTAL_FORWARD = 1,
-};
-
-template <class T>
-class clsFlag {
-public:
-    clsFlag(T tData) : m_tData(tData) {}
-    T getParam() const { return m_tData; }
-    void setParam(u32 u32Data, u32 u32Mask)
-    {
-        m_tData = static_cast<T>((m_tData & ~u32Mask) | (u32Data & u32Mask));
-    }
-
-    T m_tData; // offset 0x0, size 0x4
-};
-
 enum enmNo {
     PLAYER_00 = 0,
     PLAYER_01 = 1,
@@ -148,7 +134,7 @@ struct stcInitData {
     NNS_VECTORFAST sUpVecFast;  // offset 0x10, size 0x10
     f32 f32LocalAngleRad;       // offset 0x20, size 0x4
     u32 u32Padding;             // offset 0x24, size 0x4
-}; // total size: 0x30
+};                              // total size: 0x30
 } // namespace nspPlayer
 typedef nspPlayer::stcInitData stcInitData;
 
@@ -247,6 +233,9 @@ enum enPlayerCtrlType {
 #include "Develop/Projects/SR2/pgm/src/Data/PathData.hpp"
 #include "Develop/Projects/SR2/pgm/src/Effect/GearChenge/FlyAction.hpp"
 
+// RECONSTRUCTED: sound identifier.
+enum enmSF_ID { SF_ID_REVERSE = 17 };
+
 // total size: 0x18
 class _ActionFuncTbl {
 public:
@@ -257,22 +246,78 @@ public:
 // total size: 0x12F0
 class clsPlayerTask : public clsObject, public clsTask {
 public:
+    enum enmSystemFlag {
+        SYSTEM_FLAG__CLEAR = 0,
+        SYSTEM_FLAG__OBJ_PORTAL_FORWARD = 1,
+    };
+
     typedef ::enmFlag enmFlag;
     enum enmStatus {
-        STATUS_NULL = 0,
-        STATUS_END = 1,
-        STATUS_STOP = 2,
-        STATUS_BLEND = 4,
-        STATUS_UNLOOP = 8,
-        STATUS_LINK_ONE = 16,
-        STATUS_LINK_SYNC = 32,
-        STATUS_NEXT_UNLOOP = 64,
-        STATUS_NEXT_STOP = 128,
+        STATUS_CLEAR = 0,
+        STATUS_GROUND = 1,
+        STATUS_WALL = 2,
+        STATUS_LANDING = 4,
+        STATUS_START = 8,
+        STATUS_GOAL = 16,
+        STATUS_ON_WATER = 32,
+        STATUS_WEATHER = 64,
+        STATUS_REVERSE = 128,
+        STATUS_INVINCIBILITY = 256,
+        STATUS_DAMAGE = 512,
+        STATUS_ON_SNOW = 1024,
+        STATUS_THROUGH_WALLOBJ = 2048,
+        STATUS_SEARCH_RAIL = 4096,
+        STATUS_ATTACKDAMAGE = 8192,
+        STATUS_ON_TURB = 16384,
+        STATUS_TRAP_COLORBALL = 32768,
+        STATUS_TRAP_PARTSLOCK = 65536,
+        STATUS_SPEED_DOWN = 131072,
+        STATUS_EGGCONFETTI = 262144,
+        STATUS_NIGHTSEFFECT = 524288,
+        STATUS_NONE_RIDE = 1048576,
+        STATUS_MASK_UPDATE = 2080639,
+        STATUS_MASK_CONDITION = 1015808,
     };
-    typedef ::enmActionType enmActionType;
+    enum enmActionType {
+        ACTION_TYPE_NULL = 0,
+        ACTION_TYPE_DAMAGE00 = 1,
+        ACTION_TYPE_DAMAGE01 = 2,
+        ACTION_TYPE_DEMO = 3,
+        ACTION_TYPE_WALK_WAIT = 4,
+        ACTION_TYPE_WALK_RUN = 5,
+        ACTION_TYPE_WALK_BACK = 6,
+        ACTION_TYPE_WALK_BRAKE = 7,
+        ACTION_TYPE_WALK_FLIGHT = 8,
+        ACTION_TYPE_WALK_SPRING = 9,
+        ACTION_TYPE_INERTIA = 10,
+        ACTION_TYPE_RUN = 11,
+        ACTION_TYPE_BRAKE = 12,
+        ACTION_TYPE_FLIGHT = 13,
+        ACTION_TYPE_JUMP = 14,
+        ACTION_TYPE_TRICK = 15,
+        ACTION_TYPE_PATH = 16,
+        ACTION_TYPE_ATTACK = 17,
+        ACTION_TYPE_RAIL = 18,
+        ACTION_TYPE_FLY = 19,
+        ACTION_TYPE_POWER = 20,
+        ACTION_TYPE_GDIVE = 21,
+        ACTION_TYPE_GDIVE_AUTO = 22,
+        ACTION_TYPE_GCTRL_SLIDE = 23,
+        ACTION_TYPE_GCTRL_TRICK = 24,
+        ACTION_TYPE_GCTRL_FLIGHT = 25,
+        ACTION_TYPE_DIR_REGULATE_RUN = 26,
+        ACTION_TYPE_TRANSLATION_MOVE_PATH = 27,
+        ACTION_TYPE_WHEELDRIFT = 28,
+        ACTION_TYPE_AUTOWALLRUN = 29,
+        ACTION_TYPE_FALSE_START = 30,
+        ACTION_TYPE_RESTART = 31,
+        ACTION_TYPE_ATTACKDAMAGE = 32,
+        ACTION_TYPE_BOOST = 33,
+        ACTION_TYPE_MAX = 34,
+        ACTION_TYPE_ = 35,
+    };
     typedef ::enmMoveFlag enmMoveFlag;
     typedef f32 (*MtxPtr)[4];
-    typedef f32 (*Mtx44Ptr)[4][4];
 
     enum enmCalcNodePos {
         NODE_POS_SPINE = 0,
@@ -285,29 +330,172 @@ public:
         NODE_POS_HIP = 7,
         NODE_POS_MAX = 8,
     };
-
-    // stub (header): clsPlayerTask(const stcSetDataDetail& rParam1) : clsTask(0, 0) {}
     clsPlayerTask(const stcSetDataDetail& rParam1)
-        : clsTask(0x18704, 5), m_cCharaVoice(this), m_cSystemFlag(SYSTEM_FLAG__CLEAR)
+        : clsTask(0x18704, 5), m_pcMotion(NULL), m_cGravity(this), m_cBackUpGravity(this),
+          m_cTrick(this), m_cGravityActionManager(this), m_cReaction(this), m_pcKey(NULL),
+          m_pcAutoRunKey(NULL), m_pcUserKeyTmp(NULL), m_pcCharacter(NULL), m_pcGearCtrl(NULL),
+          m_pcPhysic(NULL), m_pcLap(NULL), m_pcGroundObject(NULL),
+          m_lstLightCollision(clsPfMainHeap::RS()), m_cCharaVoice(this),
+          m_cSystemFlag(SYSTEM_FLAG__CLEAR), m_ePlayerNo(PLAYER_00), m_eFlag(FLAG_INIT),
+          m_eStatus(STATUS_CLEAR), m_eStatusOld(STATUS_CLEAR), m_eStatusTrigger(STATUS_CLEAR),
+          m_eStatusRemove(STATUS_CLEAR), m_eActionType(ACTION_TYPE_DEMO),
+          m_eOldActionType(ACTION_TYPE_DEMO), m_eMoveFlag(DEFAULT_FLAG), m_f32FrameRate(1.0f),
+          m_f32CurveRotateRate(0.0f), m_f32CurveMotionRate(0.0f), m_f32CurveRad(0.0f),
+          m_f32CurveWaitFrame(0.0f), m_f32vibrationCurveRate(0.0f), m_f32CurveFrame(0.0f),
+          m_f32CentrifugalForce(0.0f), m_f32MinSpeed(0.0f), m_f32MaxSpeed(1.0f), m_f32Speed(0.0f),
+          m_f32Accele(0.0f), m_f32SpeedRate(0.0f), m_f32AdjustAcceleRate(1.0f),
+          m_f32AdjustMaxSpeed(0.0f), m_s32NodeVibCycle(0), m_f32FaceRotateRate(0.0f),
+          m_s32RingNum(0), m_s32GoalRingNum(0), m_f32GoalRingRate(1.0f), m_s32LinkCount(0),
+          m_eLinkType(LINK_TYPE_NULL), m_f32Val(0.0f), m_f32ApproachVal(0.0f),
+          m_f32ObstacleFrame(0.0f), m_f32InertiaDecayFrame(0.0f), m_s32ActionMode(0),
+          m_eCtrlType(CTRL_TYPE_1P), m_eDefaultCtrlType(CTRL_TYPE_1P), m_s8BaseMotionNo(0),
+          m_u8CurrentDrawMtxNo(0), m_u8BadTrackCnt(0), m_s8Ranking(0), m_f32EggConfettiFrame(0.0f),
+          m_f32EggConfettiDropFrame(0.0f), m_f32NightsAtkEffectFrame(0.0f),
+          m_f32NightsAtkEffectDropFrame(0.0f), m_u32NightsAtkEffectDropCnt(0),
+          m_f32ReverseRestartCountFrame(0.0f), m_f32ReverseStartCountFrame(0.0f),
+          m_pcBackLineTask(NULL), m_pcVaporTrailTask(NULL), m_pcSlipStreamTask(NULL),
+          m_pcWeatherTask(NULL), m_f32RandMotionFrame(0.0f), m_f32RankChangeMotionFrame(0.0f),
+          m_f32CamDelayRqTime(0.0f), m_f32FlightFrame(0.0f), m_f32SystemScale(1.0f),
+          m_opcResidenceTexModel_PS2(NULL), m_u16ReturnLineNo(0), m_bForcedUpdateFlag(0),
+          m_bDrawFlag(1), m_u8BaseLightNo(1), m_u8LightNo(1), m_u8BackUpLightNo(0),
+          m_u8BackUpFogNo(0), m_s8OldPathNo(-1), m_bDisableFog(0), m_s8CameraNo(-1), m_s8ViewNo(-1),
+          m_s8CurAttackTarget(-1), m_bDamageFlag(0), m_pcDmgEffectTask(NULL),
+          m_pcDmgEffectTask2(NULL), m_bIsAttackDmgScale(0), m_f32AttackDmgScale(1.0f),
+          m_s32SuperSonic(0), m_eComType(COM_AI_TYPE_NORMAL), m_f32BoostAttackFrame(0.0f),
+          m_f32GpRateEffectCnt(0.0f), m_cRingLimitTime(t_of32RingRateTime),
+          m_cRingGravityLimitTime(t_of32RingGravityRateTime), m_s32ReplayCamIdx(-1),
+          m_s32AutoWallRunPathNo(0), m_pcDashPanel(NULL), m_pcEggConfetti(NULL),
+          m_pcNightsAtkEffect(NULL)
     {
+        nspOOLibChecker::ClassC("clsPlayerTask");
+        m_s32EnableMovePathDebug = 0;
+        m_sDebugLine.u16Attr = 0;
+        m_sDebugLine.uniData.sSpeed.s16MinSpeed = 160;
+        m_sDebugLine.uniData.sSpeed.s16MaxSpeed = 160;
+        m_sDebugLine.uniData.sSpeed.s16Type = 0;
+        m_sDebugLine.uniData.sSpeed.as16Reserve[4] = 0;
+        m_sDebugLine.uniData.sSpeed.as16Reserve[3] = 0;
+        m_sDebugLine.uniData.sSpeed.as16Reserve[2] = 0;
+        m_sDebugLine.uniData.sSpeed.as16Reserve[1] = 0;
+        m_sDebugLine.uniData.sSpeed.as16Reserve[0] = 0;
+        m_bEnableFlyDebug = 0;
+        m_f32Debug_StiffFrame = 20.0f;
+        m_f32Debug_StallSpeed = 60.000004f;
+        m_f32Debug_AirResist = -0.3f;
+        m_f32Debug_UpDownAccele = 0.85f;
+        m_f32Debug_FallAccele = 0.02f;
+        m_f32Debug_DescentAccele = 0.0457f;
+        m_f32Debug_RollSpeed = 0.0054931640625f * nspFly::FLYACTION_UP_DOWN_ROT;
+        m_f32Debug_PitchSpeed = 0.0054931640625f * nspFly::FLYACTION_LEFT_RIGHT_ROT;
+        m_f32Debug_UpPitch_Limit = 0.0054931640625f * nspFly::FLYACTION_MAX_PITCH;
+        m_f32Debug_DownPitch_Limit = 0.0054931640625f * nspFly::FLYACTION_MIN_PITCH;
+        m_af32Debug_PitchGravityTable[0] =
+            0.0054931640625f * nspFly::FLYACTION_DEFAULT_PITCH_GRAVITY;
+        m_af32Debug_PitchGravityTable[1] = 0.0054931640625f * nspFly::FLYACTION_FALL_PITCH_GRAVITY;
+        m_af32Debug_PitchGravityTable[2] =
+            0.0054931640625f * nspFly::FLYACTION_DESCENT_PITCH_GRAVITY;
+        m_bDispReturnPoint = 0;
+        m_bDispCoursePoint = 0;
+        m_lstLightCollision.resize(8);
+        setSetData(&rParam1);
+        nnMakeUnitMatrix(&m_sEffMtx);
+        nnMakeUnitMatrix(&m_sDrawMtx[0]);
+        nnMakeUnitMatrix(&m_sDrawMtx[1]);
+        nnMakeUnitMatrix(&m_asBoardMtx[0]);
+        nnMakeUnitMatrix(&m_asBoardMtx[1]);
+        nnMakeUnitMatrix(&m_asBoardMtx[2]);
+        nnMakeUnitMatrix(&m_asBoardMtx[3]);
+        nnMakeUnitMatrix(&m_sGearDrawMtx);
+        nnCopyVectorFast(&m_sPosVecFast[0], &nspNnUtil::tosZeroVecFast);
+        nnCopyVectorFast(&m_sPosVecFast[1], &nspNnUtil::tosZeroVecFast);
+        nnCopyVectorFast(&m_sUpVecFast, &nspNnUtil::tosYVecFast);
+        nnCopyVectorFast(&m_sVelocityVecFast, &nspNnUtil::tosZeroVecFast);
+        nnCopyVectorFast(&m_sSpeedVecFast, &nspNnUtil::tosZeroVecFast);
+        nnCopyVectorFast(&m_sAirVecFast, &nspNnUtil::tosZeroVecFast);
+        nnCopyVectorFast(&m_sMoveNrmVecFast, &nspNnUtil::tosZeroVecFast);
+        nnCopyVectorFast(&m_sFaceDirVecFast, &nspNnUtil::tosZeroVecFast);
+        nnCopyVectorFast(&m_sContactVecFast, &nspNnUtil::tosZeroVecFast);
+        nnCopyVectorFast(&m_sRelativeVecFast, &nspNnUtil::tosZeroVecFast);
+        nnCopyVectorFast(&m_sInertiaVecFast, &nspNnUtil::tosZeroVecFast);
+        nnCopyVectorFast(&m_sInertiaDecayVecFast, &nspNnUtil::tosZeroVecFast);
+        nnCopyVectorFast(&m_sVectorMoveVecFast, &nspNnUtil::tosZeroVecFast);
+        nnCopyVectorFast(&m_sPathMoveVecFast, &nspNnUtil::tosZeroVecFast);
+        nnCopyVectorFast(&m_sOffsetDrawVecFast, &nspNnUtil::tosZeroVecFast);
+        nnCopyVectorFast(&m_sContactCharaDirVecFast, &nspNnUtil::tosZeroVecFast);
+        nnSetUpVectorFast(getControlMatrixRef()->getVibRotAxisVecFastRef(), 0.0f, 1.0f, 0.8f);
+        getControlMatrixRef()->setTrsDecayRate(0.99f);
+        getControlMatrixRef()->setRotDecayRate(0.99f);
+        m_af32ActionVal[0] = 0.0f;
+        m_af32ActionVal[1] = 0.0f;
+        m_af32ActionVal[2] = 0.0f;
+        s8 s8Index;
+        for (s8Index = 0; (s8Index < 4) != false; ++s8Index) {
+            m_apcLoopParticle[s8Index] = NULL;
+        }
+        for (s8Index = 0; (s8Index < 4) != false; ++s8Index) {
+            m_apcLoopEffect[s8Index] = NULL;
+        }
+        for (s8Index = 0; s8Index < 8; ++s8Index) {
+            m_asNodePos[s8Index].x = m_asNodePos[s8Index].y = m_asNodePos[s8Index].z = 0.0f;
+            m_asNodePos[s8Index].w = 1.0f;
+            nnMakeUnitMatrix(&m_asNodeMatrix[s8Index]);
+        }
     }
-    // stub (header): clsPlayerTask(u32 u32Param1) : clsTask(0, 0) {}
     clsPlayerTask(u32 u32Param1)
-        : clsTask(u32Param1, 5), m_cCharaVoice(this), m_cSystemFlag(SYSTEM_FLAG__CLEAR)
+        : clsTask(u32Param1, 5), m_cGravityActionManager(this), m_pcKey(NULL), m_pcAutoRunKey(NULL),
+          m_pcUserKeyTmp(NULL), m_pcCharacter(NULL), m_pcGearCtrl(NULL), m_pcPhysic(NULL),
+          m_pcLap(NULL), m_pcGroundObject(NULL), m_lstLightCollision(clsPfMainHeap::RS()),
+          m_cCharaVoice(this), m_cSystemFlag(SYSTEM_FLAG__CLEAR), m_ePlayerNo(PLAYER_00),
+          m_eFlag(FLAG_INIT), m_eStatus(STATUS_CLEAR), m_eStatusOld(STATUS_CLEAR),
+          m_eStatusTrigger(STATUS_CLEAR), m_eStatusRemove(STATUS_CLEAR),
+          m_eActionType(ACTION_TYPE_DEMO), m_eOldActionType(ACTION_TYPE_DEMO),
+          m_eMoveFlag(DEFAULT_FLAG), m_f32FrameRate(1.0f), m_f32CurveRotateRate(0.0f),
+          m_f32CurveMotionRate(0.0f), m_f32CurveRad(0.0f), m_f32CurveWaitFrame(0.0f),
+          m_f32vibrationCurveRate(0.0f), m_f32CurveFrame(0.0f), m_f32CentrifugalForce(0.0f),
+          m_f32MinSpeed(0.0f), m_f32MaxSpeed(1.0f), m_f32Speed(0.0f), m_f32Accele(0.0f),
+          m_f32SpeedRate(0.0f), m_f32AdjustAcceleRate(1.0f), m_f32AdjustMaxSpeed(0.0f),
+          m_s32NodeVibCycle(0), m_f32FaceRotateRate(0.0f), m_s32RingNum(0), m_s32GoalRingNum(0),
+          m_f32GoalRingRate(1.0f), m_s32LinkCount(0), m_eLinkType(LINK_TYPE_NULL), m_f32Val(0.0f),
+          m_f32ApproachVal(0.0f), m_f32ObstacleFrame(0.0f), m_f32InertiaDecayFrame(0.0f),
+          m_s32ActionMode(0), m_eCtrlType(CTRL_TYPE_GHOST), m_eDefaultCtrlType(CTRL_TYPE_GHOST),
+          m_s8BaseMotionNo(0), m_u8CurrentDrawMtxNo(0), m_u8BadTrackCnt(0), m_s8Ranking(0),
+          m_f32EggConfettiFrame(0.0f), m_f32EggConfettiDropFrame(0.0f),
+          m_f32NightsAtkEffectFrame(0.0f), m_f32NightsAtkEffectDropFrame(0.0f),
+          m_u32NightsAtkEffectDropCnt(0), m_pcBackLineTask(NULL), m_pcVaporTrailTask(NULL),
+          m_pcSlipStreamTask(NULL), m_pcWeatherTask(NULL), m_f32RandMotionFrame(0.0f),
+          m_f32RankChangeMotionFrame(0.0f), m_f32CamDelayRqTime(0.0f), m_f32FlightFrame(0.0f),
+          m_f32SystemScale(1.0f), m_opcResidenceTexModel_PS2(NULL), m_u16ReturnLineNo(0),
+          m_bForcedUpdateFlag(0), m_bDrawFlag(1), m_u8BaseLightNo(1), m_u8LightNo(1),
+          m_u8BackUpLightNo(0), m_u8BackUpFogNo(0), m_s8OldPathNo(-1), m_bDisableFog(0),
+          m_s8CameraNo(-1), m_s8ViewNo(-1), m_s8CurAttackTarget(-1), m_bDamageFlag(0),
+          m_pcDmgEffectTask(NULL), m_pcDmgEffectTask2(NULL), m_bIsAttackDmgScale(0),
+          m_f32AttackDmgScale(1.0f), m_s32SuperSonic(0), m_eComType(COM_AI_TYPE_NORMAL),
+          m_f32BoostAttackFrame(0.0f), m_f32GpRateEffectCnt(0.0f), m_f32ItemFrame(0.0f),
+          m_s32ReplayCamIdx(-1), m_s32AutoWallRunPathNo(0), m_pcEggConfetti(NULL)
     {
     }
     virtual ~clsPlayerTask();
     virtual enmPlayerType getPlayerType() const { return PLAYER_TYPE__NORMAL; } // vtable slot 0x58
+    virtual void setActionType(enmActionType eType);
     virtual void reset();
-    virtual void draw();
     virtual void execute();
+    virtual void draw();
+
+    // RECONSTRUCTED: inline helper names.
+    void updateVisibility();
+    void updateStatus();
+    void updateSurface();
+    void updateModel();
+    void updateReverse();
+    void updateReturnPoint();
+    void updateCentrifugalForce();
 
     static f32 t_of32DefaultMinSpeed;
     static f32 t_of32TurbMinSpeed;
     static f32 t_of32TurbMaxSpeed;
     static f32 t_of32SurfaceAdjustScale;
-    static f32 t_of32RingRateTime;
-    static f32 t_of32RingGravityRateTime;
+    static const f32 t_of32RingRateTime;
+    static const f32 t_of32RingGravityRateTime;
     static _ActionFuncTbl t_sActionFuncTbl[34];
 
     u8 isDemo() const;
@@ -343,17 +531,23 @@ public:
     void setInertia(const NNS_VECTORFAST* pParam1, f32 f32Param2, f32 f32Param3);
     void createGear(nspGear::enmGearCtrl eGearCtrlNo, u32 u32InitEquipsGears);
     void createChara(nspChara::enmCharaType eCharaType, nspChara::enmModelType eModelType);
-    void initKey(nspPlayer::enmNo u8PadNo, enPlayerCtrlType sParam2, u8 u8Param3);
-    void initCamera(enPlayerCtrlType eCtrlType, u32 u32CharaNo);
-    void init(nspPlayer::enmNo ePlayerNo,
-              enPlayerCtrlType eCtrlType,
-              u32 u32CharaNo,
-              nspGear::enmGearCtrl eGearCtrlNo,
-              u32 u32GearLevel,
-              u8 u8PadNo);
+    virtual void init(nspPlayer::enmNo ePlayerNo,
+                      enPlayerCtrlType eCtrlType,
+                      u32 u32CharaNo,
+                      nspGear::enmGearCtrl eGearCtrlNo,
+                      u32 u32GearLevel,
+                      u8 u8PadNo);
+    virtual void initCamera(enPlayerCtrlType eCtrlType, u32 u32CharaNo);
+    virtual void initKey(nspPlayer::enmNo u8PadNo, enPlayerCtrlType sParam2, u8 u8Param3);
     void createMothion(nspChara::enmCharaType enCharaType);
-    void setClearStatus(clsPlayerTask::enmStatus eStatus);
-    void setAndStatus(clsPlayerTask::enmStatus eStatus);
+    void setClearStatus(enmStatus eStatus)
+    {
+        m_eStatus = static_cast<enmStatus>(m_eStatus & ~eStatus);
+    }
+    void setAndStatus(enmStatus eStatus)
+    {
+        m_eStatus = static_cast<enmStatus>(m_eStatus & eStatus);
+    }
     void clearPlayerCondition();
     void setNightsAtkEffectStatus(f32 f32Frame);
     void setEggConfettiStatus(f32 f32Frame);
@@ -439,7 +633,6 @@ public:
     void initCommonFlight();
     void initCommonRun();
     void updateAction();
-    void setActionType(clsPlayerTask::enmActionType eType);
     void actionGearFly();
     void initGearFly();
     void endGearFly();
@@ -490,39 +683,39 @@ public:
     void enableFog();
     f32 getAccele() const;
     s32 getActionMode() const;
-    enmActionType getActionType() const;
+    enmActionType getActionType() const { return m_eActionType; }
     f32 getActionVal(u32 u32Index) const;
     NNS_VECTORFAST* getAirVecFastRef();
     u8 getBackUpFogNo() const;
     u8 getBackUpLightNo() const;
-    s8 getCameraNo() const;
-    f32 getCentrifugalForce() const;
-    clsCharacter* getCharacterRef();
+    s8 getCameraNo() const { return m_s8CameraNo; }
+    f32 getCentrifugalForce() const { return m_f32CentrifugalForce; }
+    clsCharacter* getCharacterRef() { return m_pcCharacter; }
     NNS_VECTORFAST* getContactVecFastRef();
-    clsControlMatrix* getControlMatrixRef();
+    clsControlMatrix* getControlMatrixRef() { return &m_cControlMatrix; }
     enPlayerCtrlType getCtrlType() const;
-    f32 getCurveRad() const;
+    f32 getCurveRad() const { return m_f32CurveRad; }
     f32 getCurveRotateRate() const;
-    Mtx44Ptr getDrawMtxRef();
+    NNS_MATRIX* getDrawMtxRef() { return &m_sDrawMtx[m_u8CurrentDrawMtxNo]; }
     MtxPtr getEffMtxRef();
-    enmFlag getFlag() const;
+    enmFlag getFlag() const { return m_eFlag; }
     f32* getFlightFrameRef();
     clsFlyAction* getFlyActionRef();
     s8 getFollowNum() const;
-    clsGearCtrl* getGearCtrlRef();
-    clsGravityActionManager* getGravityActionManagerRef();
-    clsGravity* getGravityRef();
-    clsPlayerKey* getKeyRef();
+    clsGearCtrl* getGearCtrlRef() { return m_pcGearCtrl; }
+    clsGravityActionManager* getGravityActionManagerRef() { return &m_cGravityActionManager; }
+    clsGravity* getGravityRef() { return &m_cGravity; }
+    clsPlayerKey* getKeyRef() { return m_pcKey; }
     clsLap* getLapPtr();
-    u8 getLightNo() const;
+    u8 getLightNo() const { return m_u8LightNo; }
     f32 getMaxSpeed() const;
     f32 getMinSpeed() const;
-    clsPlayerMotion* getMotionRef();
+    clsPlayerMotion* getMotionRef() { return m_pcMotion; }
     enmMoveFlag getMoveFlag() const;
     NNS_VECTORFAST* getMoveNrmVecFastPtr() const;
     const NNS_VECTORFAST* getNodePos(u8 u8NodeNo) const;
     enmActionType getOldActionType() const;
-    Mtx44Ptr getOldDrawMtxRef();
+    NNS_MATRIX* getOldDrawMtxRef();
     NNS_VECTORFAST* getOldPosVecFastPtr() const;
     u8 getOnSnow() const;
     u8 getOnSnowOld() const;
@@ -530,24 +723,24 @@ public:
     u8 getOnWaterOld() const;
     NNS_VECTORFAST* getPathMoveVecFastRef();
     clsPath* getPathRef();
-    clsPlayerPhysic* getPhysicRef();
-    nspPlayer::enmNo getPlayerNo() const;
+    clsPlayerPhysic* getPhysicRef() { return m_pcPhysic; }
+    nspPlayer::enmNo getPlayerNo() const { return static_cast<nspPlayer::enmNo>(m_ePlayerNo); }
     NNS_VECTORFAST* getPosVecFastPtr() const;
     NNS_VECTORFAST* getPosVecFastRef();
     MtxPtr getPosturalMtxPtr() const;
     NNS_VECTORFAST* getPosturalNrmVecFastPtr() const;
     f32 getPosturalRad() const;
     clsPosturalCtrl* getPosturalRef();
-    clsPrfm* getPrfmRef();
+    clsPrfm* getPrfmRef() { return &m_cPrfm; }
     NNS_VECTORFAST* getRelativeVecFastRef();
-    clsRetPath* getRetCoursePathRef();
+    clsRetPath* getRetCoursePathRef() { return &m_cRetCoursePath; }
     u16 getReturnLineNo() const;
     s32 getRingNum() const;
-    s32 getSfId(s32 s32SfId);
-    f32 getSpeed() const;
+    s32 getSfId(enmSF_ID eSfId) { return m_s32SfId[eSfId]; }
+    f32 getSpeed() const { return m_f32Speed; }
     f32 getSpeedRate() const;
-    enmStatus getStatus() const;
-    enmStatus getStatusTrigger() const;
+    enmStatus getStatus() const { return m_eStatus; }
+    enmStatus getStatusTrigger() const { return m_eStatusTrigger; }
     clsSurface* getSurfaceRef();
     clsTrickManager* getTrickRef();
     NNS_VECTORFAST* getUpVecFastPtr() const;
@@ -555,27 +748,42 @@ public:
     NNS_VECTORFAST* getVectorMoveVecFastRef();
     MtxPtr getVelocityMtxPtr() const;
     NNS_VECTORFAST* getVelocityNrmVecFastPtr() const;
-    NNS_QUATERNION* getVelocityQuatPtr() const;
+    const NNS_QUATERNION* getVelocityQuatPtr() const { return m_cVelocity.getQuatPtr(); }
     f32 getVelocityRad() const;
     clsPosturalCtrl* getVelocityRef();
     NNS_VECTORFAST* getVelocityVecFastPtr() const;
     NNS_VECTORFAST* getVelocityVecFastRef();
     clsCharaVoice* getVoiceRef();
-    u8 isAttackDmgScale() const;
-    u8 isCom() const;
-    u8 isDefaultUser() const;
-    u8 isDemoCom() const;
-    u8 isMotionVisibleAllView() const;
-    u8 isReplay() const;
-    u8 isUser() const;
+    u8 isAttackDmgScale() const { return m_bIsAttackDmgScale; }
+    u8 isCom() const { return m_eCtrlType == CTRL_TYPE_COM; }
+    u8 isDefaultUser() const
+    {
+        return (m_eDefaultCtrlType >= CTRL_TYPE_1P && m_eDefaultCtrlType <= CTRL_TYPE_4P) ||
+               (m_s8CameraNo >= 0 && clsGameMgr::GS()->m_s8TitleDemoNo != -1);
+    }
+    u8 isDemoCom() const
+    {
+        return m_eCtrlType == CTRL_TYPE_COM &&
+               !(m_s8CameraNo >= 0 && clsGameMgr::GS()->m_s8TitleDemoNo != -1);
+    }
+    u8 isMotionVisibleAllView() const { return m_bMotionVisible; }
+    u8 isReplay() const { return m_eCtrlType == CTRL_TYPE_REPLAY; }
+    u8 isUser() const
+    {
+        return (m_eCtrlType >= CTRL_TYPE_1P && m_eCtrlType <= CTRL_TYPE_4P) ||
+               (m_s8CameraNo >= 0 && clsGameMgr::GS()->m_s8TitleDemoNo != -1);
+    }
     void setAccele(f32 f32Accele);
     void setActionMode(s32 s32ActionMode);
     void setActionVal(u32 u32Index, f32 f32Val);
     void setAllFrameRate(f32 f32FrameRate);
-    void setBackUpFogNo(u8 u8FogNo);
-    void setBackUpLightNo(u8 u8LightNo);
+    void setBackUpFogNo(u8 u8FogNo) { m_u8BackUpFogNo = u8FogNo; }
+    void setBackUpLightNo(u8 u8LightNo) { m_u8BackUpLightNo = u8LightNo; }
     void setBaseLightNo(u8 u8LightNo);
-    void setCentrifugalForce(f32 f32CentrifugalForce);
+    void setCentrifugalForce(f32 f32CentrifugalForce)
+    {
+        m_f32CentrifugalForce = f32CentrifugalForce;
+    }
     void setClearFlag(enmFlag eFlag);
     void setClearMoveFlag(enmMoveFlag eMoveFlag);
     void setCurveRotateRate(f32 f32CurveRotateRate);
@@ -590,10 +798,10 @@ public:
     void setMoveFlag(enmMoveFlag eMoveFlag);
     void setOrFlag(enmFlag eFlag);
     void setOrMoveFlag(enmMoveFlag eMoveFlag);
-    void setOrStatus(enmStatus eStatus);
+    void setOrStatus(enmStatus eStatus) { m_eStatus = static_cast<enmStatus>(m_eStatus | eStatus); }
     void setPosVecFast(const NNS_VECTORFAST* psVecFast);
     void setPosturalRad(f32 f32Rad);
-    void setReturnLineNo(u16 u16LineNo);
+    void setReturnLineNo(u16 u16LineNo) { m_u16ReturnLineNo = u16LineNo; }
     void setSpeed(f32 f32Speed);
     void setSpeedRate(f32 f32SpeedRate);
     void setStiffFrame(f32 f32Frame, s32 eStiffType);
@@ -619,10 +827,10 @@ public:
     u8 m_bDispCoursePoint;                           // offset 0xC5, size 0x1
     clsPlayerDebug* m_pcDebug;                       // offset 0xC8, size 0x4
     s32 m_s32SfId[23];                               // offset 0xCC, size 0x5C
-    f32 m_sDrawMtx[2][4][4];                         // offset 0x130, size 0x80
-    f32 m_sEffMtx[4][4];                             // offset 0x1B0, size 0x40
-    f32 m_asBoardMtx[4][4][4];                       // offset 0x1F0, size 0x100
-    f32 m_sGearDrawMtx[4][4];                        // offset 0x2F0, size 0x40
+    NNS_MATRIX m_sDrawMtx[2];                        // offset 0x130, size 0x80
+    NNS_MATRIX m_sEffMtx;                            // offset 0x1B0, size 0x40
+    NNS_MATRIX m_asBoardMtx[4];                      // offset 0x1F0, size 0x100
+    NNS_MATRIX m_sGearDrawMtx;                       // offset 0x2F0, size 0x40
     NNS_VECTORFAST m_sPosVecFast[2];                 // offset 0x330, size 0x20
     NNS_VECTORFAST m_sUpVecFast;                     // offset 0x350, size 0x10
     NNS_VECTORFAST m_sPreUpVecFast;                  // offset 0x360, size 0x10
@@ -665,137 +873,138 @@ public:
     clsPlayerPhysic* m_pcPhysic;                     // offset 0xE34, size 0x4
     clsLap* m_pcLap;                                 // offset 0xE38, size 0x4
     clsObject* m_pcGroundObject;                     // offset 0xE3C, size 0x4
-    clsOOList m_lstLightCollision;                   // offset 0xE40, size 0x14
-    clsFlag<enmSystemFlag> m_cSystemFlag;            // offset 0xE54, size 0x4
-    enum enmNo m_ePlayerNo;                          // offset 0xE58, size 0x4
-    enmFlag m_eFlag;                                 // offset 0xE5C, size 0x4
-    enmStatus m_eStatus;                             // offset 0xE60, size 0x4
-    enmStatus m_eStatusOld;                          // offset 0xE64, size 0x4
-    enmStatus m_eStatusTrigger;                      // offset 0xE68, size 0x4
-    enmStatus m_eStatusRemove;                       // offset 0xE6C, size 0x4
-    enmActionType m_eActionType;                     // offset 0xE70, size 0x4
-    enmActionType m_eOldActionType;                  // offset 0xE74, size 0x4
-    enmMoveFlag m_eMoveFlag;                         // offset 0xE78, size 0x4
-    f32 m_f32FrameRate;                              // offset 0xE7C, size 0x4
-    f32 m_f32CurveRotateRate;                        // offset 0xE80, size 0x4
-    f32 m_f32CurveMotionRate;                        // offset 0xE84, size 0x4
-    f32 m_f32CurveRad;                               // offset 0xE88, size 0x4
-    f32 m_f32CurveWaitFrame;                         // offset 0xE8C, size 0x4
-    f32 m_f32vibrationCurveRate;                     // offset 0xE90, size 0x4
-    f32 m_f32CurveFrame;                             // offset 0xE94, size 0x4
-    f32 m_f32CentrifugalForce;                       // offset 0xE98, size 0x4
-    f32 m_f32MinSpeed;                               // offset 0xE9C, size 0x4
-    f32 m_f32MaxSpeed;                               // offset 0xEA0, size 0x4
-    f32 m_f32Speed;                                  // offset 0xEA4, size 0x4
-    f32 m_f32Accele;                                 // offset 0xEA8, size 0x4
-    f32 m_f32SpeedRate;                              // offset 0xEAC, size 0x4
-    f32 m_f32AdjustAcceleRate;                       // offset 0xEB0, size 0x4
-    f32 m_f32AdjustMaxSpeed;                         // offset 0xEB4, size 0x4
-    s32 m_s32NodeVibCycle;                           // offset 0xEB8, size 0x4
-    f32 m_f32FaceRotateRate;                         // offset 0xEBC, size 0x4
-    s32 m_s32RingNum;                                // offset 0xEC0, size 0x4
-    s32 m_s32GoalRingNum;                            // offset 0xEC4, size 0x4
-    f32 m_f32GoalRingRate;                           // offset 0xEC8, size 0x4
-    s32 m_s32LinkCount;                              // offset 0xECC, size 0x4
-    enum enmLinkType m_eLinkType;                    // offset 0xED0, size 0x4
-    f32 m_f32Val;                                    // offset 0xED4, size 0x4
-    f32 m_f32ApproachVal;                            // offset 0xED8, size 0x4
-    f32 m_af32ActionVal[3];                          // offset 0xEDC, size 0xC
-    f32 m_f32ObstacleFrame;                          // offset 0xEE8, size 0x4
-    f32 m_f32InertiaDecayFrame;                      // offset 0xEEC, size 0x4
-    s32 m_s32ActionMode;                             // offset 0xEF0, size 0x4
-    enum enPlayerCtrlType m_eCtrlType;               // offset 0xEF4, size 0x4
-    enum enPlayerCtrlType m_eDefaultCtrlType;        // offset 0xEF8, size 0x4
-    s8 m_s8BaseMotionNo;                             // offset 0xEFC, size 0x1
-    u8 m_u8CurrentDrawMtxNo;                         // offset 0xEFD, size 0x1
-    u8 m_u8BadTrackCnt;                              // offset 0xEFE, size 0x1
-    s8 m_s8Ranking;                                  // offset 0xEFF, size 0x1
-    s32 m_s32FalseStartShockFrame;                   // offset 0xF00, size 0x4
-    s32 m_s32FalseStartDamageFrame;                  // offset 0xF04, size 0x4
-    f32 m_f32DamageFrame;                            // offset 0xF08, size 0x4
-    f32 m_f32InvincibilityFrame;                     // offset 0xF0C, size 0x4
-    f32 m_f32TrapColorBallFrame;                     // offset 0xF10, size 0x4
-    f32 m_f32TrapColorBallDropFrame;                 // offset 0xF14, size 0x4
-    u32 m_u32TrapColorBallDropCnt;                   // offset 0xF18, size 0x4
-    u32 m_u32TrapColorBallDropMaxCnt;                // offset 0xF1C, size 0x4
-    f32 m_f32TrapPartsLockFrame;                     // offset 0xF20, size 0x4
-    f32 m_f32EggConfettiFrame;                       // offset 0xF24, size 0x4
-    f32 m_f32EggConfettiDropFrame;                   // offset 0xF28, size 0x4
-    f32 m_f32NightsAtkEffectFrame;                   // offset 0xF2C, size 0x4
-    f32 m_f32NightsAtkEffectDropFrame;               // offset 0xF30, size 0x4
-    u32 m_u32NightsAtkEffectDropCnt;                 // offset 0xF34, size 0x4
-    f32 m_f32DriftSideSign;                          // offset 0xF38, size 0x4
-    f32 m_f32DriftOffsetPosturalRotate;              // offset 0xF3C, size 0x4
-    f32 m_f32DriftStartSpeed;                        // offset 0xF40, size 0x4
-    f32 m_f32DriftLimitSpeed;                        // offset 0xF44, size 0x4
-    f32 m_f32DriftDashSpeed;                         // offset 0xF48, size 0x4
-    f32 m_f32DriftHandlingRate;                      // offset 0xF4C, size 0x4
-    f32 m_f32DriftFrame;                             // offset 0xF50, size 0x4
-    u32 m_u32DriftDashType;                          // offset 0xF54, size 0x4
-    f32 m_f32ReverseRestartCountFrame;               // offset 0xF58, size 0x4
-    f32 m_f32ReverseStartCountFrame;                 // offset 0xF5C, size 0x4
-    clsTask* m_apcLoopParticle[4];                   // offset 0xF60, size 0x10
-    clsTask* m_apcLoopEffect[4];                     // offset 0xF70, size 0x10
-    NNS_VECTORFAST m_asNodePos[8];                   // offset 0xF80, size 0x80
-    f32 m_asNodeMatrix[8][4][4];                     // offset 0x1000, size 0x200
-    clsBackLineEffectTask* m_pcBackLineTask;         // offset 0x1200, size 0x4
-    clsVaporTrail_Task* m_pcVaporTrailTask;          // offset 0x1204, size 0x4
-    clsVaporTrail_Task* m_pcSlipStreamTask;          // offset 0x1208, size 0x4
-    clsWeather_Task* m_pcWeatherTask;                // offset 0x120C, size 0x4
-    clsCharaVoice m_cCharaVoice;                     // offset 0x1210, size 0x10
-    enum enmRet m_aeClipperRet[4];                   // offset 0x1220, size 0x10
-    f32 m_of32DrawClipDistx2;                        // offset 0x1230, size 0x4
-    f32 m_of32MotionClipDistx1;                      // offset 0x1234, size 0x4
-    f32 m_f32CamMostDistRet;                         // offset 0x1238, size 0x4
-    f32 m_f32RandMotionFrame;                        // offset 0x123C, size 0x4
-    f32 m_f32RankChangeMotionFrame;                  // offset 0x1240, size 0x4
-    u32 m_u32CamDelayRqType;                         // offset 0x1244, size 0x4
-    f32 m_f32CamDelayRqTime;                         // offset 0x1248, size 0x4
-    f32 m_f32AttackFrame;                            // offset 0x124C, size 0x4
-    f32 m_f32FlightFrame;                            // offset 0x1250, size 0x4
-    f32 m_f32SystemScale;                            // offset 0x1254, size 0x4
-    clsModelType_OB_TX* m_opcResidenceTexModel_PS2;  // offset 0x1258, size 0x4
-    u16 m_u16ReturnLineNo;                           // offset 0x125C, size 0x2
-    u8 m_bForcedUpdateFlag;                          // offset 0x125E, size 0x1
-    u8 m_bDrawVisible;                               // offset 0x125F, size 0x1
-    u8 m_bMotionVisible;                             // offset 0x1260, size 0x1
-    u8 m_bDrawFlag;                                  // offset 0x1261, size 0x1
-    s8 m_s8Channel_ICS;                              // offset 0x1262, size 0x1
-    s8 m_s8FollowNum;                                // offset 0x1263, size 0x1
-    u8 m_u8BaseLightNo;                              // offset 0x1264, size 0x1
-    u8 m_u8LightNo;                                  // offset 0x1265, size 0x1
-    u8 m_u8BackUpLightNo;                            // offset 0x1266, size 0x1
-    u8 m_u8BackUpFogNo;                              // offset 0x1267, size 0x1
-    s8 m_s8OldPathNo;                                // offset 0x1268, size 0x1
-    u8 m_bDisableFog;                                // offset 0x1269, size 0x1
-    s8 m_s8CameraNo;                                 // offset 0x126A, size 0x1
-    s8 m_s8ViewNo;                                   // offset 0x126B, size 0x1
-    u8 m_u8JumpCount;                                // offset 0x126C, size 0x1
-    s8 m_s8CurAttackTarget;                          // offset 0x126D, size 0x1
-    f32 m_f32Attack_Speed;                           // offset 0x1270, size 0x4
-    f32 m_f32Attack_Accele;                          // offset 0x1274, size 0x4
-    f32 m_f32Attack_SpeedRate;                       // offset 0x1278, size 0x4
-    enum enmAttackLR m_eTargetSide;                  // offset 0x127C, size 0x4
-    u8 m_bDamageFlag;                                // offset 0x1280, size 0x1
-    clsBaseEffect_Task* m_pcDmgEffectTask;           // offset 0x1284, size 0x4
-    clsBaseEffect_Task* m_pcDmgEffectTask2;          // offset 0x1288, size 0x4
-    u8 m_bIsAttackDmgScale;                          // offset 0x128C, size 0x1
-    f32 m_f32AttackDmgScale;                         // offset 0x1290, size 0x4
-    s32 m_s32SuperSonic;                             // offset 0x1294, size 0x4
-    enum enmComType m_eComType;                      // offset 0x1298, size 0x4
-    f32 m_f32BoostAttackFrame;                       // offset 0x129C, size 0x4
-    f32 m_f32GpRateEffectCnt;                        // offset 0x12A0, size 0x4
-    f32 m_f32TrickXNegaWaitFrame;                    // offset 0x12A4, size 0x4
-    u8 m_bTrickXNegaFlg;                             // offset 0x12A8, size 0x1
-    s32 m_s32GoalMotionRequest;                      // offset 0x12AC, size 0x4
-    clsLimitTime m_cRingLimitTime;                   // offset 0x12B0, size 0x14
-    clsLimitTime m_cRingGravityLimitTime;            // offset 0x12C4, size 0x14
-    f32 m_f32ItemFrame;                              // offset 0x12D8, size 0x4
-    s32 m_s32ReplayCamIdx;                           // offset 0x12DC, size 0x4
-    s32 m_s32AutoWallRunPathNo;                      // offset 0x12E0, size 0x4
-    clsDashPanel_Obj* m_pcDashPanel;                 // offset 0x12E4, size 0x4
-    clsEggConfetti* m_pcEggConfetti;                 // offset 0x12E8, size 0x4
-    clsNightsAtkEffect* m_pcNightsAtkEffect;         // offset 0x12EC, size 0x4
+    oostd::clsOOList<clsThroughCollision*, oostd::clsOOStlAllocator<clsThroughCollision*> >
+        m_lstLightCollision;                        // offset 0xE40, size 0x14
+    clsFlag<enmSystemFlag> m_cSystemFlag;           // offset 0xE54, size 0x4
+    enum enmNo m_ePlayerNo;                         // offset 0xE58, size 0x4
+    enmFlag m_eFlag;                                // offset 0xE5C, size 0x4
+    enmStatus m_eStatus;                            // offset 0xE60, size 0x4
+    enmStatus m_eStatusOld;                         // offset 0xE64, size 0x4
+    enmStatus m_eStatusTrigger;                     // offset 0xE68, size 0x4
+    enmStatus m_eStatusRemove;                      // offset 0xE6C, size 0x4
+    enmActionType m_eActionType;                    // offset 0xE70, size 0x4
+    enmActionType m_eOldActionType;                 // offset 0xE74, size 0x4
+    enmMoveFlag m_eMoveFlag;                        // offset 0xE78, size 0x4
+    f32 m_f32FrameRate;                             // offset 0xE7C, size 0x4
+    f32 m_f32CurveRotateRate;                       // offset 0xE80, size 0x4
+    f32 m_f32CurveMotionRate;                       // offset 0xE84, size 0x4
+    f32 m_f32CurveRad;                              // offset 0xE88, size 0x4
+    f32 m_f32CurveWaitFrame;                        // offset 0xE8C, size 0x4
+    f32 m_f32vibrationCurveRate;                    // offset 0xE90, size 0x4
+    f32 m_f32CurveFrame;                            // offset 0xE94, size 0x4
+    f32 m_f32CentrifugalForce;                      // offset 0xE98, size 0x4
+    f32 m_f32MinSpeed;                              // offset 0xE9C, size 0x4
+    f32 m_f32MaxSpeed;                              // offset 0xEA0, size 0x4
+    f32 m_f32Speed;                                 // offset 0xEA4, size 0x4
+    f32 m_f32Accele;                                // offset 0xEA8, size 0x4
+    f32 m_f32SpeedRate;                             // offset 0xEAC, size 0x4
+    f32 m_f32AdjustAcceleRate;                      // offset 0xEB0, size 0x4
+    f32 m_f32AdjustMaxSpeed;                        // offset 0xEB4, size 0x4
+    s32 m_s32NodeVibCycle;                          // offset 0xEB8, size 0x4
+    f32 m_f32FaceRotateRate;                        // offset 0xEBC, size 0x4
+    s32 m_s32RingNum;                               // offset 0xEC0, size 0x4
+    s32 m_s32GoalRingNum;                           // offset 0xEC4, size 0x4
+    f32 m_f32GoalRingRate;                          // offset 0xEC8, size 0x4
+    s32 m_s32LinkCount;                             // offset 0xECC, size 0x4
+    enum enmLinkType m_eLinkType;                   // offset 0xED0, size 0x4
+    f32 m_f32Val;                                   // offset 0xED4, size 0x4
+    f32 m_f32ApproachVal;                           // offset 0xED8, size 0x4
+    f32 m_af32ActionVal[3];                         // offset 0xEDC, size 0xC
+    f32 m_f32ObstacleFrame;                         // offset 0xEE8, size 0x4
+    f32 m_f32InertiaDecayFrame;                     // offset 0xEEC, size 0x4
+    s32 m_s32ActionMode;                            // offset 0xEF0, size 0x4
+    enum enPlayerCtrlType m_eCtrlType;              // offset 0xEF4, size 0x4
+    enum enPlayerCtrlType m_eDefaultCtrlType;       // offset 0xEF8, size 0x4
+    s8 m_s8BaseMotionNo;                            // offset 0xEFC, size 0x1
+    u8 m_u8CurrentDrawMtxNo;                        // offset 0xEFD, size 0x1
+    u8 m_u8BadTrackCnt;                             // offset 0xEFE, size 0x1
+    s8 m_s8Ranking;                                 // offset 0xEFF, size 0x1
+    s32 m_s32FalseStartShockFrame;                  // offset 0xF00, size 0x4
+    s32 m_s32FalseStartDamageFrame;                 // offset 0xF04, size 0x4
+    f32 m_f32DamageFrame;                           // offset 0xF08, size 0x4
+    f32 m_f32InvincibilityFrame;                    // offset 0xF0C, size 0x4
+    f32 m_f32TrapColorBallFrame;                    // offset 0xF10, size 0x4
+    f32 m_f32TrapColorBallDropFrame;                // offset 0xF14, size 0x4
+    u32 m_u32TrapColorBallDropCnt;                  // offset 0xF18, size 0x4
+    u32 m_u32TrapColorBallDropMaxCnt;               // offset 0xF1C, size 0x4
+    f32 m_f32TrapPartsLockFrame;                    // offset 0xF20, size 0x4
+    f32 m_f32EggConfettiFrame;                      // offset 0xF24, size 0x4
+    f32 m_f32EggConfettiDropFrame;                  // offset 0xF28, size 0x4
+    f32 m_f32NightsAtkEffectFrame;                  // offset 0xF2C, size 0x4
+    f32 m_f32NightsAtkEffectDropFrame;              // offset 0xF30, size 0x4
+    u32 m_u32NightsAtkEffectDropCnt;                // offset 0xF34, size 0x4
+    f32 m_f32DriftSideSign;                         // offset 0xF38, size 0x4
+    f32 m_f32DriftOffsetPosturalRotate;             // offset 0xF3C, size 0x4
+    f32 m_f32DriftStartSpeed;                       // offset 0xF40, size 0x4
+    f32 m_f32DriftLimitSpeed;                       // offset 0xF44, size 0x4
+    f32 m_f32DriftDashSpeed;                        // offset 0xF48, size 0x4
+    f32 m_f32DriftHandlingRate;                     // offset 0xF4C, size 0x4
+    f32 m_f32DriftFrame;                            // offset 0xF50, size 0x4
+    u32 m_u32DriftDashType;                         // offset 0xF54, size 0x4
+    f32 m_f32ReverseRestartCountFrame;              // offset 0xF58, size 0x4
+    f32 m_f32ReverseStartCountFrame;                // offset 0xF5C, size 0x4
+    clsTask* m_apcLoopParticle[4];                  // offset 0xF60, size 0x10
+    clsTask* m_apcLoopEffect[4];                    // offset 0xF70, size 0x10
+    NNS_VECTORFAST m_asNodePos[8];                  // offset 0xF80, size 0x80
+    NNS_MATRIX m_asNodeMatrix[8];                   // offset 0x1000, size 0x200
+    clsBackLineEffectTask* m_pcBackLineTask;        // offset 0x1200, size 0x4
+    clsVaporTrail_Task* m_pcVaporTrailTask;         // offset 0x1204, size 0x4
+    clsVaporTrail_Task* m_pcSlipStreamTask;         // offset 0x1208, size 0x4
+    clsWeather_Task* m_pcWeatherTask;               // offset 0x120C, size 0x4
+    clsCharaVoice m_cCharaVoice;                    // offset 0x1210, size 0x10
+    enum enmRet m_aeClipperRet[4];                  // offset 0x1220, size 0x10
+    f32 m_of32DrawClipDistx2;                       // offset 0x1230, size 0x4
+    f32 m_of32MotionClipDistx1;                     // offset 0x1234, size 0x4
+    f32 m_f32CamMostDistRet;                        // offset 0x1238, size 0x4
+    f32 m_f32RandMotionFrame;                       // offset 0x123C, size 0x4
+    f32 m_f32RankChangeMotionFrame;                 // offset 0x1240, size 0x4
+    u32 m_u32CamDelayRqType;                        // offset 0x1244, size 0x4
+    f32 m_f32CamDelayRqTime;                        // offset 0x1248, size 0x4
+    f32 m_f32AttackFrame;                           // offset 0x124C, size 0x4
+    f32 m_f32FlightFrame;                           // offset 0x1250, size 0x4
+    f32 m_f32SystemScale;                           // offset 0x1254, size 0x4
+    clsModelType_OB_TX* m_opcResidenceTexModel_PS2; // offset 0x1258, size 0x4
+    u16 m_u16ReturnLineNo;                          // offset 0x125C, size 0x2
+    u8 m_bForcedUpdateFlag;                         // offset 0x125E, size 0x1
+    u8 m_bDrawVisible;                              // offset 0x125F, size 0x1
+    u8 m_bMotionVisible;                            // offset 0x1260, size 0x1
+    u8 m_bDrawFlag;                                 // offset 0x1261, size 0x1
+    s8 m_s8Channel_ICS;                             // offset 0x1262, size 0x1
+    s8 m_s8FollowNum;                               // offset 0x1263, size 0x1
+    u8 m_u8BaseLightNo;                             // offset 0x1264, size 0x1
+    u8 m_u8LightNo;                                 // offset 0x1265, size 0x1
+    u8 m_u8BackUpLightNo;                           // offset 0x1266, size 0x1
+    u8 m_u8BackUpFogNo;                             // offset 0x1267, size 0x1
+    s8 m_s8OldPathNo;                               // offset 0x1268, size 0x1
+    u8 m_bDisableFog;                               // offset 0x1269, size 0x1
+    s8 m_s8CameraNo;                                // offset 0x126A, size 0x1
+    s8 m_s8ViewNo;                                  // offset 0x126B, size 0x1
+    u8 m_u8JumpCount;                               // offset 0x126C, size 0x1
+    s8 m_s8CurAttackTarget;                         // offset 0x126D, size 0x1
+    f32 m_f32Attack_Speed;                          // offset 0x1270, size 0x4
+    f32 m_f32Attack_Accele;                         // offset 0x1274, size 0x4
+    f32 m_f32Attack_SpeedRate;                      // offset 0x1278, size 0x4
+    enum enmAttackLR m_eTargetSide;                 // offset 0x127C, size 0x4
+    u8 m_bDamageFlag;                               // offset 0x1280, size 0x1
+    clsBaseEffect_Task* m_pcDmgEffectTask;          // offset 0x1284, size 0x4
+    clsBaseEffect_Task* m_pcDmgEffectTask2;         // offset 0x1288, size 0x4
+    u8 m_bIsAttackDmgScale;                         // offset 0x128C, size 0x1
+    f32 m_f32AttackDmgScale;                        // offset 0x1290, size 0x4
+    s32 m_s32SuperSonic;                            // offset 0x1294, size 0x4
+    enum enmComType m_eComType;                     // offset 0x1298, size 0x4
+    f32 m_f32BoostAttackFrame;                      // offset 0x129C, size 0x4
+    f32 m_f32GpRateEffectCnt;                       // offset 0x12A0, size 0x4
+    f32 m_f32TrickXNegaWaitFrame;                   // offset 0x12A4, size 0x4
+    u8 m_bTrickXNegaFlg;                            // offset 0x12A8, size 0x1
+    s32 m_s32GoalMotionRequest;                     // offset 0x12AC, size 0x4
+    clsLimitTime m_cRingLimitTime;                  // offset 0x12B0, size 0x14
+    clsLimitTime m_cRingGravityLimitTime;           // offset 0x12C4, size 0x14
+    f32 m_f32ItemFrame;                             // offset 0x12D8, size 0x4
+    s32 m_s32ReplayCamIdx;                          // offset 0x12DC, size 0x4
+    s32 m_s32AutoWallRunPathNo;                     // offset 0x12E0, size 0x4
+    clsDashPanel_Obj* m_pcDashPanel;                // offset 0x12E4, size 0x4
+    clsEggConfetti* m_pcEggConfetti;                // offset 0x12E8, size 0x4
+    clsNightsAtkEffect* m_pcNightsAtkEffect;        // offset 0x12EC, size 0x4
 };
 
 #endif // PLAYER_HPP

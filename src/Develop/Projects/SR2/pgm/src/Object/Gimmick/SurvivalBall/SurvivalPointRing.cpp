@@ -71,10 +71,10 @@ void clsSurvivalBallPointRing_Obj::main()
 }
 
 void clsSurvivalBallPointRing_Obj::draw(clsModelType_OB_TX_MO_MA* pcModel,
-                                        f32 (*psMtxPal)[4][4],
+                                        NNS_MATRIX* psMtxPal,
                                         u32* psNodeStat,
-                                        const f32 (*opaNnViewMtx)[4][4],
-                                        f32 (*psMtxWork)[4][4],
+                                        const NNS_MATRIX* opaNnViewMtx,
+                                        NNS_MATRIX* psMtxWork,
                                         u32 u32ViewNo)
 {
 }
@@ -82,7 +82,7 @@ void clsSurvivalBallPointRing_Obj::draw(clsModelType_OB_TX_MO_MA* pcModel,
 clsSurvivalBallPointRing_Task::clsSurvivalBallPointRing_Task(u32 u32Param1)
     : clsSingleModelGimmick_Task<clsSurvivalBallPointRing_Task,
                                  clsSurvivalBallPointRing_Obj,
-                                 clsModelType_OB_TX_MO_MA>(0, 0)
+                                 clsModelType_OB_TX_MO_MA>(u32Param1, 101010)
 {
 }
 

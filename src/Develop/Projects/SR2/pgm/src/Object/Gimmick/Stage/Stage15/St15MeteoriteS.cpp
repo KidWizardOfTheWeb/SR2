@@ -34,7 +34,7 @@ void clsMeteoriteS_Obj::destroyData()
 }
 
 clsMeteoriteS_Task::clsMeteoriteS_Task(u32 u32ObjectAreaNum)
-    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 0)
+    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 101010)
 {
 }
 

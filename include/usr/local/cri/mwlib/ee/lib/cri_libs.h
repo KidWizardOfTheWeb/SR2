@@ -1,7 +1,7 @@
 #ifndef CRI_LIBS_H
 #define CRI_LIBS_H
 
-// CRI ADX library types — PS2 streaming job and file system layer.
+// CRI ADX library types - PS2 streaming job and file system layer.
 // These are third-party C library types; raw C types are used intentionally.
 
 // UUID type (from CRI/ADX library)
@@ -10,13 +10,13 @@ struct _UUID {
     unsigned short Data2; // offset 0x4, size 0x2
     unsigned short Data3; // offset 0x6, size 0x2
     signed char Data4[8]; // offset 0x8, size 0x8
-}; // total size: 0x10
+};                        // total size: 0x10
 
 // Streaming job chunk
 struct SJCK {
     signed char* data; // offset 0x0, size 0x4
     signed int len;    // offset 0x4, size 0x4
-}; // total size: 0x8
+};                     // total size: 0x8
 
 // Streaming job vtable
 struct _sj_vtbl {
@@ -37,7 +37,7 @@ struct _sj_vtbl {
 // Streaming job object
 struct SJ_OBJ {
     struct _sj_vtbl* vtbl; // offset 0x0, size 0x4
-}; // total size: 0x4
+};                         // total size: 0x4
 
 // ADX file system object
 struct _adx_fs {
@@ -57,7 +57,7 @@ struct _adx_fs {
     signed int rqrdsct;     // offset 0x28, size 0x4
     signed int ofst;        // offset 0x2C, size 0x4
     void* dir;              // offset 0x30, size 0x4
-}; // total size: 0x34
+};                          // total size: 0x34
 
 enum MwsfdStat {
     MWSFD_STAT_STOP = 0,
@@ -248,5 +248,24 @@ struct ADXM_TPRM_EX {
     void* stkptr_usridle;        // offset 0x28, size 0x4
     signed int stksize_usridle;  // offset 0x2C, size 0x4
 };
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+// RECONSTRUCTED: argument signedness.
+signed int SNDF_SendFxControl(unsigned int command, unsigned int value);
+
+// RECONSTRUCTED: sequence API types.
+signed int SNDF_SeqIdGetStat(unsigned char id);
+signed int SNDF_SeqIdPlay(unsigned char id);
+signed int SNDF_SeqIdStop(unsigned char id);
+signed int SNDF_SendSeqRequest(unsigned int request);
+
+void ADXM_WaitVsync(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // CRI_LIBS_H

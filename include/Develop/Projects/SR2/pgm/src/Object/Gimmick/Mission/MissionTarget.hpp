@@ -4,6 +4,7 @@
 #include "types.h"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 #include "Develop/Projects/SR2/pgm/src/Data/Path/PathPoint.hpp"
+#include "Develop/Projects/SR2/pgm/lib/OO/core/OOMainHeap.hpp"
 
 // total size: 0x28
 class clsMissionTarget_Obj {
@@ -19,7 +20,14 @@ public:
 // total size: 0xC
 class clsMissionTarget {
 public:
-    virtual ~clsMissionTarget() {}
+    clsMissionTarget() : m_u32ObjectNum(0), m_pu8Broken(NULL) {}
+    virtual ~clsMissionTarget()
+    {
+        if (m_pu8Broken != NULL) {
+            clsOOMainHeap::getInstance()->___FreeHi(m_pu8Broken);
+            m_pu8Broken = NULL;
+        }
+    }
 
     void initBrokenNum(u32 u32ObjectNum);
     void setBroken(u32 u32No, u8 u8Flag);

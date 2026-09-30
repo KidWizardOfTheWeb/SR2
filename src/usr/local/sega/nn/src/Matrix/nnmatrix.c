@@ -1,6 +1,6 @@
 #include "usr/local/sega/nn/src/Matrix/nnmatrix.h"
 
-void nnCopyMatrix(NNS_MATRIX* dst, NNS_MATRIX* src)
+void nnCopyMatrix(NNS_MATRIX* dst, const NNS_MATRIX* src)
 {
 }
 
@@ -12,7 +12,7 @@ void nnInvertOrthoMatrix(NNS_MATRIX* dst, NNS_MATRIX* src)
 {
 }
 
-void nnMultiplyMatrix(NNS_MATRIX* dst, NNS_MATRIX* mtx1, NNS_MATRIX* mtx2)
+void nnMultiplyMatrix(NNS_MATRIX* dst, const NNS_MATRIX* mtx1, const NNS_MATRIX* mtx2)
 {
 }
 
@@ -50,7 +50,7 @@ void nnTranslateMatrix(NNS_MATRIX* dst, NNS_MATRIX* src, float x, float y, float
 {
 }
 
-void nnCopyVectorMatrixTranslation(NNS_MATRIX* mtx, struct NNS_VECTOR* vec)
+void nnCopyVectorMatrixTranslation(NNS_MATRIX* mtx, const struct NNS_VECTOR* vec)
 {
 }
 

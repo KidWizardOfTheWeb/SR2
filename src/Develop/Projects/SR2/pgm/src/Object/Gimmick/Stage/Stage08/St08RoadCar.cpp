@@ -28,17 +28,17 @@ void clsRoadCar_Obj::requestDrawContactEffect(const hkContactPoint* pParam1)
 }
 
 void clsRoadCar_Obj::draw(clsModelType_OB_TX& rcObj,
-                          f32 (*psMtxPal)[4][4],
+                          NNS_MATRIX* psMtxPal,
                           u32* psNodeStat,
-                          const f32 (*opaNnViewMtx)[4][4],
-                          f32 (*psMtxWork)[4][4],
+                          const NNS_MATRIX* opaNnViewMtx,
+                          NNS_MATRIX* psMtxWork,
                           u32 u32ViewNo)
 {
 }
 
 clsRoadCar_Task::clsRoadCar_Task(u32 u32ObjectAreaNum)
     : clsSingleModelGimmick_Task<clsRoadCar_Task, clsRoadCar_Obj, clsModelType_OB_TX>(
-          u32ObjectAreaNum, 0)
+          u32ObjectAreaNum, 101000)
 {
 }
 

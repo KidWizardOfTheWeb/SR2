@@ -1,6 +1,7 @@
 #ifndef ST10SNOWBALL_HPP
 #define ST10SNOWBALL_HPP
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 #include "types.h"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/RigidBodyGimmickObj.hpp"
@@ -9,20 +10,20 @@
 class clsSe3DControl;
 struct hkContactPointConfirmedEvent;
 
-enum enmSnowBallMode {
-    MODE_STOP = 0,
-    MODE_MOVE = 1,
-    MODE_GRAVITY = 2,
-};
-
 // total size: 0x130
 class clsSnowBall_Obj : public clsRigidBodyGimmickObj {
 public:
+    enum enmSnowBallMode {
+        MODE_STOP = 0,
+        MODE_MOVE = 1,
+        MODE_GRAVITY = 2,
+    };
+
     virtual ~clsSnowBall_Obj() {}
     virtual nspPackId::enm getPackId() const
     {
         return nspPackId::ST10_SNOWBALL_20010;
-    } // likely: return 20010; [ASM-derived guess — verify]
+    } // RECONSTRUCTED.
     virtual void init();
     virtual void contactTriggerEvent(hkContactPoint* pcContact, clsObject* pcObject);
     virtual void createData();
@@ -36,10 +37,10 @@ public:
     virtual void callbackContactTriggerRigidBody(const hkContactPointConfirmedEvent& cEvent);
 
     void draw(clsModelType_OB_TX& rcModel,
-              f32 (*psMtxPal)[4][4],
+              NNS_MATRIX* psMtxPal,
               u32* psNodeStat,
-              const f32 (*opaNnViewMtx)[4][4],
-              f32 (*psMtxWork)[4][4],
+              const NNS_MATRIX* opaNnViewMtx,
+              NNS_MATRIX* psMtxWork,
               u32 u32ViewNo);
     void drawShadow(clsModelType_OB& rcModel);
 
@@ -51,7 +52,7 @@ public:
     f32 m_f32Scale;                       // offset 0xDC, size 0x4
     clsSe3DControl* m_pcSe3DControl;      // offset 0xE0, size 0x4
     u8 m_bDrawFlag;                       // offset 0xE4, size 0x1
-    f32 m_sShadowMtx[4][4];               // offset 0xF0, size 0x40
+    NNS_MATRIX m_sShadowMtx;              // offset 0xF0, size 0x40
 };
 
 // total size: 0x9C

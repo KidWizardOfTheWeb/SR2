@@ -4,7 +4,7 @@
 #include "Develop/Projects/SR2/pgm/lib/OO/core/OOVector.hpp"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 
-extern "C" int memcmp(const void*, const void*, unsigned int);
+#include "usr/local/sce/ee/gcc/ee/lib/libc/memcmp.h"
 
 class hkShape;
 
@@ -30,6 +30,18 @@ public:
     };
 
     typedef std::vector<stcShapeInfo, std::allocator<stcShapeInfo> > ShapeInfoVector;
+
+    clsMultiShape() {}
+    explicit clsMultiShape(u32 u32Num) { m_vecShpeInfo.reserve(u32Num); }
+    ~clsMultiShape()
+    {
+        ShapeInfoVector::iterator first = m_vecShpeInfo.begin();
+        ShapeInfoVector::iterator last = m_vecShpeInfo.end();
+        while (first != last) {
+            delete first->pcShape;
+            ++first;
+        }
+    }
 
     stcShapeInfo* findMultiShape(const NNS_VECTOR& rsScaleVec);
 

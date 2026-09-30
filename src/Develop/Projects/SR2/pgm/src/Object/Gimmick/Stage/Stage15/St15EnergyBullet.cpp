@@ -31,7 +31,7 @@ void clsEnergyBullet_Obj::updatePathMove()
 }
 
 clsEnergyBullet_Task::clsEnergyBullet_Task(u32 u32ObjectAreaNum)
-    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 0)
+    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 101010)
 {
 }
 

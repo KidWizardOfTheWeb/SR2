@@ -6,7 +6,7 @@ void clsPutGravityObj3_Obj::init()
 
 hkShape* clsPutGravityObj3_Obj::getShape()
 {
-    return (hkShape*)0;
+    return NULL;
 }
 
 f32 clsPutGravityObj3_Obj::getMass()
@@ -29,10 +29,10 @@ void clsPutGravityObj3_Obj::createSe()
 }
 
 void clsPutGravityObj3_Obj::draw(clsModelType_OB_TX* pcModels,
-                                 f32 (*psMtxPal)[4][4],
+                                 NNS_MATRIX* psMtxPal,
                                  u32* psNodeStat,
-                                 const f32 (*opaNnViewMtx)[4][4],
-                                 f32 (*psMtxWork)[4][4],
+                                 const NNS_MATRIX* opaNnViewMtx,
+                                 NNS_MATRIX* psMtxWork,
                                  u32 u32ViewNo,
                                  clsPutGravityObj3_Task* pcTask)
 {
@@ -51,13 +51,5 @@ void clsPutGravityObj3_Task::execute()
 }
 
 void clsPutGravityObj3_Task::draw()
-{
-}
-
-clsPutGravityObj3_Obj::clsPutGravityObj3_Obj()
-{
-}
-
-clsPutGravityObj3_Obj::~clsPutGravityObj3_Obj()
 {
 }

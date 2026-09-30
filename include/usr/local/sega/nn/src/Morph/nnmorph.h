@@ -1,6 +1,8 @@
 #ifndef NNMORPH_H
 #define NNMORPH_H
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
+
 #include "usr/local/sega/nn/src/Object/nnobject.h"
 #include "usr/local/sega/px/src/pxgeom.h"
 
@@ -54,26 +56,30 @@ struct NNS_VTXLIST_PS2_DESC_MORPH_TARGET {
     struct NNS_VTXLIST_PS2_DESC_TYPE Weight; // offset 0x24, size 0x8
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 unsigned int nnCalcMorphObjectBufferSize(struct NNS_OBJECT* obj,
                                          struct NNS_MORPHTARGETLIST* mtgt,
                                          unsigned int flag);
+
 unsigned int nnInitMorphObject(struct NNS_OBJECT* mobj,
                                struct NNS_OBJECT* obj,
                                struct NNS_MORPHTARGETLIST* mtgt,
                                unsigned int flag);
-void nnCalcMorphSeparateVertices(struct NNS_VTXLISTPTR* pVtxListPtrList,
-                                 struct NNS_MORPHTARGETLIST* mtgt,
-                                 unsigned int iVtxList,
-                                 float* mwpal,
-                                 unsigned int flag);
 void nnCalcMorphObject(struct NNS_OBJECT* mobj,
                        struct NNS_MORPHTARGETLIST* mtgt,
                        float* mwpal,
                        unsigned int flag);
 void nnDrawMorphObject(struct NNS_OBJECT* mobj,
-                       float (*mtxpal)[4][4],
+                       NNS_MATRIX* mtxpal,
                        unsigned int* nodestatlist,
                        unsigned int subobjtype,
                        unsigned int flag);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // NNMORPH_H

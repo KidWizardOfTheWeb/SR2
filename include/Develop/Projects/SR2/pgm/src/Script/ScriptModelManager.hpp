@@ -47,20 +47,20 @@ public:
     void codeChangeMotion(u8* puc, clsScript_Task* pcTask);
     void codeModel(u8* puc, clsScript_Task* pcTask);
     void playAllModel(u8* puc, clsScript_Task* pcTask);
-    void addData_Ob_Tx_Mo_Ma_Mfo(u8* puc, u32* pui, u16 us, u32 ui);
-    void addData_Ob_Tx_Ma_Mfo(u8* puc, u32* pui, u16 us, u32 ui);
-    void addData_Ob_Tx_Mo_Ma(u8* puc, u32* pui, u16 us, u32 ui);
-    void addData_Ob_Tx_Mfo(u8* puc, u32* pui, u16 us, u32 ui);
-    void addData_Ob_Tx_Ma(u8* puc, u32* pui, u16 us, u32 ui);
-    void addData_Ob_Tx_Mo(u8* puc, u32* pui, u16 us, u32 ui);
-    void addData_Ob_Tx(u8* puc, u32* pui, u16 us, u32 ui);
-    void addData_Ob_Mo_Ma(u8* puc, u32* pui, u16 us, u32 ui);
-    void addData_Ob_Ma(u8* puc, u32* pui, u16 us, u32 ui);
-    void addData_Ob_Mo(u8* puc, u32* pui, u16 us, u32 ui);
-    void addData_Ob(u8* puc, u32* pui, u16 us, u32 ui);
+    static void addData_Ob_Tx_Mo_Ma_Mfo(u8* puc, u32* pui, u16 us, u32 ui);
+    static void addData_Ob_Tx_Ma_Mfo(u8* puc, u32* pui, u16 us, u32 ui);
+    static void addData_Ob_Tx_Mo_Ma(u8* puc, u32* pui, u16 us, u32 ui);
+    static void addData_Ob_Tx_Mfo(u8* puc, u32* pui, u16 us, u32 ui);
+    static void addData_Ob_Tx_Ma(u8* puc, u32* pui, u16 us, u32 ui);
+    static void addData_Ob_Tx_Mo(u8* puc, u32* pui, u16 us, u32 ui);
+    static void addData_Ob_Tx(u8* puc, u32* pui, u16 us, u32 ui);
+    static void addData_Ob_Mo_Ma(u8* puc, u32* pui, u16 us, u32 ui);
+    static void addData_Ob_Ma(u8* puc, u32* pui, u16 us, u32 ui);
+    static void addData_Ob_Mo(u8* puc, u32* pui, u16 us, u32 ui);
+    static void addData_Ob(u8* puc, u32* pui, u16 us, u32 ui);
     s32 getDataNum();
     void releaseData();
-    void initData();
+    static void initData();
 };
 
 #endif // SCRIPTMODELMANAGER_HPP

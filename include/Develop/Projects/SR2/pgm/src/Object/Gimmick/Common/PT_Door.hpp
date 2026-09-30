@@ -2,29 +2,37 @@
 #define PT_DOOR_HPP
 
 #include "types.h"
+#include "Develop/Projects/SR2/pgm/src/Data/GlobalData.hpp"
+#include "Develop/Projects/SR2/pgm/src/Game/BaseRace.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/RigidBodyGimmickObj.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 
 class clsPlayerTask;
 
-enum enmPT_DoorMode {
-    MODE_INIT = 0,
-    MODE_MAIN = 1,
-};
-
 // total size: 0xE0
 class clsPT_Door_Obj : public clsRigidBodyGimmickObj {
 public:
-    virtual ~clsPT_Door_Obj() {}
-    clsPT_Door_Obj() {}
+    enum enmPT_DoorMode {
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
+    };
+
+    virtual ~clsPT_Door_Obj() { destroyData(); }
+    clsPT_Door_Obj() : m_ePtDoorMode(MODE_INIT) {}
 
     virtual void contactTriggerEvent(hkContactPoint* pcContact, clsObject* pcObject);
     virtual void setData();
     virtual void createData();
     virtual void destroyData();
     virtual nspPackId::enm getPackId() const { return nspPackId::PT_DOOR_2080; }
-    virtual u32 getMultiDrawNum() const { return 0; }
+    virtual u32 getMultiDrawNum() const
+    {
+        if (nspGlobal::sTask.pcBaseRace->getStageNo() == 10) {
+            return 13;
+        }
+        return 3;
+    }
     virtual void reset() {}
     virtual void main() {}
     virtual void contactInterraction(clsRigidBodyGimmickObj* pcObject);
@@ -44,7 +52,7 @@ class clsPT_Door_Task
 public:
     clsPT_Door_Task(u32 u32ObjectAreaNum)
         : clsSingleModelGimmick_Task<clsPT_Door_Task, clsPT_Door_Obj, clsModelType_OB_TX>(
-              u32ObjectAreaNum, 0)
+              u32ObjectAreaNum, 101000)
     {
     }
     virtual ~clsPT_Door_Task() {}

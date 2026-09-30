@@ -1,14 +1,18 @@
 #ifndef ST16AUTORUNHELI_HPP
 #define ST16AUTORUNHELI_HPP
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
+#include "usr/local/sce/ee/gcc/ee/lib/libc/memset.h"
 #include "types.h"
+#include "Develop/Projects/SR2/pgm/src/Havok/HavokHeap.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickAutoRunObj.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/PhantomGimmickObject.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage08/St08UfoCatcher.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Object.hpp"
-#include "Develop/Projects/SR2/pgm/src/Object/SlerpQuat.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/PendulumControl.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/Se3DControl.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/SlerpQuat.hpp"
 #include "Develop/Projects/SR2/pgm/src/Data/Pack.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage03/St03Macross.hpp"
 
@@ -24,25 +28,27 @@ public:
     clsModelType_OB_TX m_cModelRope;    // offset 0x10, size 0x8
 };
 
-class clsPendulumControl; // PLACEHOLDER — empty header, scaffold first when possible
+class clsPendulumControl;
 class clsPlayerTask;
 
 // total size: 0x250
 class clsAutoRunHeli : public clsGimmickAutoRunObj {
 public:
     clsAutoRunHeli() {}
-    virtual ~clsAutoRunHeli() {}
-    virtual void destroy() {}
-
-    // Name collision with Game.hpp — nested inside class per scaffold rule
-    // Note: enmMode name collision — Game.hpp declares different values at global scope
+    virtual ~clsAutoRunHeli() { destroy(); }
+    virtual void destroy()
+    {
+        delete m_pcPendulumControl;
+        m_pcPendulumControl = NULL;
+        delete m_pcSe3DControl;
+        m_pcSe3DControl = NULL;
+    }
+    // RECONSTRUCTED: enum scope.
     enum enmMode {
         MODE_INIT = 0,
         MODE_MAIN = 1,
     };
-
-    // Name collision with other TUs — nested inside class per scaffold rule
-    // Note: enmMoveMode name collision — Stage06/St06GLinkElevator.hpp declares different values
+    // RECONSTRUCTED: enum scope.
     enum enmMoveMode {
         MOVEMODE_WAIT = 0,
         MOVEMODE_MOVE = 1,
@@ -80,10 +86,10 @@ public:
     virtual void getEffectPosVecFast(NNS_VECTORFAST& rsPosVecFast);
     virtual void execute();
     virtual u8 draw(clsAutoRunHeliModel& rcModel,
-                    f32 (*psMtxPal)[4][4],
+                    NNS_MATRIX* psMtxPal,
                     u32* psNodeStat,
-                    const f32 (*opaNnViewMtx)[4][4],
-                    f32 (*psMtxWork)[4][4],
+                    const NNS_MATRIX* opaNnViewMtx,
+                    NNS_MATRIX* psMtxWork,
                     u32 u32ViewNo,
                     u32 NodeStatus);
 
@@ -95,12 +101,8 @@ public:
 class clsAutoRunHeli_Obj : public clsPhantomGimmickObject {
 public:
     enum enmMode {
-        MODE__READY = 0,
-        MODE__WAIT = 1,
-        MODE__CHARGE = 2,
-        MODE__SHOOT = 3,
-        MODE__HORMING = 4,
-        MODE__BLAST = 5,
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
     };
 
     enum enmCtrlMode {
@@ -109,8 +111,11 @@ public:
         CTRL_STOP = 2,
     };
 
-    clsAutoRunHeli_Obj() : clsPhantomGimmickObject() {}
-    virtual ~clsAutoRunHeli_Obj() {}
+    clsAutoRunHeli_Obj() : clsPhantomGimmickObject(), m_eMode(MODE_INIT)
+    {
+        memset(m_aeCtrlMode, 0, sizeof(m_aeCtrlMode));
+    }
+    virtual ~clsAutoRunHeli_Obj() { destroyData(); }
 
     virtual void contactTriggerEvent(hkContactPoint* pcObject, clsObject* pParam2);
     virtual void createData();
@@ -137,14 +142,20 @@ public:
 class clsAutoRunHeli_Task
     : public clsBaseGimmickBody<clsAutoRunHeli_Task, clsAutoRunHeli_Obj, clsAutoRunHeliModel> {
 public:
-    clsAutoRunHeli_Task(u32 u32ObjectAreaNum);
+    clsAutoRunHeli_Task(u32 u32ObjectAreaNum)
+        : clsBaseGimmickBody<clsAutoRunHeli_Task, clsAutoRunHeli_Obj, clsAutoRunHeliModel>(
+              u32ObjectAreaNum, 100099),
+          m_pA32Rot(NULL), m_f32AirCnt(0.0f)
+    {
+        hkVector4 cBox(15.0f, 10.0f, 4.0f, 0.0f);
+        m_pcPhantomShape = new hkBoxShape(cBox, hkConvexShapeDefaultRadius);
+    }
     virtual ~clsAutoRunHeli_Task();
     virtual void reset();
     virtual void createModel(stcBinInfo& rsBinInfoI);
     virtual void execute();
     virtual void draw();
 
-    // Members
     clsMacrossThroughCollision m_cThroughCollision; // offset 0xA4, size 0x8
     NNS_ROTATE_A32* m_pA32Rot;                      // offset 0xAC, size 0x4
     f32 m_f32AirCnt;                                // offset 0xB0, size 0x4

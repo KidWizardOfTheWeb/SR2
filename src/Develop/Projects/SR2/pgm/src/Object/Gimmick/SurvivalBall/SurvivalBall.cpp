@@ -63,7 +63,7 @@ void clsSurvivalBallBall_Obj::draw(clsSurvivalBallBallModels& rParam1)
 {
 }
 
-void clsSurvivalBallBall_Obj::drawBall(clsModelType_OB_TX_MO_MA& rParam1, f32 (*)[4][4])
+void clsSurvivalBallBall_Obj::drawBall(clsModelType_OB_TX_MO_MA& rParam1, NNS_MATRIX*)
 {
 }
 
@@ -73,9 +73,9 @@ void clsSurvivalBallBall_Obj::drawGyro(clsModelType_OB_TX_MO_MA& rParam1,
 }
 
 clsSurvivalBallBall_Task::clsSurvivalBallBall_Task(u32 u32Param1)
-    : clsSingleModelGimmick_Task<clsSurvivalBallBall_Task,
-                                 clsSurvivalBallBall_Obj,
-                                 clsSurvivalBallBallModels>(0, 0)
+    : clsBaseGimmickBody<clsSurvivalBallBall_Task,
+                         clsSurvivalBallBall_Obj,
+                         clsSurvivalBallBallModels>(0, 0)
 {
 }
 

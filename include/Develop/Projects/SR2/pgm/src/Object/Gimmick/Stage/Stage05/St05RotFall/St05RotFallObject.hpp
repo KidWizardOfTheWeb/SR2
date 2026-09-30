@@ -1,6 +1,7 @@
 #ifndef ST05ROTFALLOBJECT_HPP
 #define ST05ROTFALLOBJECT_HPP
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 #include "types.h"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/RigidBodyGimmickObj.hpp"
@@ -9,16 +10,16 @@
 class clsSe3DControl;
 class clsMultiObTxModels;
 
-enum enmRotFallMode {
-    MODE_INIT = 0,
-    MODE_WAIT = 1,
-    MODE_MAIN = 2,
-};
-
 // total size: 0x170
 class clsRotFall_Object : public clsRigidBodyGimmickObj {
 public:
-    // TODO: enmModelType name collision with CharaData.hpp — verify scope during implementation
+    enum enmRotFallMode {
+        MODE_INIT = 0,
+        MODE_WAIT = 1,
+        MODE_MAIN = 2,
+    };
+
+    // RECONSTRUCTED: enum scope.
     enum enmModelType {
         MODEL_TYPE_ROCK_A = 0,
         MODEL_TYPE_ROCK_B = 1,
@@ -39,10 +40,10 @@ public:
     virtual void requestDrawBreakEffect();
 
     void draw(clsMultiObTxModels& rcObj,
-              f32 (*psMtxPal)[4][4],
+              NNS_MATRIX* psMtxPal,
               u32* psNodeStat,
-              const f32 (*opaNnViewMtx)[4][4],
-              f32 (*psMtxWork)[4][4]);
+              const NNS_MATRIX* opaNnViewMtx,
+              NNS_MATRIX* psMtxWork);
     void countAppearFrame();
     void clearAppearFrame();
 
@@ -52,8 +53,8 @@ public:
     static f32 t_f32AppearFrame;
     static u8 t_au8ModelTypeTable[14];
 
-    f32 m_sBaseMtx[4][4];            // offset 0xD0, size 0x40
-    f32 m_sBaseInvMtx[4][4];         // offset 0x110, size 0x40
+    NNS_MATRIX m_sBaseMtx;           // offset 0xD0, size 0x40
+    NNS_MATRIX m_sBaseInvMtx;        // offset 0x110, size 0x40
     NNS_VECTOR m_sFallRotSpeed;      // offset 0x150, size 0xC
     enmRotFallMode m_eMode;          // offset 0x15C, size 0x4
     enmModelType m_eModelType;       // offset 0x160, size 0x4

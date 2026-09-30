@@ -80,7 +80,12 @@ public:
     void delFontData(nspSrFontSystem::enmFontNo);
     void setFontDataFromFile(
         nspSrFontSystem::enmFontNo, void* pvParam2, void* pvParam3, void* pvParam4, s32 s32Param5);
-    void setBtnDataFromFile(void* pvDataBuff, bool bSetUp, void* pvTex) {}
+    void setBtnDataFromFile(void* pvDataBuff, bool bSetUp, void* pvTex)
+    {
+        delBtnTexBuff();
+        m_pcBtnData = new clsPfSplitTexture(pvDataBuff, bSetUp, pvTex);
+        SetBtnSplitTexture(m_pcBtnData, 26);
+    }
     void setFontLoadFunc(
         void (*fFontLoadFunc)(
             u32, s32, clsSrFontSystem*, nspSrFontSystem::enmFontNo, s32, void*, bool, void*),

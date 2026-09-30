@@ -14,7 +14,7 @@ public:
     virtual void execute();
     virtual void draw();
 
-    void initData();
+    static void initData();
     void releaseData();
     void codeWaitString(u8* pu8Ptr, clsScript_Task* pcTask);
 

@@ -10,6 +10,13 @@ class clsPlayerTask;
 // total size: 0xC
 class clsGimmickAutoRunBufferBase {
 public:
+    ~clsGimmickAutoRunBufferBase()
+    {
+        m_u32ExecuteNum = 0;
+        m_u32SleepNum = 0;
+        m_u32ObjectNum = 0;
+    }
+
     u32 m_u32ExecuteNum; // offset 0x0, size 0x4
     u32 m_u32SleepNum;   // offset 0x4, size 0x4
     u32 m_u32ObjectNum;  // offset 0x8, size 0x4
@@ -20,6 +27,19 @@ public:
 template <class T>
 class clsGimmickAutoRunBuffer : public clsGimmickAutoRunBufferBase {
 public:
+    clsGimmickAutoRunBuffer()
+    {
+        m_u32ExecuteNum = 0;
+        m_u32SleepNum = 0;
+        m_u32ObjectNum = 0;
+        m_apcObj = NULL;
+        m_ppcExecute = NULL;
+        m_ppcSleep = NULL;
+        m_ppcExecuteWork = NULL;
+    }
+
+    ~clsGimmickAutoRunBuffer() { destroy(); }
+
     void create(u32 u32Num)
     {
         m_apcObj = new T[u32Num];
@@ -35,16 +55,7 @@ public:
         initSleep();
     }
 
-    void destroy()
-    {
-        delete[] m_ppcExecuteWork;
-        m_ppcExecuteWork = 0;
-        delete[] m_apcObj;
-        m_apcObj = 0;
-        m_u32ExecuteNum = 0;
-        m_u32SleepNum = 0;
-        m_u32ObjectNum = 0;
-    }
+    void destroy();
 
     void initSleep()
     {
@@ -75,7 +86,7 @@ public:
     T* getSleep()
     {
         if (m_u32SleepNum == 0) {
-            return 0;
+            return NULL;
         }
         m_u32SleepNum--;
         return m_ppcSleep[m_u32SleepNum];
@@ -114,10 +125,26 @@ public:
     T** m_ppcExecuteWork; // offset 0x18, size 0x4
 };
 
+template <class T>
+void clsGimmickAutoRunBuffer<T>::destroy()
+{
+    if (m_ppcExecuteWork != NULL) {
+        delete[] m_ppcExecuteWork;
+    }
+    m_ppcExecuteWork = NULL;
+    if (m_apcObj != NULL) {
+        delete[] m_apcObj;
+    }
+    m_apcObj = NULL;
+    m_u32ExecuteNum = 0;
+    m_u32SleepNum = 0;
+    m_u32ObjectNum = 0;
+}
+
 // total size: 0x1C0
 class clsGimmickAutoRunObj {
 public:
-    // Note: enmRet name collision with nspOOFileMgr::enmRet ? nested per scaffold rule
+    // RECONSTRUCTED: enum scope.
     enum enmRet {
         VISIBLE_CLIP = 0,
         VISIBLE = 1,

@@ -9,10 +9,10 @@ void clsMissionMark_Obj::createData()
 }
 
 void clsMissionMark_Obj::draw(clsModelType_OB_TX_MO_MA& rcObj,
-                              f32 (*psMtxPal)[4][4],
+                              NNS_MATRIX* psMtxPal,
                               u32* psNodeStat,
-                              const f32 (*opaNnViewMtx)[4][4],
-                              f32 (*psMtxWork)[4][4])
+                              const NNS_MATRIX* opaNnViewMtx,
+                              NNS_MATRIX* psMtxWork)
 {
 }
 
@@ -33,12 +33,6 @@ void clsMissionMark_Task::execute()
 }
 
 void clsMissionMark_Task::draw()
-{
-}
-
-clsMissionMark_Task::clsMissionMark_Task(u32 u32ObjectAreaNum)
-    : clsSingleModelGimmick_Task<clsMissionMark_Task, clsMissionMark_Obj, clsModelType_OB_TX_MO_MA>(
-          0, 0)
 {
 }
 

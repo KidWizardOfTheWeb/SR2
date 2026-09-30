@@ -28,7 +28,7 @@ public:
     };
 
     clsCharaSuperSonic(clsPlayerTask* pParam1, u8 u8Param2);
-    virtual ~clsCharaSuperSonic() {}
+    virtual ~clsCharaSuperSonic() { reset(); }
     virtual f32 getCollisionRadius() const { return tof32CollisionRadius; }
     virtual f32 getDrawOffset() const { return m_f32OffsetPosition; }
     virtual void draw(u32 u32Param1);
@@ -40,8 +40,7 @@ public:
     virtual void actionAttack01();
     virtual void reset();
 
-    void loadAdditionalData(stcBinInfo& rParam1); // TODO: verify — mangled as clsPack::stcBinInfo
-                                                  // but likely global stcBinInfo
+    void loadAdditionalData(stcBinInfo& rParam1);
     void updateGravity();
     void updateAction();
     s32 updateLimitTime(f32 f32Param1, stcRingRateTime* pParam2);

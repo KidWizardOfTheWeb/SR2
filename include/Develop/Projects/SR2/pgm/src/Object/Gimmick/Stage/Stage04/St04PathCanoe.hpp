@@ -8,15 +8,6 @@
 
 class clsSe3DControl;
 
-enum enmPathCanoeMode {
-    MODE_INIT = 0,
-    MODE_START_WAIT = 1,
-    MODE_MAIN = 2,
-    MODE_BLINK_WAIT = 3,
-    MODE_NOT_DISP = 4,
-    MODE_WAIT = 5,
-};
-
 class clsPathCanoe_Obj;
 
 // total size: 0x9C
@@ -37,6 +28,15 @@ public:
 // total size: 0x260
 class clsPathCanoe_Obj : public clsRigidBodyGimmickObj {
 public:
+    enum enmPathCanoeMode {
+        MODE_INIT = 0,
+        MODE_START_WAIT = 1,
+        MODE_MAIN = 2,
+        MODE_BLINK_WAIT = 3,
+        MODE_NOT_DISP = 4,
+        MODE_WAIT = 5,
+    };
+
     static f32 tof32ClipSqDist;
     static u32 otau32Se_CanoeBreak[2];
     static u32 otau32Se_CanoeExp[2];
@@ -58,10 +58,10 @@ public:
     virtual void boundAction(clsPlayerTask* pParam1);
 
     u8 draw(clsModelType_OB_TX& rParam1,
-            f32 (*)[4][4],
+            NNS_MATRIX*,
             u32* pParam3,
-            const f32 (*)[4][4],
-            f32 (*)[4][4],
+            const NNS_MATRIX*,
+            NNS_MATRIX*,
             u32 u32Param6);
     void chackAction(u32 u32Param1);
     void path_main();

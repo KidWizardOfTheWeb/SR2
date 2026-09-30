@@ -26,12 +26,18 @@ void clsScore2D_Task::setRecordTime(s32 s32Arg0, f32 f32Arg1)
 {
 }
 
-void clsScore2D_Task::setStartPos(f32 f32Arg0, f32 f32Arg1, f32 f32Arg2)
+void clsScore2D_Task::setStartPos(f32 f32x, f32 f32y, f32 f32z)
 {
+    m_tsStartPosVec.x = f32x;
+    m_tsStartPosVec.y = f32y;
+    m_tsStartPosVec.z = f32z;
 }
 
-void clsScore2D_Task::setStartRot(f32 f32Arg0, f32 f32Arg1, f32 f32Arg2)
+void clsScore2D_Task::setStartRot(f32 f32x, f32 f32y, f32 f32z)
 {
+    m_tsStartRotVec.x = f32x;
+    m_tsStartRotVec.y = f32y;
+    m_tsStartRotVec.z = f32z;
 }
 
 void clsScore2D_Task::execute()

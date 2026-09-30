@@ -35,7 +35,7 @@ void clsPress_Obj::main()
 
 clsPress_Task::clsPress_Task(u32 u32ObjectAreaNum)
     : clsSingleModelGimmick_Task<clsPress_Task, clsPress_Obj, clsModelType_OB_TX>(u32ObjectAreaNum,
-                                                                                  0)
+                                                                                  99999)
 {
 }
 

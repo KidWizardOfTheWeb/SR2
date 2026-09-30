@@ -9,6 +9,8 @@
 #include "Develop/Projects/SR2/pgm/src/Data/Path/PathCom.hpp"
 #include "Develop/Projects/SR2/pgm/src/Data/Pack.hpp"
 #include "Develop/Projects/SR2/pgm/src/Data/Path/PathPoint.hpp"
+#include "Develop/Projects/SR2/pgm/lib/OO/core/OOLibChecker.hpp"
+#include "Develop/Projects/SR2/pgm/lib/OO/nn/NNUtil_PS2.hpp"
 
 struct stcBinDataDetail;
 class clsRainDrops_Task;
@@ -257,21 +259,29 @@ struct stcEtcBinaryStageData {
 class clsBaseStage_Task : public clsTask {
 public:
     clsBaseStage_Task(stcBinInfo& rsBinInfoI);
-    virtual ~clsBaseStage_Task() {}
+    virtual ~clsBaseStage_Task()
+    {
+        nspOOLibChecker::ClassD("clsBaseStage_Task");
+        delete m_pcCoursePath;
+        nspNnUtil::TexRelease(m_cModel.m_psTexList);
+    }
     virtual void execute();
     virtual void draw();
     virtual void reset();
     virtual s32 getDivNum() const { return 0; }
     virtual void init();
-    virtual clsLap* createLap() { return 0; }
+    virtual clsLap* createLap() { return NULL; }
     virtual void initMain();
-    virtual clsPathCourse* createCoursePath() { return 0; }
+    virtual clsPathCourse* createCoursePath() { return new clsPathCourse; }
 
     void calcCamCoursePoint(u32 u32v, clsRetPath* pcRetCoursePath);
     void setObjPortalBin(stcBinInfo& rsBinInfoI);
     void setEtcParam(stcBinInfo& rsBinInfoI);
 
-    bool checkObjPortal(u32 u32v, u8 u8v) { return false; }
+    u32 checkObjPortal(u32 u32ViewNo, u8 u8PortalNo)
+    {
+        return m_cObjPortal_Camera.check(u32ViewNo, u8PortalNo);
+    }
     clsPathCourse* getCoursePathPtr() { return m_pcCoursePath; }
     void deleteColorViewDetail(u8 u8v) {}
     void addColorDropsEffect(u32 u32a, u32 u32b, u32 u32c, f32 f32v, u32 u32d) {}

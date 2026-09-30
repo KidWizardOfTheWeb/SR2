@@ -53,7 +53,7 @@ void clsDomino_Obj::mainCrash()
 
 clsDomino_Task::clsDomino_Task(u32 u32ObjectAreaNum)
     : clsSingleModelGimmick_Task<clsDomino_Task, clsDomino_Obj, clsModelType_OB_TX>(
-          u32ObjectAreaNum, 0)
+          u32ObjectAreaNum, 101000)
 {
 }
 

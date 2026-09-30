@@ -11,6 +11,10 @@ class clsPlayerTask;
 // total size: 0xC
 class clsGLinkTrainThroughCollision : public clsBaseThroughCollision {
 public:
+    clsGLinkTrainThroughCollision(clsGLinkTrainManager_Object* pcManager)
+        : m_pcGLinkTrainManager(pcManager)
+    {
+    }
     virtual ~clsGLinkTrainThroughCollision() {}
     virtual void contactAlwaysEvent(clsPlayerTask* pcPlayer);
 
@@ -20,6 +24,10 @@ public:
 // total size: 0x30
 class clsGLinkTrainStartThroughCol : public clsBaseThroughCollision {
 public:
+    clsGLinkTrainStartThroughCol(clsGLinkTrainManager_Object* pcManager)
+        : m_pcGLinkTrainManager(pcManager), m_f32WaitFrame(0.0f), m_u8ObjectNo(0)
+    {
+    }
     virtual ~clsGLinkTrainStartThroughCol() {}
     virtual void contactTriggerEvent(clsPlayerTask* pcPlayer);
 

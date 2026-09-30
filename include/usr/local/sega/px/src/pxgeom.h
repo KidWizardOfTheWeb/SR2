@@ -161,6 +161,10 @@ struct PXS_WIREPARAM;
 extern struct PXS_FXYZW pxgVuClipParam[2];
 extern struct PXS_FXYZW pxgLightMatrix[8]; // size: 0x80, address: 0x6E64D0
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void PXNormalizeVector(struct PXS_FXYZW* v0, struct PXS_FXYZW* v1);
 void PXSetLightColor(enum PXE_LIGHT num, float r, float g, float b, float a);
 void PXSetLightVector(enum PXE_LIGHT num, float x, float y, float z);
@@ -175,8 +179,6 @@ void PXPutPrimMode(struct PXS_PRMODESET* prmode);
 void PXPutClipParam(enum PXE_CULL cullmode);
 void PXPutNearZ(float nearz);
 void PXTransposeMatrix(struct PXS_MATRIX* dst, struct PXS_MATRIX* src);
-void PXCalcLightMatrix(struct PXS_MATRIX* p, struct PXS_FXYZW* l, struct PXS_MATRIX* v);
-void PXCalcLightMatrix2(struct PXS_MATRIX* p, struct PXS_FXYZW* l, struct PXS_MATRIX* v);
 void PXPutLightMatrix(void* mtx, unsigned int flag);
 void PXPutLightVector(void* mtx, unsigned int flag);
 void PXPutLightColor();
@@ -210,5 +212,9 @@ void PXMakeWireParam(struct PXS_WIREPARAM* param,
                      unsigned int b,
                      unsigned int a);
 void PXPutWireParam(struct PXS_WIREPARAM* param);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // PXGEOM_H

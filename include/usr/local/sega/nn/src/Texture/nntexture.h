@@ -113,6 +113,10 @@ extern struct _NNS_TEXLIST* nngCurrentTextureList;
 extern struct NNS_TEXAREA_PARAM nngTexArea;
 extern enum NNE_BOOL nnsIgnoreTextureSwitch;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void nnSetInitIgnoreTextureSwitchPS2(enum NNE_BOOL on_off);
 void nnInitTexturePS2(unsigned int localptr, unsigned int size);
 void nnExitTexturePS2();
@@ -131,5 +135,9 @@ void* nnAllocTexLocalMemoryPS2(unsigned int size);
 void nnFreeTexLocalMemoryPS2(void* addr);
 unsigned int nnCalcTexLocalMemoryFreeMaxPS2();
 unsigned int nnCalcTexDmaTagSizeOneCorePS2(struct _NNS_TEXINFO* pTexInfo);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // NNTEXTURE_H

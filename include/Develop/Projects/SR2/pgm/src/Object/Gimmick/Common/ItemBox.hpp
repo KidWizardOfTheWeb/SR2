@@ -1,7 +1,9 @@
 #ifndef ITEMBOX_HPP
 #define ITEMBOX_HPP
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 #include "types.h"
+#include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/GimmickCommon.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/PhantomGimmickObject.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
@@ -21,14 +23,6 @@ public:
 };
 
 class clsItemBox_Task;
-
-class clsGimmickCommon {
-public:
-    static f32 t_of32ClipDistRate;
-
-private:
-    u8 m_bDisableFog; // offset 0x0, size 0x1
-};
 
 enum enmItemBoxMode {
     INIT = 0,
@@ -86,19 +80,19 @@ public:
 
     // @STRING@ inline draw callbacks (render system hooks)
     void drawMatModel(clsModelType_OB_TX_MO_MA* pcModel,
-                      f32 (*pMtx)[4][4],
+                      NNS_MATRIX* pMtx,
                       u32* pu32Flg,
-                      const f32 (*pBaseMtx)[4][4],
-                      f32 (*pDstMtx)[4][4],
+                      const NNS_MATRIX* pBaseMtx,
+                      NNS_MATRIX* pDstMtx,
                       u32 u32Arg)
     {
     }
     void draw(NNS_OBJECT* pcObj,
-              f32 (*pMtx)[4][4],
+              NNS_MATRIX* pMtx,
               u32* pu32Flg,
-              const f32 (*pBaseMtx)[4][4],
+              const NNS_MATRIX* pBaseMtx,
               u32 u32Arg1,
-              f32 (*pDstMtx)[4][4],
+              NNS_MATRIX* pDstMtx,
               u32 u32Arg2,
               clsItemBox_Task* pcTask)
     {

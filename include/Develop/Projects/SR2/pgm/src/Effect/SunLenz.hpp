@@ -2,9 +2,12 @@
 #define SUNLENZ_HPP
 
 #include "types.h"
+#include "usr/local/sce/ee/gcc/ee/lib/libc/memset.h"
 #include "Develop/Projects/SR2/pgm/src/2D/Score/ScoreParts2D.hpp"
 #include "Develop/Projects/SR2/pgm/src/Data/Pack.hpp"
 #include "Develop/Projects/SR2/pgm/src/Task/TaskManager.hpp"
+#include "Develop/Projects/SR2/pgm/lib/OO/PS2/PS2System.hpp"
+#include "Develop/Projects/SR2/pgm/lib/OO/PS2_nn/PS2NnGraphics.hpp"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 
 struct _NNS_TEXLIST;
@@ -12,7 +15,7 @@ struct _NNS_TEXLIST;
 // total size: 0x110
 class clsSunLenz_Task : public clsTask {
 public:
-    // Note: DWARF flattens several incompatible stcDetail layouts; SunLenz uses the 0x20 variant.
+    // RECONSTRUCTED: nested detail type.
     struct stcDetail {
         NNS_VECTORFAST m_sClipPosFast; // offset 0x0, size 0x10
         stcPoint2D_s16 m_sPos2D_s16;   // offset 0x10, size 0x4
@@ -23,7 +26,30 @@ public:
         u8 m_u8RandCnt;                // offset 0x19, size 0x1
     };
 
-    clsSunLenz_Task(const stcSetDataDetail& rsSetDataDetail) : clsTask(0, 0) {}
+    clsSunLenz_Task(const stcSetDataDetail& rsSetDataDetail) : clsTask(100001, 5)
+    {
+        m_u32ViewportNum = clsPfSystem::GS()->getViewportNum();
+        m_s8ShiftX = 0;
+        m_s8ShiftY = 0;
+        m_sSunPosFast.x = rsSetDataDetail.sPosVec.x;
+        m_sSunPosFast.y = rsSetDataDetail.sPosVec.y;
+        m_sSunPosFast.z = rsSetDataDetail.sPosVec.z;
+        m_s32SunSize = static_cast<s32>(rsSetDataDetail.sRotVec.x);
+        m_sSunPosFast.w = 1.0f;
+        memset(m_asDetail, 0, sizeof(m_asDetail));
+        clsPfGraphics* pcGraphics = clsPfGraphics::GS();
+        m_s16FbHalfW = pcGraphics->getFbWidth() >> 1;
+        m_s16FbHalfH = pcGraphics->getFbHeight() >> 1;
+        m_s16FbQuartW = m_s16FbHalfW >> 1;
+        m_s16FbQuartH = m_s16FbHalfH >> 1;
+        if (m_u32ViewportNum >= 2) {
+            m_s8ShiftY = 1;
+        }
+        if (m_u32ViewportNum >= 3) {
+            m_s8ShiftX = 1;
+        }
+        setTexture(0);
+    }
     virtual ~clsSunLenz_Task() {}
 
     virtual void execute();

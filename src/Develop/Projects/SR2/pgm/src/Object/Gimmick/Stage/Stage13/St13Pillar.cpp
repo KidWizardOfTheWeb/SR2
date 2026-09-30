@@ -36,7 +36,7 @@ void clsPillar_Obj::CheckObjRemove()
 
 clsPillar_Task::clsPillar_Task(u32 u32ObjectAreaNum)
     : clsMultiModelGimmick_Task<clsPillar_Task, clsPillar_Obj, clsMultiObTxModels>(u32ObjectAreaNum,
-                                                                                   0)
+                                                                                   101000)
 {
 }
 

@@ -5,9 +5,6 @@
 #include "Develop/Projects/SR2/pgm/src/Effect/Particle/ParticleSet.hpp"
 #include "Develop/Projects/SR2/pgm/src/Game/Game.hpp"
 
-// clsSetCamEditor is 0x50 bytes but DWARF struct not available — forward-declare only
-// static nspDebugDetail::cSetEdit is at 0xB15FD0
-
 namespace nspDebugDetail {
 
 void Sr2(s32 param_1, s32 param_2, s32 param_3, s32 param_4)
@@ -26,20 +23,28 @@ void BurnOut(s32 param_1, s32 param_2, s32 param_3, s32 param_4)
 {
 }
 
-void BossDisp(s32 param_1, s32 param_2, s32 param_3, s32 param_4)
+const s32 BossDisp(s32 param_1, s32 param_2, s32 param_3, s32 param_4)
 {
+    // Incomplete implementation.
+    return 0;
 }
 
-void BossDebug(s32 param_1, s32 param_2, s32 param_3, s32 param_4)
+const s32 BossDebug(s32 param_1, s32 param_2, s32 param_3, s32 param_4)
 {
+    // Incomplete implementation.
+    return 0;
 }
 
-void BossAttackDebug(s32 param_1, s32 param_2, s32 param_3, s32 param_4)
+const s32 BossAttackDebug(s32 param_1, s32 param_2, s32 param_3, s32 param_4)
 {
+    // Incomplete implementation.
+    return 0;
 }
 
-void BlackHoleDebug(s32 param_1, s32 param_2, s32 param_3, s32 param_4)
+const s32 BlackHoleDebug(s32 param_1, s32 param_2, s32 param_3, s32 param_4)
 {
+    // Incomplete implementation.
+    return 0;
 }
 
 void Race(s32 param_1, s32 param_2, s32 param_3, s32 param_4)
@@ -74,8 +79,9 @@ void PathRangeEditor(s32 param_1, s32 param_2, s32 param_3, s32 param_4)
 {
 }
 
-void GDiveTrain(s32 param_1, s32 param_2, s32 param_3, s32 param_4)
+const s32 GDiveTrain(s32 param_1, s32 param_2, s32 param_3, s32 param_4)
 {
+    return 3;
 }
 
 void OutSideChecker(s32 param_1, s32 param_2, s32 param_3, s32 param_4)

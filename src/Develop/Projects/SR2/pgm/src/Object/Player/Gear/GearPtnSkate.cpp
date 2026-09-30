@@ -22,8 +22,7 @@ void clsGearPtnSkate::controlMotionCurve00()
 {
 }
 
-void clsGearPtnSkate::draw(const f32 (*pParam1)[4][4], f32 f32Param2, u32 u32Param3)
+void clsGearPtnSkate::draw(const NNS_MATRIX* pParam1, f32 f32Param2, u32 u32Param3)
 {
-    m_pcBurnLight_Task->m_s16DrawNum =
-        *(u8*)((u8*)clsSingleton<clsPfSystem>::m_tpcSingleton + 0x7E);
+    m_pcBurnLight_Task->m_s16DrawNum = clsPfSystem::GS()->m_bUnPause;
 }

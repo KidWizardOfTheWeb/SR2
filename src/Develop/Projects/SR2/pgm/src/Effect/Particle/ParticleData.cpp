@@ -28,8 +28,3 @@ void nspParticleData::setModeData(u8* pu8Param1, u32* pu32Param2, u16 u16Param3,
 void nspParticleData::setSetData(u8* pu8Param1, u32* pu32Param2, u16 u16Param3, u32 u32Param4)
 {
 }
-
-void* nspParticleData::getSetDataStart()
-{
-    return 0;
-}

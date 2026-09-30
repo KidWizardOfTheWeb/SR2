@@ -42,16 +42,12 @@ void clsPathPoint::DrawLine_Debug(bool bIsDrawSphere, s32 s32NonDrawLineNoI)
 {
 }
 
-void clsPathPoint::loadBinaryData(u8* pu8DataI, clsBaseStage_Task* pcStageI, s32 s32FlagI)
-{
-}
-
 const _LineData* clsPathPoint::getLineData(u16 u16LineNoI) const
 {
-    return 0;
+    return NULL;
 }
 
 const NNS_VECTORFAST* clsPathPoint::getPoint(u32 u32PointNoI) const
 {
-    return 0;
+    return NULL;
 }

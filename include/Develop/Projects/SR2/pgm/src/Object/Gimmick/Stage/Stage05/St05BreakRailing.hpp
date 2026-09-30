@@ -7,6 +7,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/RigidBodyGimmickObj.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Object.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Collision/GroundCollision.hpp"
 
 class clsBreakRailing_Obj;
 class clsPlayerTask;
@@ -14,7 +15,7 @@ class clsPlayerTask;
 // total size: 0xC
 class clsBreakRailingThrCol : public clsBaseThroughCollision {
 public:
-    virtual ~clsBreakRailingThrCol() {}
+    virtual ~clsBreakRailingThrCol() { destroy(); }
 
     virtual void contactAlwaysEvent(hkContactPoint* pcObject, clsObject* pParam2);
     virtual void contactRemoveEvent(hkContactPoint* pcObject, clsObject* pParam2);
@@ -31,8 +32,8 @@ public:
         MODE_MAIN = 1,
     };
 
-    clsBreakRailing_Obj() {}
-    virtual ~clsBreakRailing_Obj() {}
+    clsBreakRailing_Obj() : m_eMode(MODE_INIT) { m_cThrCol.m_pcBreakRailingObj = this; }
+    virtual ~clsBreakRailing_Obj();
 
     virtual void reset();
     virtual void setData();
@@ -44,14 +45,17 @@ public:
 
     enmMode m_eMode;                 // offset 0xD0, size 0x4
     clsBreakRailingThrCol m_cThrCol; // offset 0xD4, size 0xC
-    f32 m_sInvMtx[4][4];             // offset 0xE0, size 0x40
+    NNS_MATRIX m_sInvMtx;            // offset 0xE0, size 0x40
 };
 
 // total size: 0x94
 class clsBreakRailing_Task
     : public clsBaseGimmickBody<clsBreakRailing_Task, clsBreakRailing_Obj, clsModelType_OB> {
 public:
-    clsBreakRailing_Task(u32 param);
+    clsBreakRailing_Task(u32 u32ObjectAreaNum)
+        : clsBaseGimmickBody(u32ObjectAreaNum, 101000), m_psInfo(NULL)
+    {
+    }
     virtual ~clsBreakRailing_Task();
 
     virtual void reset();
@@ -59,7 +63,12 @@ public:
     virtual void execute();
     virtual void draw();
 
-    stcInfo* m_psInfo; // offset 0x90, size 0x4
+    clsGroundCollision::stcInfo* m_psInfo; // offset 0x90, size 0x4
 };
+
+inline clsBreakRailing_Obj::~clsBreakRailing_Obj()
+{
+    destroyData();
+}
 
 #endif // ST05BREAKRAILING_HPP

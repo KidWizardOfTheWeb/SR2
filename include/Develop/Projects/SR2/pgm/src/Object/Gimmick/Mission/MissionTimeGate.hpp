@@ -1,6 +1,7 @@
 #ifndef MISSIONTIMEGATE_HPP
 #define MISSIONTIMEGATE_HPP
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 #include "types.h"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
@@ -18,17 +19,17 @@ class clsMissionTimeGate_Obj : public clsPhantomGimmickObject {
 public:
     clsMissionTimeGate_Obj();
 
-    virtual ~clsMissionTimeGate_Obj() {}
+    virtual ~clsMissionTimeGate_Obj() { destroyData(); }
     virtual nspPackId::enm getPackId() const { return nspPackId::MISSION_TIME_GATE_27010; }
 
     virtual void createData();
     virtual void destroyData();
     virtual void contactTriggerEvent(hkContactPoint* p0, clsObject* p1);
     void draw(clsModelType_OB_TX_MO_MA& p0,
-              f32 (*psMtxPal)[4][4],
+              NNS_MATRIX* psMtxPal,
               u32* p2,
-              const f32 (*opaNnViewMtx)[4][4],
-              f32 (*psMtxWork)[4][4],
+              const NNS_MATRIX* opaNnViewMtx,
+              NNS_MATRIX* psMtxWork,
               u32 p3);
 
     u32 m_u32AddTime;                                    // offset 0x60, size 0x4
@@ -43,8 +44,10 @@ public:
     clsMissionTimeGate_Task(u32 u32ObjectAreaNum)
         : clsSingleModelGimmick_Task<clsMissionTimeGate_Task,
                                      clsMissionTimeGate_Obj,
-                                     clsModelType_OB_TX_MO_MA>(u32ObjectAreaNum, 0x18A88)
+                                     clsModelType_OB_TX_MO_MA>(u32ObjectAreaNum, 101000),
+          m_pf32TexCoordV(NULL)
     {
+        m_pcPhantomShape = new hkSphereShape(4.5f);
     }
     virtual ~clsMissionTimeGate_Task() {}
 

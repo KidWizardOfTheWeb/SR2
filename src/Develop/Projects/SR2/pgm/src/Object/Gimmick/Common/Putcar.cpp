@@ -34,7 +34,7 @@ void clsPutCar_Obj::callbackContactTriggerRigidBody(const hkContactPointConfirme
 
 clsPutCar_Task::clsPutCar_Task(u32 u32ObjectAreaNum)
     : clsMultiModelGimmick_Task<clsPutCar_Task, clsPutCar_Obj, clsMultiObTxModels>(u32ObjectAreaNum,
-                                                                                   0)
+                                                                                   101000)
 {
 }
 

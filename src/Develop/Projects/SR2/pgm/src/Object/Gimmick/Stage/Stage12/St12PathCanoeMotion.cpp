@@ -38,10 +38,10 @@ void clsPathCanoeMotion_Obj::main()
 }
 
 u8 clsPathCanoeMotion_Obj::draw(clsModelType_OB_TX_MO& m,
-                                f32 (*a)[4][4],
+                                NNS_MATRIX* a,
                                 u32* b,
-                                const f32 (*c)[4][4],
-                                f32 (*d)[4][4],
+                                const NNS_MATRIX* c,
+                                NNS_MATRIX* d,
                                 u32 e,
                                 f32* f)
 {
@@ -71,7 +71,7 @@ void clsPathCanoeMotion_Obj::boundAction(clsPlayerTask* p)
 clsPathCanoeMotion_Task::clsPathCanoeMotion_Task(u32 u32ObjectAreaNum)
     : clsSingleModelGimmick_Task<clsPathCanoeMotion_Task,
                                  clsPathCanoeMotion_Obj,
-                                 clsModelType_OB_TX_MO>(u32ObjectAreaNum, 0)
+                                 clsModelType_OB_TX_MO>(u32ObjectAreaNum, 101000)
 {
 }
 

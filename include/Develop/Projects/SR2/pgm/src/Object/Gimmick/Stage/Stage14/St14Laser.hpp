@@ -18,14 +18,14 @@ public:
     void contactTriggerEvent(clsPlayerTask* pcPlayer);
 };
 
-enum enmLaserMode {
-    MODE_INIT = 0,
-    MODE_MAIN = 1,
-    MODE_WAIT = 2,
-};
-
 class clsSt14Laser_Obj : public clsRigidBodyGimmickObj {
 public:
+    enum enmLaserMode {
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
+        MODE_WAIT = 2,
+    };
+
     clsSt14Laser_Obj() {}
     virtual ~clsSt14Laser_Obj() {}
     virtual void setData();
@@ -37,7 +37,6 @@ public:
 
     static f32 tof32ClipSqDist;
 
-public:
     enmLaserMode m_eLaserMode; // offset 0xD0, size 0x4
     f32 m_f32MatMotEndFrame;   // offset 0xD4, size 0x4
     f32 m_f32MatMotFrame;      // offset 0xD8, size 0x4

@@ -13,7 +13,7 @@ public:
                          clsModelType_OB_TX_MO_MA* pcModelI,
                          u32 eFlagI,
                          const NNS_VECTORFAST* opsFollowPosFast,
-                         const f32 (*opsFollowMtx)[4][4],
+                         const NNS_MATRIX* opsFollowMtx,
                          u32 u32ViewNo,
                          f32 f32WaitFrame);
     virtual ~clsObjectEffect_Task();
@@ -22,9 +22,9 @@ public:
 
     void setDrawFlg(bool bDraw) { m_bDraw = bDraw; }
 
-    u8 m_bDraw;                            // offset 0xD0, size 0x1
-    f32 (*m_opsFollowMatrix)[4][4];        // offset 0xD4
-    NNS_VECTORFAST* m_opsFollowPosVecFast; // offset 0xD8, size 0x4
+    u8 m_bDraw;                                  // offset 0xD0, size 0x1
+    const NNS_MATRIX* m_opsFollowMatrix;         // offset 0xD4
+    const NNS_VECTORFAST* m_opsFollowPosVecFast; // offset 0xD8, size 0x4
 };
 
 #endif // OBJECTEFFECT_HPP

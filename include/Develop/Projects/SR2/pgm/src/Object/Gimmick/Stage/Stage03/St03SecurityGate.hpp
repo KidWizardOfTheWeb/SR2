@@ -1,6 +1,7 @@
 #ifndef ST03SECURITYGATE_HPP
 #define ST03SECURITYGATE_HPP
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 #include "types.h"
 #include "Develop/Projects/SR2/pgm/src/Object/Collision/BaseThroughCollision.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/RigidBodyGimmickObj.hpp"
@@ -32,26 +33,26 @@ public:
     void* m_pvBin;                  // offset 0x10, size 0x4
 };
 
-enum enmSecurityGateMode {
-    MODE_INIT = 0,
-    MODE_MAIN = 1,
-    MODE_CRASH_WAIT = 2,
-};
-
-enum enmSecurityGateState {
-    STATE_NOT_NEXT = 0,
-    STATE_OPEN = 1,
-    STATE_OPEN_WAIT = 2,
-    STATE_OPEN_BIGDOOR = 3,
-    STATE_CLOSE_BEGIN = 4,
-    STATE_CLOSE_BIGDOOR = 5,
-    STATE_CLOSE = 6,
-    STATE_SLEEP = 7,
-};
-
 // total size: 0x140
 class clsSecurityGate_Obj : public clsRigidBodyGimmickObj {
 public:
+    enum enmSecurityGateMode {
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
+        MODE_CRASH_WAIT = 2,
+    };
+
+    enum enmSecurityGateState {
+        STATE_NOT_NEXT = 0,
+        STATE_OPEN = 1,
+        STATE_OPEN_WAIT = 2,
+        STATE_OPEN_BIGDOOR = 3,
+        STATE_CLOSE_BEGIN = 4,
+        STATE_CLOSE_BIGDOOR = 5,
+        STATE_CLOSE = 6,
+        STATE_SLEEP = 7,
+    };
+
     inline clsSecurityGate_Obj() : clsRigidBodyGimmickObj() {}
     virtual ~clsSecurityGate_Obj() {}
 
@@ -100,10 +101,10 @@ public:
     void openDoor(u32 u32PlayerNo);
     void openDoor();
     void draw(clsModelType_OB_TX_MO& rcModel,
-              f32 (*psMtxPal)[4][4],
+              NNS_MATRIX* psMtxPal,
               u32* psNodeStat,
-              const f32 (*opaNnViewMtx)[4][4],
-              f32 (*psMtxWork)[4][4],
+              const NNS_MATRIX* opaNnViewMtx,
+              NNS_MATRIX* psMtxWork,
               u32 u32ViewNo);
 
     clsRigidBodyGimmickObj* m_pcRigidBodyObject; // offset 0x50, size 0x4

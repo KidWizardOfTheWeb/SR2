@@ -1,6 +1,7 @@
 #ifndef ST12PATHCANOEMOTION_HPP
 #define ST12PATHCANOEMOTION_HPP
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 #include "types.h"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage04/St04PathCanoe.hpp"
@@ -13,6 +14,15 @@ class clsModelType_OB_TX_MO;
 // total size: 0x250
 class clsPathCanoeMotion_Obj : public clsRigidBodyGimmickObj {
 public:
+    enum enmPathCanoeMode {
+        MODE_INIT = 0,
+        MODE_START_WAIT = 1,
+        MODE_MAIN = 2,
+        MODE_BLINK_WAIT = 3,
+        MODE_NOT_DISP = 4,
+        MODE_WAIT = 5,
+    };
+
     static f32 tof32ClipSqDist;
     static u32 otau32Se_CanoeBreak[2];
     static u32 otau32Se_CanoeExp[2];
@@ -59,10 +69,10 @@ public:
     void initParameter();
     void path_main();
     u8 draw(clsModelType_OB_TX_MO& m,
-            f32 (*a)[4][4],
+            NNS_MATRIX* a,
             u32* b,
-            const f32 (*c)[4][4],
-            f32 (*d)[4][4],
+            const NNS_MATRIX* c,
+            NNS_MATRIX* d,
             u32 e,
             f32* f);
 };

@@ -3,10 +3,18 @@
 
 #include "types.h"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
+#include "usr/local/sega/nn/src/Matrix/nnquaternion.h"
 
 // total size: 0x3C
 class clsSlerpQuat {
 public:
+    clsSlerpQuat() : m_f32Rate(0.0f), m_f32Add(0.0f), m_bIsSlerp(0)
+    {
+        nnMakeUnitQuaternion(&m_sBaseQuat);
+        nnMakeUnitQuaternion(&m_sSlerpQuat);
+        nnMakeUnitQuaternion(&m_sResultQuat);
+    }
+
     NNS_QUATERNION m_sBaseQuat;   // offset 0x0, size 0x10
     NNS_QUATERNION m_sSlerpQuat;  // offset 0x10, size 0x10
     NNS_QUATERNION m_sResultQuat; // offset 0x20, size 0x10

@@ -10,7 +10,7 @@
 class clsCharaScrGp : public clsCharaRoboBase {
 public:
     clsCharaScrGp(clsPlayerTask* pcPlayer) : clsCharaRoboBase(pcPlayer, 0, 0) {}
-    virtual ~clsCharaScrGp() {}
+    virtual ~clsCharaScrGp() { reset(); }
 
     virtual void draw(u32 u32Param1);
     virtual void initAttack00();

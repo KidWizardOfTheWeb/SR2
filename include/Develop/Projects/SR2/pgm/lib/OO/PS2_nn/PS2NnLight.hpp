@@ -9,12 +9,12 @@
 class clsPfLight : public clsSingleton<clsPfLight>, public clsOOLight {
 public:
     clsPfLight() {}
-    virtual ~clsPfLight() {}
+    virtual ~clsPfLight() { delete[] m_psDetail_Heap_PS2; }
 
     virtual void reinitLight(u32 ou32HardWareNumI,
                              u32 ou32SoftWareNumI,
-                             const f32 (*paViewMtxI)[4][4]);
-    virtual void updateLightMtx(const f32 (&pParam1)[4][4]) const {}
+                             const NNS_MATRIX* paViewMtxI);
+    virtual void updateLightMtx(const NNS_MATRIX& pParam1) const {}
     virtual void sendLight(u32 ou32NoI);
 
     stcDetail_PS2* m_psDetail_Heap_PS2; // offset 0x10, size 0x4

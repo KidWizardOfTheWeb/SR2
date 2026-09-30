@@ -7,6 +7,8 @@
 // total size: 0x8
 class clsFrameControl {
 public:
+    ~clsFrameControl() {} // RECONSTRUCTED
+
     f32 m_f32Frame;      // offset 0x0, size 0x4
     f32 m_f32CountFrame; // offset 0x4, size 0x4
 

@@ -3,10 +3,10 @@
 f32 clsSt13Hikari_Object::tof32ClipSqDist = 0.0f;
 
 void clsSt13Hikari_Object::draw(clsModelType_OB_TX_MO_MA& rcModel,
-                                f32 (*psMtxPal)[4][4],
+                                NNS_MATRIX* psMtxPal,
                                 u32* psNodeStat,
-                                const f32 (*opaNnViewMtx)[4][4],
-                                f32 (*psMtxWork)[4][4],
+                                const NNS_MATRIX* opaNnViewMtx,
+                                NNS_MATRIX* psMtxWork,
                                 u32 u32ViewNo)
 {
 }
@@ -32,7 +32,7 @@ void clsSt13Hikari_Object::destroyData()
 }
 
 clsSt13Hikari_Task::clsSt13Hikari_Task(u32 u32ObjectAreaNum)
-    : clsSingleModelGimmick_Task(0, u32ObjectAreaNum)
+    : clsSingleModelGimmick_Task(u32ObjectAreaNum, 101000)
 {
 }
 

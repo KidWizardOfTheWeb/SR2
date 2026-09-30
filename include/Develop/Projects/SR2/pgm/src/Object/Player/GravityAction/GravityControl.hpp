@@ -1,6 +1,11 @@
 #ifndef GRAVITYCONTROL_HPP
 #define GRAVITYCONTROL_HPP
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 #include "types.h"
+#include "Develop/Projects/SR2/pgm/lib/OO/core/OOFlag.hpp"
+#include "Develop/Projects/SR2/pgm/lib/OO/nn/NNUtil.hpp"
+#include "usr/local/sega/nn/src/Matrix/nnquaternion.h"
+#include "usr/local/sce/ee/gcc/ee/lib/libc/memset.h"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 #include "Develop/Projects/SR2/pgm/src/Object/Player/GravityAction/BaseGravityAction.hpp"
 
@@ -67,10 +72,35 @@ public:
         MAX_KEY_TABLE_NUM = 4,
     };
 
+    enum enmStatus {
+        STATUS_CLEAR = 0,
+        STATUS_NOTAGP_TRIGGER = 1,
+        STATUS_NOTAGP_ALWAYS = 2,
+        STATUS_MASK_NOTAGP = 3,
+    };
+
+    enum enmBonusFlag {
+        BONUS__CLEAR = 0,
+        BONUS__SPEED = 1,
+        BONUS__GP = 2,
+    };
+
     static stcCommonSetting t_sCommonSetting;
 
-    clsGravityControl(clsGravityActionManager* pcManager) : clsBaseGravityAction(pcManager) {}
-    virtual ~clsGravityControl() {}
+    clsGravityControl(clsGravityActionManager* pcManager)
+        : clsBaseGravityAction(pcManager), m_pcPhantom(NULL), m_pcEffectCharge_Task(NULL),
+          m_pcEffectWrist_Task(NULL), m_pcEffectLine_Task(NULL), m_eType(TYPE_SLIDE),
+          m_cStatus(STATUS_CLEAR), m_cBonus(BONUS__CLEAR), m_eFlag(0), m_bChangeGravity(0),
+          m_f32LeverRateX(0.0f), m_f32LeverRateY(0.0f), m_f32LeverTimeX(0.0f),
+          m_f32LeverTimeY(0.0f), m_f32VelocityRadX(0.0f), m_f32VelocityRadY(0.0f),
+          m_f32PosturalRadX(0.0f), m_f32PosturalRadY(0.0f), m_f32Frame(0.0f), m_f32FaceRate(0.0f),
+          m_f32ChargeFrame(0.0f), m_f32RotateAcceleRate(1.0f)
+    {
+        nnMakeUnitQuaternion(&m_sBaseQuat);
+        nnCopyVectorFast(&m_sUpVecFast, &nspNnUtil::tosYVecFast);
+        memset(m_as8AdjustKeyTable, 0, sizeof(m_as8AdjustKeyTable));
+    }
+    virtual ~clsGravityControl();
 
     NNS_VECTORFAST m_sUpVecFast;        // offset 0x20, size 0x10
     NNS_QUATERNION m_sBaseQuat;         // offset 0x30, size 0x10
@@ -79,8 +109,8 @@ public:
     clsTask* m_pcEffectWrist_Task;      // offset 0x48, size 0x4
     clsTask* m_pcEffectLine_Task;       // offset 0x4C, size 0x4
     enmType m_eType;                    // offset 0x50, size 0x4
-    s32 m_cStatus;                      // offset 0x54, size 0x4
-    s32 m_cBonus;                       // offset 0x58, size 0x4
+    clsFlag<enmStatus> m_cStatus;       // offset 0x54, size 0x4
+    clsFlag<enmBonusFlag> m_cBonus;     // offset 0x58, size 0x4
     u8 m_eFlag;                         // offset 0x5C, size 0x1
     u8 m_bChangeGravity;                // offset 0x5D, size 0x1
     f32 m_f32LeverRateX;                // offset 0x60, size 0x4
@@ -120,7 +150,7 @@ public:
     void setDashParam(f32 f32BaseSpeed, f32 f32MaxSpeed, f32 f32DashFrame);
     void checkChangeGravity();
     void adjustVelocity();
-    void calcRotateMatrix(f32 (*psDstMtx)[4][4]);
+    void calcRotateMatrix(NNS_MATRIX* psDstMtx);
     void calcRotateQuaternion(NNS_QUATERNION* psDstQuat);
     void setKeyTable(enmKeyTable eKeyTable, clsPlayerTask* pcPlayer);
     void destroyEffectTaskCharge() {}
@@ -131,5 +161,9 @@ public:
     u8 selectAngle_SpecialAdjust() { return 0; }
     u8 initMove_SpecialAdjust() { return 0; }
 };
+
+inline clsGravityControl::~clsGravityControl()
+{
+}
 
 #endif // GRAVITYCONTROL_HPP

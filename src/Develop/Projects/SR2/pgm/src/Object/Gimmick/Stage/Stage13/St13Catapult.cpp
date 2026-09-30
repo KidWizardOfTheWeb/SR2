@@ -30,7 +30,7 @@ void clsSt13Catapult_Obj::contactTriggerEvent(hkContactPoint* pcObject, clsObjec
 
 clsSt13Catapult_Task::clsSt13Catapult_Task(u32 u32ObjectAreaNum)
     : clsSingleModelGimmick_Task<clsSt13Catapult_Task, clsSt13Catapult_Obj, clsModelType_OB_TX_MO>(
-          0, 0)
+          u32ObjectAreaNum, 101000)
 {
 }
 

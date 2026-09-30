@@ -2,6 +2,8 @@
 #define GHOST_HPP
 
 #include "types.h"
+#include "usr/local/sce/ee/lib/libkernl/kprintf2.h"
+#include "macros.h"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 #include "Develop/Projects/SR2/pgm/lib/OO/core/Singleton.hpp"
 #include "Develop/Projects/SR2/pgm/src/Game/Game.hpp"
@@ -54,11 +56,11 @@ struct stcGhostSaveData {
 
 // total size: 0x70
 struct stcGhostInfo {
-    NNS_VECTORFAST sPos;   // offset 0x0, size 0x10
-    NNS_QUATERNION sQuat;  // offset 0x10, size 0x10
-    f32 sDrawMatrix[4][4]; // offset 0x20, size 0x40
-    u8 u8CharaType;        // offset 0x60, size 0x1
-    u8 bIsEnable;          // offset 0x61, size 0x1
+    NNS_VECTORFAST sPos;    // offset 0x0, size 0x10
+    NNS_QUATERNION sQuat;   // offset 0x10, size 0x10
+    NNS_MATRIX sDrawMatrix; // offset 0x20, size 0x40
+    u8 u8CharaType;         // offset 0x60, size 0x1
+    u8 bIsEnable;           // offset 0x61, size 0x1
 };
 
 // total size: 0xFE10
@@ -73,14 +75,26 @@ public:
     virtual void draw();
 
     void setStartFlag(bool bFlag);
-    void* getSaveDataBuff(s32 s32Idx);                        // TODO: verify return type
-    u8 checkGhostDataCrc(const void* pv);                     // TODO: verify return type
-    void setGhostData(void* pv, bool bFlag, const u16* pu16); // TODO: verify return type
+    void* getSaveDataBuff(s32 s32Idx);
+    u8 checkGhostDataCrc(const void* pv);
+    void setGhostData(void* pv, bool bFlag, const u16* pu16);
     void updateGhostPlayer();
     void restart();
     void createGhostSaveBuffer();
-    void* getGhostLoadData(u32 u32Idx);    // TODO: verify return type
-    bool getGhostDownloadFlag(u32 u32Idx); // TODO: verify return type
+    static stcSendAdv* getGhostLoadData(u32 u32StageNoI)
+    {
+        if (u32StageNoI == 0 || u32StageNoI > 16) {
+            SUPER_ASSERT(0x32652012,
+                         "Ghost.h",
+                         386,
+                         "clsGhost::getGhostLoadData() ステージナンバーが範囲外です。\n");
+        }
+        if (t_psSaveBuf->u1IsUsed && t_psSaveBuf->u4StageNoSub1 == u32StageNoI - 1) {
+            return &t_psSaveBuf->sCharaLoadParam;
+        }
+        return NULL;
+    }
+    bool getGhostDownloadFlag(u32 u32Idx); // RECONSTRUCTED: return type.
 
     clsPlayerGhost* m_pcGhostPlayer;      // offset 0x58, size 0x4
     clsPlayerTask* m_pcPlayer;            // offset 0x5C, size 0x4

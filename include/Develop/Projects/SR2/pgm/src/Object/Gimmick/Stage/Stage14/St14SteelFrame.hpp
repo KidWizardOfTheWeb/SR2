@@ -5,14 +5,14 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/RigidBodyGimmickObj.hpp"
 
-enum enmSteelFrameMode {
-    MODE_INIT = 0,
-    MODE_MAIN = 1,
-};
-
 // total size: 0xE0
 class clsSteelFrame_Obj : public clsRigidBodyGimmickObj {
 public:
+    enum enmSteelFrameMode {
+        MODE_INIT = 0,
+        MODE_MAIN = 1,
+    };
+
     clsSteelFrame_Obj();
     virtual ~clsSteelFrame_Obj();
     virtual void init();

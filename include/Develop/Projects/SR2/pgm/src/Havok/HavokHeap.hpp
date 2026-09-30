@@ -1,7 +1,8 @@
 #ifndef HAVOKHEAP_HPP
 #define HAVOKHEAP_HPP
 
-#include "Develop/Projects/SR2/pgm/src/Havok/Havok.hpp"
+#include "Develop/Projects/SR2/pgm/src/Havok/hkBaseObject.hpp"
+#include "Develop/Projects/SR2/pgm/src/Havok/HavokMath.hpp"
 #include "Develop/Projects/SR2/pgm/src/Havok/hkEnum.hpp"
 #include "Develop/Projects/SR2/pgm/src/Havok/hkArray.hpp"
 #include "Develop/Projects/SR2/pgm/lib/OO/core/OOHeapFragment.hpp"
@@ -9,22 +10,23 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Object.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Player/PlayerMotion.hpp"
 
+class hkBool;
 class hkEntity;
 class hkWorldObject;
 class hkEntityActivationListener;
-class hkEntityDeactivator;
+class hkEntityDeactivator : public hkReferencedObject {};
 class hkEntityListener;
-// total size: 0x4
-class hkFinishLoadedObjectFlag {
-public:
-    s32 m_finishing; // offset 0x0, size 0x4
-};
 class hkGeometry;
 class hkPhantomOverlapListener;
 class hkRigidBodyCinfo;
-class hkRigidBodyDeactivator {
+class hkRigidBodyDeactivator : public hkEntityDeactivator {
 public:
-    enum DeactivatorType { DEACTIVATOR_NEVER = 0 };
+    enum DeactivatorType { DEACTIVATOR_NEVER = 1, DEACTIVATOR_SPATIAL = 2 };
+
+    virtual ~hkRigidBodyDeactivator() {}
+    virtual hkBool shouldDeactivateHighFrequency(const hkEntity* pParam1) = 0;
+    virtual hkBool shouldDeactivateLowFrequency(const hkEntity* pParam1) = 0;
+    virtual s32 getRigidBodyDeactivatorType() const = 0;
 };
 class hkMatrix3;
 class hkMotionState;
@@ -33,6 +35,7 @@ class hkAgent3ProcessInput;
 class hkAgentEntry;
 class hkAgentNnEntry;
 class hkAction;
+class hkAabbPhantom;
 class hkBroadPhaseHandlePair;
 class hkCdBody;
 class hkCdBodyPairCollector;
@@ -56,6 +59,7 @@ class hkCdVertex;
 class hkLinearCastCollisionInput;
 class hkMaxSizeMotion;
 class hkMemory;
+class hkOstream;
 class hkProcessCollisionInput;
 class hkProcessCollisionOutput;
 class hkRayHitCollector;
@@ -108,6 +112,12 @@ class PotentialInfo;
 // total size: 0x1
 class hkBool {
 public:
+    hkBool() {}
+    hkBool(c8 bValue) : m_bool(bValue) {}
+
+    operator bool() const { return m_bool != 0; }
+    bool operator!() const { return m_bool == 0; }
+
     c8 m_bool; // offset 0x0, size 0x1
 };
 
@@ -156,7 +166,7 @@ public:
 // total size: 0xC
 class hkGskCache16 : public hkGskCache {};
 
-// dep-only shells — no DWARF layout; minimal bodies for type completeness
+// RECONSTRUCTED: incomplete types.
 class hkMassElement {};
 // total size: 0x50
 class hkMassProperties {
@@ -228,7 +238,20 @@ class hkMoppAabbCastVirtualMachineQueryFloat {};
 class hkMoppAabbCastVirtualMachineQueryInt {};
 class hkConstraintSchemaInfo {};
 class hkConstraintSolverResources {};
-class hkVelocityAccumulator {};
+// total size: 0x80
+class hkVelocityAccumulator {
+public:
+    u8 m_type;                   // offset 0x0, size 0x1
+    u8 m_matrixIsIdentity;       // offset 0x1, size 0x1
+    u16 m_padding;               // offset 0x2, size 0x2
+    u32 m_deactivationCounter;   // offset 0x4, size 0x4
+    u32 m_deactivationClass;     // offset 0x8, size 0x4
+    hkVector4 m_linearVelocity;  // offset 0x10, size 0x10
+    hkVector4 m_angularVelocity; // offset 0x20, size 0x10
+    hkVector4 m_invMasses;       // offset 0x30, size 0x10
+    hkVector4 m_centerOfMass;    // offset 0x40, size 0x10
+    hkMatrix3 m_coreFromWorld;   // offset 0x50, size 0x30
+};
 class hkMoppObbVirtualMachineQuery {};
 class hkMoppPrimitiveInfo {};
 class hkSimpleConstraintUtilCollideParams {};
@@ -287,6 +310,14 @@ public:
     hkEnum<s32> m_type; // offset 0x20, size 0x4
     u32 m_pad[3];       // offset 0x24, size 0xC
 };
+// total size: 0x18
+class hkLinearCastInput {
+public:
+    hkVector4 m_to;            // offset 0x0, size 0x10
+    f32 m_maxExtraPenetration; // offset 0x10, size 0x4
+    f32 m_startPointTolerance; // offset 0x14, size 0x4
+};
+
 // total size: 0x14
 class hkCollisionInput {
 public:
@@ -316,6 +347,8 @@ public:
 // total size: 0x40
 class hkLinearCastCollisionInput : public hkCollisionInput {
 public:
+    hkLinearCastCollisionInput(const hkProcessCollisionInput& rParam1);
+
     hkVector4 m_path;                 // offset 0x20, size 0x10
     f32 m_maxExtraPenetration;        // offset 0x30, size 0x4
     f32 m_cachedPathLength;           // offset 0x34, size 0x4
@@ -324,12 +357,20 @@ public:
 // total size: 0x40
 class hkProcessCollisionInput : public hkCollisionInput {
 public:
+    u8 m_pad14[0xC];                                          // offset 0x14, size 0xC
     hkStepInfo m_stepInfo;                                    // offset 0x20, size 0x10
     hkPadSpu<hkCollisionQualityInfo*> m_collisionQualityInfo; // offset 0x30, size 0x4
     void* m_dynamicsInfo;                                     // offset 0x34, size 0x4
     u8 m_enableDeprecatedWelding;                             // offset 0x38, size 0x1
     hkCollisionAgentConfig* m_config;                         // offset 0x3C, size 0x4
 };
+
+inline hkLinearCastCollisionInput::hkLinearCastCollisionInput(
+    const hkProcessCollisionInput& rParam1)
+    : hkCollisionInput(rParam1), m_maxExtraPenetration(1.1920928955078125e-7f),
+      m_config(rParam1.m_config)
+{
+}
 class hkRayHitCollector {};
 // total size: 0x30
 class hkShapeRayCastInput {
@@ -340,10 +381,37 @@ public:
     hkRayShapeCollectionFilter* m_rayShapeCollectionFilter; // offset 0x24, size 0x4
 };
 class hkSphere {};
-class hkTypedBroadPhaseHandlePair {};
 
-class hkCollidableAddedEvent {};
-class hkCollidableRemovedEvent {};
+class hkCollidableAddedEvent {
+public:
+    void* m_object;             // offset 0x0, size 0x4
+    hkCollidable* m_collidable; // offset 0x4, size 0x4
+    s32 m_result;               // offset 0x8, size 0x4; exact semantics unresolved
+};
+
+class hkCollidableRemovedEvent {
+public:
+    hkCollidableRemovedEvent(void* object, hkCollidable* collidable, hkBool wasAdded)
+        : m_object(object), m_collidable(collidable), m_collidableWasAdded(wasAdded)
+    {
+    }
+    void* m_object;              // offset 0x0, size 0x4
+    hkCollidable* m_collidable;  // offset 0x4, size 0x4
+    hkBool m_collidableWasAdded; // offset 0x8, size 0x1
+};
+
+class hkPhantomOverlapListener {
+public:
+    virtual void collidableAddedCallback(const hkCollidableAddedEvent& rParam1) = 0;
+    virtual void collidableRemovedCallback(const hkCollidableRemovedEvent& rParam1) = 0;
+    virtual ~hkPhantomOverlapListener() {}
+};
+
+class hkWorldDeletionListener {
+public:
+    virtual ~hkWorldDeletionListener() {}
+    virtual void worldDeletedCallback(hkWorld* pParam1) = 0;
+};
 
 class hkBroadPhaseCastCollector {
 public:
@@ -353,19 +421,52 @@ public:
 // total size: 0x4
 class hkBroadPhaseHandle {
 public:
+    hkBroadPhaseHandle() {}
+    hkBroadPhaseHandle(u32 u32Id) : m_id(u32Id) {}
+
     u32 m_id; // offset 0x0, size 0x4
 };
 
 // total size: 0xC
 class hkTypedBroadPhaseHandle : public hkBroadPhaseHandle {
 public:
+    hkTypedBroadPhaseHandle() {}
+    hkTypedBroadPhaseHandle(s8 s8Type)
+        : hkBroadPhaseHandle(0), m_type(s8Type), m_collisionFilterInfo(0)
+    {
+        m_ownerOffset = 0x7F;
+    }
+
+    hkCollidable* getOwner()
+    {
+        return reinterpret_cast<hkCollidable*>(reinterpret_cast<c8*>(this) + m_ownerOffset);
+    }
+
+    const hkCollidable* getOwner() const
+    {
+        return reinterpret_cast<const hkCollidable*>(reinterpret_cast<const c8*>(this) +
+                                                     m_ownerOffset);
+    }
+
     s8 m_type;                 // offset 0x4, size 0x1
     s8 m_ownerOffset;          // offset 0x5, size 0x1
     u16 m_objectQualityType;   // offset 0x6, size 0x2
     u32 m_collisionFilterInfo; // offset 0x8, size 0x4
 };
 
-class hkBroadPhaseHandlePair {};
+// total size: 0x8
+class hkBroadPhaseHandlePair {
+public:
+    hkBroadPhaseHandle* m_a;
+    hkBroadPhaseHandle* m_b;
+};
+
+// total size: 0x8
+class hkTypedBroadPhaseHandlePair {
+public:
+    hkTypedBroadPhaseHandle* m_a;
+    hkTypedBroadPhaseHandle* m_b;
+};
 
 // total size: 0x8
 class hkCdPointCollector {
@@ -378,10 +479,19 @@ public:
 // total size: 0x10
 class hkCdBody {
 public:
-    hkShape* m_shape;   // offset 0x0, size 0x4
-    u32 m_shapeKey;     // offset 0x4, size 0x4
-    void* m_motion;     // offset 0x8, size 0x4
-    hkCdBody* m_parent; // offset 0xC, size 0x4
+    hkCdBody() {}
+    hkCdBody(const hkShape* pcShape)
+    {
+        m_shape = pcShape;
+        m_motion = NULL;
+        m_parent = NULL;
+        m_shapeKey = ~0u;
+    }
+
+    const hkShape* m_shape; // offset 0x0, size 0x4
+    u32 m_shapeKey;         // offset 0x4, size 0x4
+    void* m_motion;         // offset 0x8, size 0x4
+    hkCdBody* m_parent;     // offset 0xC, size 0x4
 };
 
 // total size: 0x20
@@ -431,7 +541,30 @@ class hkFeaturePointCache {};
 // total size: 0x24
 class hkCollidable : public hkCdBody {
 public:
+    hkCollidable() {}
+    hkCollidable(hkFinishLoadedObjectFlag sFlag)
+    {
+        if (sFlag.m_finishing) {
+            m_broadPhaseHandle.m_ownerOffset =
+                static_cast<s8>(reinterpret_cast<const c8*>(this) -
+                                reinterpret_cast<const c8*>(&m_broadPhaseHandle));
+        }
+    }
+    hkCollidable(const hkShape* pcShape, s8 s8BroadPhaseType)
+        : hkCdBody(pcShape), m_ownerOffset(0), m_broadPhaseHandle(s8BroadPhaseType)
+    {
+        m_broadPhaseHandle.m_ownerOffset = static_cast<s8>(
+            reinterpret_cast<const c8*>(this) - reinterpret_cast<const c8*>(&m_broadPhaseHandle));
+        m_forceCollideOntoPpu = 0;
+        m_shapeSizeOnSpu = 0;
+    }
+
     u32 getCollisionFilterInfo() const { return m_broadPhaseHandle.m_collisionFilterInfo; }
+    hkWorldObject* getOwner()
+    {
+        return reinterpret_cast<hkWorldObject*>(reinterpret_cast<s8*>(this) + m_ownerOffset);
+    }
+
     const hkWorldObject* getOwner() const
     {
         return reinterpret_cast<const hkWorldObject*>(reinterpret_cast<const s8*>(this) +
@@ -455,21 +588,82 @@ public:
 // total size: 0x30
 class hkLinkedCollidable : public hkCollidable {
 public:
+    hkLinkedCollidable() {}
+    hkLinkedCollidable(hkFinishLoadedObjectFlag sFlag) : hkCollidable(sFlag) {}
+    hkLinkedCollidable(const hkShape* pcShape, s8 s8BroadPhaseType)
+        : hkCollidable(pcShape, s8BroadPhaseType)
+    {
+    }
+
     hkArray<CollisionEntry> m_collisionEntries; // offset 0x24, size 0xC
 };
 
 // total size: 0xC
 class hkMaterial {
 public:
-    hkEnum<u8> m_responseType; // offset 0x0, size 0x1
+    hkMaterial() : m_friction(0.5f), m_restitution(0.4f) {}
+    hkMaterial(hkFinishLoadedObjectFlag sParam1) {}
+
+    hkEnum<s8> m_responseType; // offset 0x0, size 0x1
     f32 m_friction;            // offset 0x4, size 0x4
     f32 m_restitution;         // offset 0x8, size 0x4
 };
 
+class hkSmallArrayUtil {
+public:
+    static void _reserve(void*, s32, s32);
+    static void _reserveMore(void*, s32);
+};
+
 // total size: 0x8
+template <typename T>
 class hkSmallArray {
 public:
-    void* m_data;           // offset 0x0, size 0x4
+    hkSmallArray() : m_data(NULL), m_size(0), m_capacityAndFlags(0x8000) {}
+    ~hkSmallArray()
+    {
+        if ((m_capacityAndFlags & 0x8000) == 0) {
+            hkThreadMemory::s_threadMemoryInstance->deallocateChunk(
+                m_data, getCapacity() * sizeof(T), HK_MEMORY_CLASS_ARRAY);
+        }
+    }
+
+    void clearAndDeallocate()
+    {
+        if ((m_capacityAndFlags & 0x8000) == 0) {
+            hkThreadMemory::s_threadMemoryInstance->deallocateChunk(
+                m_data, getCapacity() * sizeof(T), HK_MEMORY_CLASS_ARRAY);
+        }
+        m_data = NULL;
+        m_size = 0;
+        m_capacityAndFlags = (m_capacityAndFlags & 0x4000) | 0x8000;
+    }
+    s32 getSize() const { return m_size; }
+    s32 getCapacity() const { return m_capacityAndFlags & 0x3fff; }
+    hkBool isEmpty() const { return hkBool(m_size == 0); }
+
+    s32 indexOf(const T& rValue) const
+    {
+        for (s32 s32Index = 0; s32Index < m_size; ++s32Index) {
+            if (m_data[s32Index] == rValue) {
+                return s32Index;
+            }
+        }
+        return -1;
+    }
+
+    void pushBack(const T& rValue)
+    {
+        if (m_size == (m_capacityAndFlags & 0x3fff)) {
+            hkSmallArrayUtil::_reserveMore(this, sizeof(T));
+        }
+        m_data[m_size++] = rValue;
+    }
+
+    T& operator[](s32 s32Index) { return m_data[s32Index]; }
+    const T& operator[](s32 s32Index) const { return m_data[s32Index]; }
+
+    T* m_data;              // offset 0x0, size 0x4
     u16 m_size;             // offset 0x4, size 0x2
     u16 m_capacityAndFlags; // offset 0x6, size 0x2
 };
@@ -711,6 +905,7 @@ public:
 class hkCollisionAgent : public hkReferencedObject {
 public:
     virtual ~hkCollisionAgent() {}
+    static void operator delete(void* pvMemory);
     virtual void updateShapeCollectionFilter(const hkCdBody& rParam1,
                                              const hkCdBody& rParam2,
                                              const hkCollisionInput& rParam3,
@@ -734,10 +929,10 @@ class hkBodyVelocity {};
 // total size: 0x10
 class hkDynamicsContactMgr : public hkContactMgr {
 public:
-    virtual hkContactPointMaterial* getContactPointProperties(u16 u16Param1) { return 0; }
+    virtual hkContactPointMaterial* getContactPointProperties(u16 u16Param1) { return NULL; }
     virtual void getAllContactPointIds(hkArray<u16>& rParam1) const {}
     virtual ~hkDynamicsContactMgr() {}
-    virtual hkContactPoint* getContactPoint(u16 u16Param1) { return 0; }
+    virtual hkContactPoint* getContactPoint(u16 u16Param1) { return NULL; }
     virtual void toiCollisionResponseBeginCallback(const hkContactPoint& rParam1,
                                                    hkSimpleConstraintInfoInitInput& rParam2,
                                                    hkBodyVelocity& rParam3,
@@ -753,7 +948,7 @@ public:
                                                  hkBodyVelocity& rParam6)
     {
     }
-    virtual hkConstraintInstance* getConstraintInstance() { return 0; }
+    virtual hkConstraintInstance* getConstraintInstance() { return NULL; }
     virtual void processToi(hkToiEvent& rParam1, f32 f32Param2, hkArray<hkEntity*>& rParam3) {}
 
     hkWorld* m_world; // offset 0xC, size 0x4
@@ -796,13 +991,18 @@ public:
     hk2dAngConstraintAtom m_2dAng;                 // offset 0x80, size 0x4
 };
 
+void hkBridgeConstraintAtom_callData(hkConstraintData* pParam1,
+                                     const hkConstraintQueryIn& rParam2,
+                                     hkConstraintQueryOut& rParam3);
+
 // total size: 0xC
 class hkBridgeConstraintAtom : public hkConstraintAtom {
 public:
+    hkBridgeConstraintAtom() { m_type = 1; }
     void init(hkConstraintData* pParam1);
 
     void (*m_buildJacobianFunc)(hkConstraintData* pParam1,
-                                hkConstraintQueryIn& rParam2,
+                                const hkConstraintQueryIn& rParam2,
                                 hkConstraintQueryOut& rParam3); // offset 0x4, size 0x4
     hkConstraintData* m_constraintData;                         // offset 0x8, size 0x4
 };
@@ -983,78 +1183,6 @@ enum hkShapeType {
     HK_SHAPE_ALL = -1,
 };
 
-enum HK_MEMORY_CLASS {
-    HK_MEMORY_CLASS_ROOT = 0,
-    HK_MEMORY_CLASS_BASE = 1,
-    HK_MEMORY_CLASS_COLLIDE = 2,
-    HK_MEMORY_CLASS_CONSTRAINT_SOLVER = 3,
-    HK_MEMORY_CLASS_DYNAMICS = 4,
-    HK_MEMORY_CLASS_EXPORT = 5,
-    HK_MEMORY_CLASS_SERIALIZE = 6,
-    HK_MEMORY_CLASS_GEOMETRY = 7,
-    HK_MEMORY_CLASS_DISPLAY = 8,
-    HK_MEMORY_CLASS_MATH = 9,
-    HK_MEMORY_CLASS_SCENE_DATA = 10,
-    HK_MEMORY_CLASS_VEHICLE = 11,
-    HK_MEMORY_CLASS_UTILITIES = 12,
-    HK_MEMORY_CLASS_ANIMATION = 13,
-    HK_MEMORY_CLASS_BEHAVIOR = 14,
-    HK_MEMORY_CLASS_TOOLS = 15,
-    HK_MEMORY_CLASS_DEMO_FRAMEWORK = 16,
-    HK_MEMORY_CLASS_DEMO = 17,
-    HK_MEMORY_CLASS_USER = 18,
-    HK_MEMORY_CLASS_BASE_CLASS = 19,
-    HK_MEMORY_CLASS_STRING = 20,
-    HK_MEMORY_CLASS_ARRAY = 21,
-    HK_MEMORY_CLASS_SINGLETON = 22,
-    HK_MEMORY_CLASS_SCRATCHPAD = 23,
-    HK_MEMORY_CLASS_STREAM = 24,
-    HK_MEMORY_CLASS_MONITOR = 25,
-    HK_MEMORY_CLASS_MAP = 26,
-    HK_MEMORY_CLASS_TREE = 27,
-    HK_MEMORY_CLASS_HKCLASS = 28,
-    HK_MEMORY_CLASS_AGENT = 29,
-    HK_MEMORY_CLASS_ALGORITHM = 30,
-    HK_MEMORY_CLASS_BROAD_PHASE = 31,
-    HK_MEMORY_CLASS_CONTACT = 32,
-    HK_MEMORY_CLASS_DISPATCH = 33,
-    HK_MEMORY_CLASS_MANIFOLD = 34,
-    HK_MEMORY_CLASS_SHAPE = 35,
-    HK_MEMORY_CLASS_COLLIDABLE = 36,
-    HK_MEMORY_CLASS_CDINFO = 37,
-    HK_MEMORY_CLASS_MOPP = 38,
-    HK_MEMORY_CLASS_ACTION = 39,
-    HK_MEMORY_CLASS_DYNCOLLIDE = 40,
-    HK_MEMORY_CLASS_DEACTIVATOR = 41,
-    HK_MEMORY_CLASS_CONSTRAINT = 42,
-    HK_MEMORY_CLASS_ENTITY = 43,
-    HK_MEMORY_CLASS_MOTION = 44,
-    HK_MEMORY_CLASS_WORLD = 45,
-    HK_MEMORY_CLASS_RIGID_BODY = 46,
-    HK_MEMORY_CLASS_PHANTOM = 47,
-    HK_MEMORY_CLASS_SIMISLAND = 48,
-    HK_MEMORY_CLASS_CAMERA = 49,
-    HK_MEMORY_CLASS_CHARACTER = 50,
-    HK_MEMORY_CLASS_VDB = 51,
-    HK_MEMORY_CLASS_INERTIA = 52,
-    HK_MEMORY_CLASS_ANIM_UNCOMPRESSED = 53,
-    HK_MEMORY_CLASS_ANIM_COMPRESSED = 54,
-    HK_MEMORY_CLASS_ANIM_DATA = 55,
-    HK_MEMORY_CLASS_ANIM_MOTION = 56,
-    HK_MEMORY_CLASS_ANIM_RIG = 57,
-    HK_MEMORY_CLASS_ANIM_CONTROL = 58,
-    HK_MEMORY_CLASS_ANIM_RUNTIME = 59,
-    HK_MEMORY_CLASS_ANIM_CACHE = 60,
-    HK_MEMORY_CLASS_BEHAVIOR_RUNTIME = 61,
-    HK_MEMORY_CLASS_BEHAVIOR_DEMOS = 62,
-    HK_MEMORY_CLASS_USER_1 = 63,
-    HK_MEMORY_CLASS_USER_2 = 64,
-    HK_MEMORY_CLASS_USER_3 = 65,
-    HK_MEMORY_CLASS_USER_4 = 66,
-    HK_MEMORY_CLASS_PRE_ALLOCATED = 67,
-    HK_MEMORY_CLASS_MAX = 68,
-};
-
 // total size: 0x14
 class BigBlockData {
 public:
@@ -1087,9 +1215,19 @@ class hkMemory {
 public:
     hkMemory();
     virtual ~hkMemory();
+    virtual void allocateChunkBatch(void** ppvParam1, s32 s32Param2, s32 s32Param3) = 0;
+    virtual void deallocateChunkBatch(void** ppvParam1, s32 s32Param2, s32 s32Param3) = 0;
+    virtual void* allocateChunk(s32 s32Param1, HK_MEMORY_CLASS sParam2) = 0;
+    virtual void deallocateChunk(void* pvParam1, s32 s32Param2, HK_MEMORY_CLASS sParam3) = 0;
+    virtual void* allocateRuntimeBlock(s32 s32Param1, HK_MEMORY_CLASS sParam2) = 0;
+    virtual void deallocateRuntimeBlock(void* pvParam1, s32 s32Param2, HK_MEMORY_CLASS sParam3) = 0;
+    virtual void preAllocateRuntimeBlock(s32 s32Param1, HK_MEMORY_CLASS sParam2) = 0;
+    virtual void provideRuntimeBlock(void* pvParam1, s32 s32Param2, HK_MEMORY_CLASS sParam3) = 0;
+    virtual void freeRuntimeBlocks() = 0;
     virtual void reservePagesFromSystemMemory(s32 s32Param1) {}
     virtual void garbageCollectEmptyPages() {}
     virtual void releaseUnusedPagesToSystemMemory() {}
+    virtual void printStatistics(hkOstream* pParam1) = 0;
     virtual s32 getAllocatedSize(s32 s32Param1);
     virtual bool isDebugMemory() { return false; }
     virtual hkBool isOk() const;
@@ -1135,10 +1273,13 @@ public:
 };
 
 namespace hkWorldOperation {
-enum BaseOperation {
-    BASE_OPERATION_NONE = 0,
+class BaseOperation {
+public:
+    BaseOperation(u8 u8Type = 0) : m_type(u8Type) {}
+
+    u8 m_type;
 };
-}
+} // namespace hkWorldOperation
 
 // total size: 0x38
 class clsPfHavokHeap : public clsSingleton<clsPfHavokHeap>, public clsOOHeapFragment {
@@ -1180,7 +1321,31 @@ enum SimulationType {
 // total size: 0x8
 class hkPropertyValue {
 public:
-    u32 m_data; // offset 0x0, size 0x4
+    hkPropertyValue() {}
+    hkPropertyValue(u_long ulData) : m_data(ulData) {}
+
+    u_long m_data; // offset 0x0, size 0x4
+};
+
+// total size: 0x10
+class hkShape : public hkReferencedObject {
+public:
+    virtual ~hkShape() {}
+    static void operator delete(void* pvMemory);
+    virtual f32 getMaximumProjection(const hkVector4& rParam1) const;
+    virtual void castRayWithCollector(const hkShapeRayCastInput& rParam1,
+                                      const hkCdBody& rParam2,
+                                      hkRayHitCollector& rParam3) const = 0;
+    virtual hkShapeContainer* getContainer() const { return NULL; }
+    virtual s32 calcSizeForSpu(s32 s32Param1) const { return -1; }
+    virtual void getAabbImpl(const hkTransform& rParam1, f32 f32Param2, hkAabb& rParam3) const = 0;
+    virtual hkBool castRayImpl(const hkShapeRayCastInput& rParam1,
+                               hkShapeRayCastOutput& rParam2) const = 0;
+
+    static void* operator new(size_t uSize);
+
+    u32 m_userData;     // offset 0x8, size 0x4
+    hkEnum<u32> m_type; // offset 0xC, size 0x4
 };
 
 // total size: 0x10
@@ -1191,23 +1356,31 @@ public:
     hkPropertyValue m_value; // offset 0x8, size 0x8
 };
 
-#ifndef HK_WORLD_OBJECT_DECLARED
-#define HK_WORLD_OBJECT_DECLARED
+// total size: 0x58
 class hkWorldObject : public hkReferencedObject {
 public:
     enum BroadPhaseType {
         BROAD_PHASE_INVALID = 0,
+        BROAD_PHASE_ENTITY = 1,
+        BROAD_PHASE_PHANTOM = 2,
+        BROAD_PHASE_BORDER = 3,
     };
 
     hkWorldObject() {}
     hkWorldObject(hkFinishLoadedObjectFlag sParam1);
     hkWorldObject(const hkShape* pParam1, BroadPhaseType sParam2);
-    virtual ~hkWorldObject() {}
+    virtual ~hkWorldObject()
+    {
+        if (m_collidable.m_shape != NULL) {
+            m_collidable.m_shape->removeReference();
+        }
+    }
     virtual void calcStatistics(hkStatisticsCollector* pParam1) const;
-    virtual void setShape(const hkShape* pParam1);
+    virtual bool setShape(const hkShape* pParam1);
+    virtual hkMotionState* getMotionState() = 0;
 
     void addProperty(u32 u32Param1, hkPropertyValue sParam2);
-    void removeProperty(u32 u32Param1);
+    hkPropertyValue removeProperty(u32 u32Param1);
     void addReference();
     void removeReference();
     void addReferenceAsCriticalOperation();
@@ -1221,7 +1394,6 @@ public:
     c8* m_name;                            // offset 0x48, size 0x4
     hkArray<hkProperty> m_properties;      // offset 0x4C, size 0xC
 };
-#endif
 
 // total size: 0x120
 class hkMotion : public hkReferencedObject {
@@ -1230,16 +1402,22 @@ public:
         MOTION_INVALID = 0,
         MOTION_DYNAMIC = 1,
         MOTION_SPHERE_INERTIA = 2,
-        MOTION_BOX_INERTIA = 3,
-        MOTION_KEYFRAMED = 4,
-        MOTION_FIXED = 5,
-        MOTION_THIN_BOX_INERTIA = 6,
-        MOTION_CHARACTER = 7,
+        MOTION_SPHERE_STABILIZED = 3,
+        MOTION_BOX_INERTIA = 4,
+        MOTION_BOX_STABILIZED = 5,
+        MOTION_KEYFRAMED = 6,
+        MOTION_FIXED = 7,
+        MOTION_THIN_BOX_INERTIA = 8,
+        MOTION_CHARACTER = 9,
     };
 
+    hkMotion() {}
     hkMotion(const hkVector4& rParam1, const hkQuaternion& rParam2, bool bParam3);
-    hkMotion(hkFinishLoadedObjectFlag) {}
+    hkMotion(hkFinishLoadedObjectFlag sParam1) {}
     virtual ~hkMotion() {}
+    static void* operator new(size_t uSize);
+    static void* operator new(size_t, void* pvMemory) { return pvMemory; }
+    static void operator delete(void* pvMemory);
     virtual void setMass(f32 f32Param1);
     virtual void setMassInv(f32 f32Param1);
     virtual void getInertiaLocal(hkMatrix3& rParam1) const = 0;
@@ -1259,9 +1437,14 @@ public:
     void getMotionStateAndVelocitiesAndDeactivationType(hkMotion* pParam1);
 
     f32 getMass() const;
+    MotionType getType() const
+    {
+        return static_cast<MotionType>(static_cast<u8>(m_type.m_storage));
+    }
+    hkBool isFixed() const { return hkBool(getType() == MOTION_FIXED); }
     void setDeactivationClass(s32 s32Param1);
 
-    hkEnum<u8> m_type;                      // offset 0x8, size 0x1
+    hkEnum<MotionType, u8> m_type;          // offset 0x8, size 0x1
     u8 m_deactivationIntegrateCounter;      // offset 0x9, size 0x1
     u16 m_deactivationNumInactiveFrames[2]; // offset 0xA, size 0x4
     hkMotionState m_motionState;            // offset 0x10, size 0xC0
@@ -1274,6 +1457,7 @@ public:
 // total size: 0x130
 class hkKeyframedRigidMotion : public hkMotion {
 public:
+    hkKeyframedRigidMotion() : m_savedMotion(NULL) {}
     hkKeyframedRigidMotion(const hkVector4& rParam1, const hkQuaternion& rParam2);
     hkKeyframedRigidMotion(hkFinishLoadedObjectFlag sParam1) : hkMotion(sParam1) {}
     virtual ~hkKeyframedRigidMotion();
@@ -1303,8 +1487,9 @@ public:
 // total size: 0x130
 class hkMaxSizeMotion : public hkKeyframedRigidMotion {
 public:
+    hkMaxSizeMotion() {}
     hkMaxSizeMotion(hkFinishLoadedObjectFlag sParam1) : hkKeyframedRigidMotion(sParam1) {}
-    virtual ~hkMaxSizeMotion();
+    virtual ~hkMaxSizeMotion() {}
 };
 
 // total size: 0x200
@@ -1313,36 +1498,39 @@ public:
     hkEntity(const hkShape* pParam1);
     hkEntity(hkFinishLoadedObjectFlag sParam1);
     virtual ~hkEntity();
+    static void* operator new(size_t uSize);
+    static void* operator new(size_t uSize, HK_MEMORY_CLASS sMemoryClass);
+    static void operator delete(void* pvMemory);
     virtual void calcStatistics(hkStatisticsCollector* pParam1) const;
-    virtual void* getMotionState();
+    virtual hkMotionState* getMotionState();
     virtual void deallocateInternalArrays();
 
     void setDeactivator(hkEntityDeactivator* pParam1);
     void addEntityListener(hkEntityListener* pParam1);
     void removeEntityListener(hkEntityListener* pParam1);
     void addCollisionListener(hkCollisionListener* pParam1);
-    u8 isActive() const;
+    hkBool isActive() const;
     void activate();
     void deactivate();
 
-    hkMaterial m_material;                             // offset 0x58, size 0xC
-    void* m_breakOffPartsUtil;                         // offset 0x64, size 0x4
-    u32 m_solverData;                                  // offset 0x68, size 0x4
-    u16 m_storageIndex;                                // offset 0x6C, size 0x2
-    u16 m_processContactCallbackDelay;                 // offset 0x6E, size 0x2
-    hkSmallArray m_constraintsMaster;                  // offset 0x70, size 0x8
-    hkArray<hkConstraintInstance*> m_constraintsSlave; // offset 0x78, size 0xC
-    hkArray<void*> m_constraintRuntime;                // offset 0x84, size 0xC
-    hkEntityDeactivator* m_deactivator;                // offset 0x90, size 0x4
-    hkSimulationIsland* m_simulationIsland;            // offset 0x94, size 0x4
-    s8 m_autoRemoveLevel;                              // offset 0x98, size 0x1
-    u32 m_uid;                                         // offset 0x9C, size 0x4
-    hkMaxSizeMotion m_motion;                          // offset 0xA0, size 0x130
-    hkSmallArray m_collisionListeners;                 // offset 0x1D0, size 0x8
-    hkSmallArray m_activationListeners;                // offset 0x1D8, size 0x8
-    hkSmallArray m_entityListeners;                    // offset 0x1E0, size 0x8
-    hkSmallArray m_actions;                            // offset 0x1E8, size 0x8
-    SpuCollisionCallback m_spuCollisionCallback;       // offset 0x1F0, size 0x8
+    hkMaterial m_material;                                           // offset 0x58, size 0xC
+    void* m_breakOffPartsUtil;                                       // offset 0x64, size 0x4
+    u32 m_solverData;                                                // offset 0x68, size 0x4
+    u16 m_storageIndex;                                              // offset 0x6C, size 0x2
+    u16 m_processContactCallbackDelay;                               // offset 0x6E, size 0x2
+    hkSmallArray<hkConstraintInternal> m_constraintsMaster;          // offset 0x70, size 0x8
+    hkArray<hkConstraintInstance*> m_constraintsSlave;               // offset 0x78, size 0xC
+    hkArray<u8> m_constraintRuntime;                                 // offset 0x84, size 0xC
+    hkEntityDeactivator* m_deactivator;                              // offset 0x90, size 0x4
+    hkSimulationIsland* m_simulationIsland;                          // offset 0x94, size 0x4
+    s8 m_autoRemoveLevel;                                            // offset 0x98, size 0x1
+    u32 m_uid;                                                       // offset 0x9C, size 0x4
+    hkMaxSizeMotion m_motion;                                        // offset 0xA0, size 0x130
+    hkSmallArray<hkCollisionListener*> m_collisionListeners;         // offset 0x1D0, size 0x8
+    hkSmallArray<hkEntityActivationListener*> m_activationListeners; // offset 0x1D8, size 0x8
+    hkSmallArray<hkEntityListener*> m_entityListeners;               // offset 0x1E0, size 0x8
+    hkSmallArray<hkAction*> m_actions;                               // offset 0x1E8, size 0x8
+    SpuCollisionCallback m_spuCollisionCallback;                     // offset 0x1F0, size 0x8
 };
 
 // total size: 0x200
@@ -1350,20 +1538,20 @@ class hkRigidBody : public hkEntity {
 public:
     hkRigidBody(const hkRigidBodyCinfo& rParam1);
     virtual ~hkRigidBody();
-    virtual void setShape(const hkShape* pParam1);
-    virtual void* getMotionState();
+    virtual bool setShape(const hkShape* pParam1);
+    virtual hkMotionState* getMotionState();
     virtual hkRigidBody* clone() const;
 
     void updateCachedShapeInfo(const hkShape* pParam1, hkVector4& rParam2);
-    void createDynamicRigidMotion(hkMotion::MotionType sParam1,
-                                  const hkVector4& rParam2,
-                                  const hkQuaternion& rParam3,
-                                  f32 f32Param4,
-                                  const hkMatrix3& rParam5,
-                                  const hkVector4& rParam6,
-                                  f32 f32Param7,
-                                  f32 f32Param8,
-                                  hkMaxSizeMotion* pParam9);
+    static void createDynamicRigidMotion(hkMotion::MotionType sParam1,
+                                         const hkVector4& rParam2,
+                                         const hkQuaternion& rParam3,
+                                         f32 f32Param4,
+                                         const hkMatrix3& rParam5,
+                                         const hkVector4& rParam6,
+                                         f32 f32Param7,
+                                         f32 f32Param8,
+                                         hkMaxSizeMotion* pParam9);
     void getCinfo(hkRigidBodyCinfo& rParam1) const;
     void setDeactivator(hkRigidBodyDeactivator* pParam1);
     void setMotionType(hkMotion::MotionType sParam1,
@@ -1371,7 +1559,7 @@ public:
                        hkUpdateCollisionFilterOnEntityMode sParam3);
     void setCenterOfMassLocal(const hkVector4& rParam1);
     void setDeactivator(hkRigidBodyDeactivator::DeactivatorType sParam1);
-    void updateBroadphaseAndResetCollisionInformationOfWarpedBody(hkEntity* pParam1);
+    static void updateBroadphaseAndResetCollisionInformationOfWarpedBody(hkEntity* pParam1);
     void setPosition(const hkVector4& rParam1);
     void setRotation(const hkQuaternion& rParam1);
     void setPositionAndRotation(const hkVector4& rParam1, const hkQuaternion& rParam2);
@@ -1391,13 +1579,23 @@ public:
     const hkQuaternion& getRotation() const;
 };
 
-#ifndef HK_PHANTOM_CLASSES_DECLARED
-#define HK_PHANTOM_CLASSES_DECLARED
 class hkPhantom : public hkWorldObject {
 public:
+    hkPhantom() : hkWorldObject(NULL, BROAD_PHASE_PHANTOM)
+    {
+        m_collidable.m_ownerOffset = static_cast<s8>(reinterpret_cast<const c8*>(this) -
+                                                     reinterpret_cast<const c8*>(&m_collidable));
+    }
+    hkPhantom(const hkShape* pShape) : hkWorldObject(pShape, BROAD_PHASE_PHANTOM)
+    {
+        m_collidable.m_ownerOffset = static_cast<s8>(reinterpret_cast<const c8*>(this) -
+                                                     reinterpret_cast<const c8*>(&m_collidable));
+    }
     virtual ~hkPhantom();
+    static void* operator new(size_t uSize, HK_MEMORY_CLASS sMemoryClass);
+    static void operator delete(void* pvMemory);
     virtual void calcStatistics(hkStatisticsCollector* pParam1) const;
-    virtual void* getMotionState() = 0;
+    virtual hkMotionState* getMotionState() = 0;
     virtual s32 getType() const = 0;
     virtual void calcAabb(hkAabb& rParam1) = 0;
     virtual void addOverlappingCollidable(hkCollidable* pParam1) = 0;
@@ -1420,6 +1618,83 @@ public:
     hkArray<hkPhantomOverlapListener*> m_overlapListeners; // offset 0x58, size 0xC
     hkArray<hkPhantomListener*> m_phantomListeners;        // offset 0x64, size 0xC
 };
+
+// total size: 0x4
+class hkPhantomListener {
+public:
+    virtual ~hkPhantomListener() {}
+    virtual void phantomAddedCallback(hkPhantom* pParam1) {}
+    virtual void phantomRemovedCallback(hkPhantom* pParam1) {}
+    virtual void phantomShapeSetCallback(hkPhantom* pParam1)
+    {
+        if (pParam1->m_world != NULL) {
+            phantomRemovedCallback(pParam1);
+            phantomAddedCallback(pParam1);
+        }
+    }
+    virtual void phantomDeletedCallback(hkPhantom* pParam1) {}
+};
+
+// total size: 0xC0
+class hkCharacterProxy : public hkReferencedObject,
+                         public hkEntityListener,
+                         public hkPhantomListener {
+public:
+    hkCharacterProxy(const hkCharacterProxyCinfo& rParam1);
+    virtual ~hkCharacterProxy();
+
+    void updateFromCinfo(const hkCharacterProxyCinfo& rParam1);
+    void integrateWithCollectors(const hkStepInfo& rParam1,
+                                 const hkVector4& rParam2,
+                                 hkAllCdPointCollector& rParam3,
+                                 hkAllCdPointCollector& rParam4);
+    void moveToLinearCastHitPosition(const hkSimplexSolverOutput& rParam1,
+                                     const hkAllCdPointCollector& rParam2,
+                                     const hkLinearCastInput& rParam3,
+                                     hkVector4& rParam4);
+    void refreshManifold(hkAllCdPointCollector& rParam1);
+    void extractSurfaceConstraintInfo(const hkRootCdPoint& rParam1,
+                                      hkSurfaceConstraintInfo& rParam2,
+                                      f32 f32Param3) const;
+    void findSurface(const hkRootCdPoint& rParam1) const;
+    void updateManifold(const hkAllCdPointCollector& rParam1, const hkAllCdPointCollector& rParam2);
+    void applySurfaceInteractions(const hkStepInfo& rParam1, const hkVector4& rParam2);
+    const hkVector4& getPosition() const;
+    void setPosition(const hkVector4& rParam1);
+    void setLinearVelocity(const hkVector4& rParam1);
+    hkShapePhantom* getShapePhantom();
+    void fireConstraintsProcessed(const hkArray<hkRootCdPoint>& rParam1,
+                                  hkSimplexSolverInput& rParam2) const;
+    void fireContactAdded(const hkRootCdPoint& rParam1) const;
+    void fireContactRemoved(const hkRootCdPoint& rParam1) const;
+    void entityRemovedCallback(hkEntity* pParam1);
+    void phantomRemovedCallback(hkPhantom* pParam1);
+    virtual void calcStatistics(hkStatisticsCollector* pParam1) const;
+
+    hkVector4 m_velocity;                           // offset 0x10, size 0x10
+    hkVector4 m_oldDisplacement;                    // offset 0x20, size 0x10
+    hkShapePhantom* m_shapePhantom;                 // offset 0x30, size 0x4
+    f32 m_dynamicFriction;                          // offset 0x34, size 0x4
+    f32 m_staticFriction;                           // offset 0x38, size 0x4
+    hkVector4 m_up;                                 // offset 0x40, size 0x10
+    f32 m_extraUpStaticFriction;                    // offset 0x50, size 0x4
+    f32 m_extraDownStaticFriction;                  // offset 0x54, size 0x4
+    f32 m_keepDistance;                             // offset 0x58, size 0x4
+    f32 m_keepContactTolerance;                     // offset 0x5C, size 0x4
+    f32 m_contactAngleSensitivity;                  // offset 0x60, size 0x4
+    s32 m_userPlanes;                               // offset 0x64, size 0x4
+    f32 m_maxCharacterSpeedForSolver;               // offset 0x68, size 0x4
+    f32 m_characterStrength;                        // offset 0x6C, size 0x4
+    f32 m_characterMass;                            // offset 0x70, size 0x4
+    hkArray<hkRootCdPoint> m_manifold;              // offset 0x74, size 0xC
+    hkArray<hkCharacterProxyListener*> m_listeners; // offset 0x80, size 0xC
+    hkArray<hkRigidBody*> m_bodies;                 // offset 0x8C, size 0xC
+    hkArray<hkPhantom*> m_phantoms;                 // offset 0x98, size 0xC
+    f32 m_maxSlopeCosine;                           // offset 0xA4, size 0x4
+    f32 m_penetrationRecoverySpeed;                 // offset 0xA8, size 0x4
+    s32 m_maxCastIterations;                        // offset 0xAC, size 0x4
+    u8 m_refreshManifoldInCheckSupport;             // offset 0xB0, size 0x1
+};
 // total size: 0x4
 class hkCollisionDetail {
 public:
@@ -1433,11 +1708,11 @@ public:
     virtual ~hkShapePhantom();
     virtual void deallocateInternalArrays();
 
-    virtual void* getMotionState();
+    virtual hkMotionState* getMotionState();
     void setTransform(const hkTransform& rParam1);
     void setPosition(const hkVector4& rParam1, f32 f32Param2);
     virtual void calcAabb(hkAabb& rParam1);
-    virtual void setShape(const hkShape* pParam1);
+    virtual bool setShape(const hkShape* pParam1);
     virtual void setPositionAndLinearCast(const hkVector4& rParam1,
                                           const hkLinearCastInput& rParam2,
                                           hkCdPointCollector& rParam3,
@@ -1471,7 +1746,6 @@ public:
 
     hkArray<hkCollisionDetail> m_collisionDetails; // offset 0x130, size 0xC
 };
-#endif
 
 // total size: 0x2
 class hkHalf {
@@ -1576,11 +1850,11 @@ public:
                                        hkUpdateCollectionFilterMode sParam3);
     hkEntity* addEntity(hkEntity* pParam1, hkEntityActivation sParam2);
     void addEntityBatch(hkEntity* const* pParam1, s32 s32Param2, hkEntityActivation sParam3);
-    void removeEntity(hkEntity* pParam1);
+    hkBool removeEntity(hkEntity* pParam1);
     void removeEntityBatch(hkEntity* const* pParam1, s32 s32Param2);
     void activateRegion(const hkAabb& rParam1);
     void addConstraint(hkConstraintInstance* pParam1);
-    void removeConstraint(hkConstraintInstance* pParam1);
+    hkBool removeConstraint(hkConstraintInstance* pParam1);
     void addAction(hkAction* pParam1);
     void removeAction(hkAction* pParam1);
     void removeActionImmediately(hkAction* pParam1);
@@ -1603,6 +1877,7 @@ public:
     void lockIslandForConstraintUpdate(hkSimulationIsland* pParam1);
     void unlockIslandForConstraintUpdate(hkSimulationIsland* pParam1);
     const hkVector4& getGravity() const { return m_gravity; }
+    bool areCriticalOperationsLocked() const { return m_criticalOperationsLockCount != 0; }
 
     static u8 m_forceMultithreadedSimulation;
 
@@ -1686,6 +1961,8 @@ class hkWorldCinfo : public hkReferencedObject {
 public:
     enum BroadPhaseBorderBehaviour {
         BROAD_PHASE_BORDER_ASSERT = 0,
+        BROAD_PHASE_BORDER_FIX_ENTITY = 1,
+        BROAD_PHASE_BORDER_REMOVE_ENTITY = 2,
     };
 
     enum ContactPointGeneration { CONTACT_POINT_ACCEPT_ALWAYS = 0 };
@@ -1745,30 +2022,31 @@ class hkRigidBodyCinfo {
 public:
     hkRigidBodyCinfo();
 
-    u32 m_collisionFilterInfo;             // offset 0x0, size 0x4
-    hkShape* m_shape;                      // offset 0x4, size 0x4
-    hkEnum<u8> m_collisionResponse;        // offset 0x8, size 0x1
-    u16 m_processContactCallbackDelay;     // offset 0xA, size 0x2
-    hkVector4 m_position;                  // offset 0x10, size 0x10
-    hkQuaternion m_rotation;               // offset 0x20, size 0x10
-    hkVector4 m_linearVelocity;            // offset 0x30, size 0x10
-    hkVector4 m_angularVelocity;           // offset 0x40, size 0x10
-    hkMatrix3 m_inertiaTensor;             // offset 0x50, size 0x30
-    hkVector4 m_centerOfMass;              // offset 0x80, size 0x10
-    f32 m_mass;                            // offset 0x90, size 0x4
-    f32 m_linearDamping;                   // offset 0x94, size 0x4
-    f32 m_angularDamping;                  // offset 0x98, size 0x4
-    f32 m_friction;                        // offset 0x9C, size 0x4
-    f32 m_restitution;                     // offset 0xA0, size 0x4
-    f32 m_maxLinearVelocity;               // offset 0xA4, size 0x4
-    f32 m_maxAngularVelocity;              // offset 0xA8, size 0x4
-    f32 m_allowedPenetrationDepth;         // offset 0xAC, size 0x4
-    hkEnum<u8> m_motionType;               // offset 0xB0, size 0x1
-    hkEnum<u8> m_rigidBodyDeactivatorType; // offset 0xB1, size 0x1
-    hkEnum<u8> m_solverDeactivation;       // offset 0xB2, size 0x1
-    hkEnum<u8> m_qualityType;              // offset 0xB3, size 0x1
-    s8 m_autoRemoveLevel;                  // offset 0xB4, size 0x1
-    hkBool m_forceCollideOntoPpu;          // offset 0xB5, size 0x1
+    u32 m_collisionFilterInfo;                     // offset 0x0, size 0x4
+    const hkShape* m_shape;                        // offset 0x4, size 0x4
+    hkEnum<s8> m_collisionResponse;                // offset 0x8, size 0x1
+    u16 m_processContactCallbackDelay;             // offset 0xA, size 0x2
+    hkVector4 m_position;                          // offset 0x10, size 0x10
+    hkQuaternion m_rotation;                       // offset 0x20, size 0x10
+    hkVector4 m_linearVelocity;                    // offset 0x30, size 0x10
+    hkVector4 m_angularVelocity;                   // offset 0x40, size 0x10
+    hkMatrix3 m_inertiaTensor;                     // offset 0x50, size 0x30
+    hkVector4 m_centerOfMass;                      // offset 0x80, size 0x10
+    f32 m_mass;                                    // offset 0x90, size 0x4
+    f32 m_linearDamping;                           // offset 0x94, size 0x4
+    f32 m_angularDamping;                          // offset 0x98, size 0x4
+    f32 m_friction;                                // offset 0x9C, size 0x4
+    f32 m_restitution;                             // offset 0xA0, size 0x4
+    f32 m_maxLinearVelocity;                       // offset 0xA4, size 0x4
+    f32 m_maxAngularVelocity;                      // offset 0xA8, size 0x4
+    f32 m_allowedPenetrationDepth;                 // offset 0xAC, size 0x4
+    hkEnum<hkMotion::MotionType, s8> m_motionType; // offset 0xB0, size 0x1
+    hkEnum<hkRigidBodyDeactivator::DeactivatorType, s8>
+        m_rigidBodyDeactivatorType;  // offset 0xB1, size 0x1
+    hkEnum<s8> m_solverDeactivation; // offset 0xB2, size 0x1
+    hkEnum<s8> m_qualityType;        // offset 0xB3, size 0x1
+    s8 m_autoRemoveLevel;            // offset 0xB4, size 0x1
+    hkBool m_forceCollideOntoPpu;    // offset 0xB5, size 0x1
 };
 
 // total size: 0x30
@@ -1794,16 +2072,25 @@ public:
     u8* m_embeddedMaterialIndices;                          // offset 0x24, size 0x4
 };
 
-// total size: 0x0
-class hkBroadPhaseBorder {
+// total size: 0x30
+class hkBroadPhaseBorder : public hkReferencedObject,
+                           public hkWorldDeletionListener,
+                           public hkPhantomOverlapListener {
 public:
     hkBroadPhaseBorder(hkWorld* pParam1, hkWorldCinfo::BroadPhaseBorderBehaviour sParam2);
     virtual ~hkBroadPhaseBorder();
+    virtual void maxPositionExceededCallback(hkEntity* pParam1);
+    virtual void deactivate();
     virtual void collidableAddedCallback(const hkCollidableAddedEvent& rParam1);
     virtual void collidableRemovedCallback(const hkCollidableRemovedEvent& rParam1);
-    virtual void maxPositionExceededCallback(hkEntity* pParam1);
     virtual void worldDeletedCallback(hkWorld* pParam1);
-    virtual void deactivate();
+
+    static void* operator new(size_t uSize);
+    static void operator delete(void* pvMemory);
+
+    hkWorld* m_world;                                    // offset 0x10, size 0x4
+    hkPhantom* m_phantoms[6];                            // offset 0x14, size 0x18
+    hkWorldCinfo::BroadPhaseBorderBehaviour m_behaviour; // offset 0x2C, size 0x4
 };
 
 // total size: 0x0
@@ -1873,7 +2160,7 @@ public:
     // total size: 0x30
     class Agent3Funcs {
     public:
-        void* (*m_createFunc)(hkAgent3Input& rParam1, hkAgentEntry* pParam2, void* pParam3);
+        void* (*m_createFunc)(const hkAgent3Input& rParam1, hkAgentEntry* pParam2, void* pParam3);
         void (*m_destroyFunc)(hkAgentEntry* pParam1,
                               void* pParam2,
                               hkContactMgr* pParam3,
@@ -1888,9 +2175,9 @@ public:
         void (*m_createZombieFunc)(hkAgentEntry* pParam1, void* pParam2, u16 u16Param3);
         void (*m_updateFilterFunc)(hkAgentEntry* pParam1,
                                    void* pParam2,
-                                   hkCdBody& rParam3,
-                                   hkCdBody& rParam4,
-                                   hkCollisionInput& rParam5,
+                                   const hkCdBody& rParam3,
+                                   const hkCdBody& rParam4,
+                                   const hkCollisionInput& rParam5,
                                    hkContactMgr* pParam6,
                                    hkConstraintOwner& rParam7);
         void (*m_invalidateTimFunc)(hkAgentEntry* pParam1,
@@ -1901,11 +2188,11 @@ public:
                                f32 f32Param3,
                                f32 f32Param4,
                                hkCollisionInput& rParam5);
-        void (*m_sepNormalFunc)(hkAgent3Input& rParam1,
+        void (*m_sepNormalFunc)(const hkAgent3Input& rParam1,
                                 hkAgentEntry* pParam2,
                                 void* pParam3,
                                 hkVector4& rParam4);
-        void* (*m_processFunc)(hkAgent3ProcessInput& rParam1,
+        void* (*m_processFunc)(const hkAgent3ProcessInput& rParam1,
                                hkAgentEntry* pParam2,
                                void* pParam3,
                                hkVector4* pParam4,
@@ -1923,21 +2210,21 @@ public:
     // total size: 0x14
     class AgentFuncs {
     public:
-        hkCollisionAgent* (*m_createFunc)(hkCdBody& rParam1,
-                                          hkCdBody& rParam2,
-                                          hkCollisionInput& rParam3,
+        hkCollisionAgent* (*m_createFunc)(const hkCdBody& rParam1,
+                                          const hkCdBody& rParam2,
+                                          const hkCollisionInput& rParam3,
                                           hkContactMgr* pParam4);
-        void (*m_getPenetrationsFunc)(hkCdBody& rParam1,
-                                      hkCdBody& rParam2,
-                                      hkCollisionInput& rParam3,
+        void (*m_getPenetrationsFunc)(const hkCdBody& rParam1,
+                                      const hkCdBody& rParam2,
+                                      const hkCollisionInput& rParam3,
                                       hkCdBodyPairCollector& rParam4);
-        void (*m_getClosestPointFunc)(hkCdBody& rParam1,
-                                      hkCdBody& rParam2,
-                                      hkCollisionInput& rParam3,
+        void (*m_getClosestPointFunc)(const hkCdBody& rParam1,
+                                      const hkCdBody& rParam2,
+                                      const hkCollisionInput& rParam3,
                                       hkCdPointCollector& rParam4);
-        void (*m_linearCastFunc)(hkCdBody& rParam1,
-                                 hkCdBody& rParam2,
-                                 hkLinearCastCollisionInput& rParam3,
+        void (*m_linearCastFunc)(const hkCdBody& rParam1,
+                                 const hkCdBody& rParam2,
+                                 const hkLinearCastCollisionInput& rParam3,
                                  hkCdPointCollector& rParam4,
                                  hkCdPointCollector* pParam5);
         hkBool m_isFlipped;    // offset 0x10, size 0x1
@@ -1985,13 +2272,15 @@ public:
     void registerContactMgrFactoryWithAll(hkContactMgrFactory* pParam1, s32 s32Param2);
     void initCollisionQualityInfo(InitCollisionQualityInfo& rParam1);
 
-    hkCollisionAgent* (*m_defaultCollisionAgent)(hkCdBody& rParam1,
-                                                 hkCdBody& rParam2,
-                                                 hkCollisionInput& rParam3,
+    hkCollisionAgent* (*m_defaultCollisionAgent)(const hkCdBody& rParam1,
+                                                 const hkCdBody& rParam2,
+                                                 const hkCollisionInput& rParam3,
                                                  hkContactMgr* pParam4);
     hkContactMgrFactory* m_contactMgrFactory[8][8];   // offset 0xC, size 0x100
+    u32 m_pad10C;                                     // offset 0x10C, size 0x4
     u32 m_hasAlternateType[32];                       // offset 0x110, size 0x80
     s32 m_numAgent2Types;                             // offset 0x190, size 0x4
+    u32 m_pad194[3];                                  // offset 0x194, size 0xC
     u8 m_agent2Types[32][32];                         // offset 0x1A0, size 0x400
     u8 m_agent2TypesPred[32][32];                     // offset 0x5A0, size 0x400
     AgentFuncs m_agent2Func[64];                      // offset 0x9A0, size 0x500
@@ -2032,20 +2321,6 @@ public:
     virtual const hkShape* getChildShape(u32 u32Param1, c8 (&sParam2)[512]) const;
 
     hkShape* m_childShape; // offset 0x4, size 0x4
-};
-
-// total size: 0x10
-class hkShape : public hkReferencedObject {
-public:
-    virtual ~hkShape() {}
-    virtual f32 getMaximumProjection(const hkVector4& rParam1) const;
-    virtual hkShapeContainer* getContainer() const { return 0; }
-    virtual s32 calcSizeForSpu(s32 s32Param1) const { return -1; }
-
-    void* operator new(size_t size) { return 0; }
-
-    u32 m_userData;     // offset 0x8, size 0x4
-    hkEnum<u32> m_type; // offset 0xC, size 0x4
 };
 
 // total size: 0x70
@@ -2180,8 +2455,8 @@ public:
                   s32 s32Param2,
                   const hkCollidableCollidableFilter* pParam3) const;
     void removePairs(hkTypedBroadPhaseHandlePair* pParam1, s32 s32Param2) const;
-    void removeDuplicates(hkArray<hkBroadPhaseHandlePair>& rParam1,
-                          hkArray<hkBroadPhaseHandlePair>& rParam2);
+    static void removeDuplicates(hkArray<hkBroadPhaseHandlePair>& rParam1,
+                                 hkArray<hkBroadPhaseHandlePair>& rParam2);
 };
 
 // total size: 0x10
@@ -2286,6 +2561,8 @@ public:
     hkVector4 m_vertexA; // offset 0x20, size 0x10
     hkVector4 m_vertexB; // offset 0x30, size 0x10
 };
+
+extern f32 hkConvexShapeDefaultRadius;
 
 // total size: 0x30
 class hkBoxShape : public hkConvexShape {
@@ -2415,17 +2692,45 @@ public:
 };
 
 // total size: 0xC
+// total size: 0x24
+class hkConstraintInternal {
+public:
+    hkConstraintInstance* m_constraint;                              // offset 0x0, size 0x4
+    hkEntity* m_entities[2];                                         // offset 0x4, size 0x8
+    hkConstraintAtom* m_atoms;                                       // offset 0xC, size 0x4
+    u16 m_atomsSize;                                                 // offset 0x10, size 0x2
+    u8 m_callbackRequest;                                            // offset 0x12, size 0x1
+    hkEnum<hkConstraintInstance::ConstraintPriority, u8> m_priority; // offset 0x13, size 0x1
+    u16 m_sizeOfSchemas;                                             // offset 0x14, size 0x2
+    u16 m_numSolverResults;                                          // offset 0x16, size 0x2
+    u16 m_numSolverElemTemps;                                        // offset 0x18, size 0x2
+    u8 m_whoIsMaster;                                                // offset 0x1A, size 0x1
+    hkBool m_isNormalType;                                           // offset 0x1B, size 0x1
+    void* m_runtime;                                                 // offset 0x1C, size 0x4
+    u16 m_runtimeSize;                                               // offset 0x20, size 0x2
+    u16 m_slaveIndex;                                                // offset 0x22, size 0x2
+};
+
 class hkConstraintData : public hkReferencedObject {
 public:
+    static void operator delete(void* pvMemory);
     class ConstraintInfo {};
-    class RuntimeInfo {};
+    class RuntimeInfo {
+    public:
+        s32 m_size;
+        s32 m_numSolverResults;
+    };
 
     virtual ~hkConstraintData() {}
+    virtual hkBool isValid() const = 0;
+    virtual s32 getType() const = 0;
+    virtual void getRuntimeInfo(hkBool sParam1, RuntimeInfo& rParam2) const = 0;
     virtual hkSolverResults* getSolverResults(void* pvParam1);
     virtual void addInstance(hkConstraintInstance* pParam1, void* pvParam2, s32 s32Param3) const;
     virtual void buildJacobian(const hkConstraintQueryIn& rParam1, hkConstraintQueryOut& rParam2) {}
     virtual hkBool isBuildJacobianCallbackRequired() { return hkBool(); }
     virtual void buildJacobianCallback(const hkConstraintQueryIn& rParam1) {}
+    virtual void getConstraintInfo(ConstraintInfo& rParam1) const = 0;
 
     static void getConstraintInfoUtil(const hkConstraintAtom* pParam1,
                                       s32 s32Param2,
@@ -2456,6 +2761,7 @@ public:
 class hkConstraintChainData : public hkConstraintData {
 public:
     virtual ~hkConstraintChainData() {}
+    virtual s32 getNumConstraintInfos() = 0;
 };
 
 // total size: 0x3C
@@ -2466,7 +2772,7 @@ public:
     virtual void entityRemovedCallback(hkEntity* pParam1);
     virtual s32 getType() const { return 1; }
 
-    void* operator new(size_t size) { return 0; }
+    void* operator new(size_t size) { return NULL; }
     void addEntity(hkEntity* pParam1);
 
     hkArray<hkEntity*> m_chainedEntities;      // offset 0x2C, size 0xC
@@ -2476,24 +2782,29 @@ public:
 // total size: 0x34
 class hkBallSocketChainData : public hkConstraintChainData {
 public:
+    struct ConstraintInfo {
+        hkVector4 m_pivotInA;
+        hkVector4 m_pivotInB;
+    };
+
     hkBallSocketChainData();
     virtual ~hkBallSocketChainData();
-    virtual hkBool isValid() const { return hkBool(); }
+    virtual hkBool isValid() const { return hkBool(true); }
     virtual s32 getType() const;
     virtual void getRuntimeInfo(hkBool sParam1, hkConstraintData::RuntimeInfo& rParam2) const;
     virtual void buildJacobian(const hkConstraintQueryIn& rParam1, hkConstraintQueryOut& rParam2);
     virtual void getConstraintInfo(hkConstraintData::ConstraintInfo& rParam1) const;
     virtual s32 getNumConstraintInfos() { return m_infos.m_size; }
 
-    void* operator new(size_t size) { return 0; }
+    void* operator new(size_t size) { return NULL; }
     void addConstraintInfoInBodySpace(const hkVector4& rParam1, const hkVector4& rParam2);
 
-    hkBridgeAtoms m_atoms;  // offset 0xC, size 0xC
-    hkArray<void*> m_infos; // offset 0x18, size 0xC
-    f32 m_tau;              // offset 0x24, size 0x4
-    f32 m_damping;          // offset 0x28, size 0x4
-    f32 m_cfm;              // offset 0x2C, size 0x4
-    f32 m_maxErrorDistance; // offset 0x30, size 0x4
+    hkBridgeAtoms m_atoms;           // offset 0xC, size 0xC
+    hkArray<ConstraintInfo> m_infos; // offset 0x18, size 0xC
+    f32 m_tau;                       // offset 0x24, size 0x4
+    f32 m_damping;                   // offset 0x28, size 0x4
+    f32 m_cfm;                       // offset 0x2C, size 0x4
+    f32 m_maxErrorDistance;          // offset 0x30, size 0x4
 };
 
 // total size: 0x0
@@ -2528,10 +2839,10 @@ public:
 class hkConstraintOwner : public hkReferencedObject {
 public:
     virtual ~hkConstraintOwner() {}
-    virtual void addConstraintToCriticalLockedIsland(hkConstraintInstance* pParam1) {}
-    virtual void removeConstraintFromCriticalLockedIsland(hkConstraintInstance* pParam1) {}
-    virtual void addCallbackRequest(hkConstraintInstance* pParam1, s32 s32Param2) {}
-    virtual void checkAccessRw() {}
+    virtual void addConstraintToCriticalLockedIsland(hkConstraintInstance* pParam1);
+    virtual void removeConstraintFromCriticalLockedIsland(hkConstraintInstance* pParam1);
+    virtual void addCallbackRequest(hkConstraintInstance* pParam1, s32 s32Param2);
+    virtual void checkAccessRw();
 
     hkConstraintInfo m_constraintInfo; // offset 0x8, size 0x10
 };
@@ -2577,35 +2888,13 @@ public:
     hkAgentNnTrack m_agentTrack;             // offset 0x5C, size 0x14
 };
 
-// total size: 0x4
-class FreeElem {
-public:
-    FreeElem* m_next; // offset 0x0, size 0x4
-};
-
-// total size: 0x8
-class FreeList {
-public:
-    FreeElem* m_head; // offset 0x0, size 0x4
-    s32 m_numElem;    // offset 0x4, size 0x4
-};
-
-// total size: 0x10
-class Stack {
-public:
-    c8* m_current; // offset 0x0, size 0x4
-    Stack* m_prev; // offset 0x4, size 0x4
-    c8* m_base;    // offset 0x8, size 0x4
-    c8* m_end;     // offset 0xC, size 0x4
-};
-
 // total size: 0xA0
 class hkAabbPhantom : public hkPhantom {
 public:
     hkAabbPhantom(const hkAabb& rParam1, u32 u32Param2);
     virtual ~hkAabbPhantom();
     virtual void calcStatistics(hkStatisticsCollector* pParam1) const;
-    virtual void* getMotionState() { return 0; }
+    virtual hkMotionState* getMotionState() { return NULL; }
     virtual s32 getType() const;
     virtual void calcAabb(hkAabb& rParam1);
     virtual void addOverlappingCollidable(hkCollidable* pParam1);
@@ -2621,44 +2910,112 @@ public:
     hkArray<hkCollidable*> m_overlappingCollidables; // offset 0x90, size 0xC
 };
 
-// total size: 0x314
-class hkThreadMemory {
+// RECONSTRUCTED: array type and header placement.
+template <typename T>
+class hkLocalArray : public hkArray<T> {
 public:
-    hkThreadMemory(hkMemory* pParam1, s32 s32Param2);
-    virtual void* alignedAllocate(s32 s32Param1, s32 s32Param2, HK_MEMORY_CLASS sParam3);
-    virtual void alignedDeallocate(void* pvParam1);
-    virtual void setStackArea(void* pvParam1, s32 s32Param2);
-    virtual void releaseCachedMemory();
-    virtual ~hkThreadMemory();
-    virtual void* onStackOverflow(s32 s32Param1);
-    virtual void onStackUnderflow(void* pvParam1);
+    hkLocalArray(s32 s32Capacity)
+    {
+        hkThreadMemory* pThreadMemory = hkThreadMemory::s_threadMemoryInstance;
+        s32 s32AllocationSize = (s32Capacity * sizeof(T) + 16) & ~15;
+        c8* pMemory = pThreadMemory->m_stack.m_current;
+        c8* pNewCurrent = pMemory + s32AllocationSize;
+        if (pNewCurrent <= pThreadMemory->m_stack.m_end) {
+            pThreadMemory->m_stack.m_current = pNewCurrent;
+        } else {
+            pMemory = static_cast<c8*>(pThreadMemory->onStackOverflow(s32AllocationSize));
+        }
+        this->m_data = reinterpret_cast<T*>(pMemory);
+        this->m_capacityAndFlags = s32Capacity | 0x80000000;
+        m_initialMemory = this->m_data;
+    }
 
-    void removeReference();
-    void addReference();
-    void onRowEmpty(s32 s32Param1);
-    void onRowFull(s32 s32Param1, s32 s32Param2);
-    void* allocate(s32 s32Param1, HK_MEMORY_CLASS sParam2);
-    void deallocate(void* pvParam1);
-    void* allocateChunk(s32 s32Param1, HK_MEMORY_CLASS sParam2);
-    void deallocateChunk(void* pvParam1, s32 s32Param2, HK_MEMORY_CLASS sParam3);
-    void replaceInstance(hkThreadMemory* pParam1);
-    void init();
-    void quit();
+    ~hkLocalArray()
+    {
+        hkThreadMemory* pThreadMemory = hkThreadMemory::s_threadMemoryInstance;
+        pThreadMemory->m_stack.m_current = reinterpret_cast<c8*>(m_initialMemory);
+        if (pThreadMemory->m_stack.m_current == pThreadMemory->m_stack.m_base) {
+            pThreadMemory->onStackUnderflow(m_initialMemory);
+        }
+    }
 
-    static hkThreadMemory* s_threadMemoryInstance;
-
-    hkMemory* m_memory;              // offset 0x4, size 0x4
-    s32 m_referenceCount;            // offset 0x8, size 0x4
-    Stack m_stack;                   // offset 0xC, size 0x10
-    s32 m_stackSize;                 // offset 0x1C, size 0x4
-    s32 m_maxNumElemsOnFreeList;     // offset 0x20, size 0x4
-    FreeList m_free_list[17];        // offset 0x24, size 0x88
-    s32 m_row_to_size_lut[17];       // offset 0xAC, size 0x44
-    c8 m_small_size_to_row_lut[513]; // offset 0xF0, size 0x201
-    s32 m_large_size_to_row_lut[8];  // offset 0x2F4, size 0x20
+    T* m_initialMemory;
 };
 
+inline void* hkBroadPhaseBorder::operator new(size_t uSize)
+{
+    void* pvMemory =
+        hkThreadMemory::s_threadMemoryInstance->allocateChunk(uSize, HK_MEMORY_CLASS_UTILITIES);
+    static_cast<hkBroadPhaseBorder*>(pvMemory)->m_memSizeAndFlags = uSize;
+    return pvMemory;
+}
+
+inline void hkBroadPhaseBorder::operator delete(void* pvMemory)
+{
+    hkBroadPhaseBorder* pBorder = static_cast<hkBroadPhaseBorder*>(pvMemory);
+    hkThreadMemory::s_threadMemoryInstance->deallocateChunk(
+        pvMemory, pBorder->m_memSizeAndFlags, HK_MEMORY_CLASS_UTILITIES);
+}
+
 // total size: 0x28
+inline void* hkEntity::operator new(size_t uSize)
+{
+    void* pvMemory =
+        hkThreadMemory::s_threadMemoryInstance->allocateChunk(uSize, HK_MEMORY_CLASS_ENTITY);
+    static_cast<hkEntity*>(pvMemory)->m_memSizeAndFlags = uSize;
+    return pvMemory;
+}
+
+inline void* hkEntity::operator new(size_t uSize, HK_MEMORY_CLASS sMemoryClass)
+{
+    void* pvMemory = hkThreadMemory::s_threadMemoryInstance->allocateChunk(uSize, sMemoryClass);
+    static_cast<hkEntity*>(pvMemory)->m_memSizeAndFlags = uSize;
+    return pvMemory;
+}
+
+inline void hkEntity::operator delete(void* pvMemory)
+{
+    hkEntity* pEntity = static_cast<hkEntity*>(pvMemory);
+    hkThreadMemory::s_threadMemoryInstance->deallocateChunk(
+        pvMemory, pEntity->m_memSizeAndFlags, HK_MEMORY_CLASS_ENTITY);
+}
+
+inline void* hkPhantom::operator new(size_t uSize, HK_MEMORY_CLASS sMemoryClass)
+{
+    void* pvMemory = hkThreadMemory::s_threadMemoryInstance->allocateChunk(uSize, sMemoryClass);
+    static_cast<hkPhantom*>(pvMemory)->m_memSizeAndFlags = uSize;
+    return pvMemory;
+}
+
+inline void hkPhantom::operator delete(void* pvMemory)
+{
+    hkPhantom* pPhantom = static_cast<hkPhantom*>(pvMemory);
+    hkThreadMemory::s_threadMemoryInstance->deallocateChunk(
+        pvMemory, pPhantom->m_memSizeAndFlags, HK_MEMORY_CLASS_PHANTOM);
+}
+
+inline void* hkMotion::operator new(size_t uSize)
+{
+    void* pvMemory =
+        hkThreadMemory::s_threadMemoryInstance->allocateChunk(uSize, HK_MEMORY_CLASS_MOTION);
+    static_cast<hkMotion*>(pvMemory)->m_memSizeAndFlags = uSize;
+    return pvMemory;
+}
+
+inline void hkMotion::operator delete(void* pvMemory)
+{
+    hkMotion* pMotion = static_cast<hkMotion*>(pvMemory);
+    hkThreadMemory::s_threadMemoryInstance->deallocateChunk(
+        pvMemory, pMotion->m_memSizeAndFlags, HK_MEMORY_CLASS_MOTION);
+}
+
+inline void hkReferencedObject::operator delete(void* pvMemory)
+{
+    hkReferencedObject* pcObject = static_cast<hkReferencedObject*>(pvMemory);
+    hkThreadMemory::s_threadMemoryInstance->deallocateChunk(
+        pvMemory, pcObject->m_memSizeAndFlags, HK_MEMORY_CLASS_BASE_CLASS);
+}
+
 class hkSimulation : public hkReferencedObject {
 public:
     enum FindContacts {
@@ -2697,9 +3054,9 @@ public:
 
     hkStepResult reCollideAfterStepFailure();
     f32 snapSimulateTimeAndGetTimeToAdvanceTo();
-    hkStepResult collideEntitiesBroadPhaseDiscrete(hkEntity** pParam1,
-                                                   s32 s32Param2,
-                                                   hkWorld* pParam3);
+    static hkStepResult collideEntitiesBroadPhaseDiscrete(hkEntity** pParam1,
+                                                          s32 s32Param2,
+                                                          hkWorld* pParam3);
     hkStepResult integrateInternal(const hkStepInfo& rParam1);
     void applyActions();
     void collideEntitiesNarrowPhaseDiscrete(hkEntity** pParam1,
@@ -2734,6 +3091,7 @@ public:
 class hkAction : public hkReferencedObject {
 public:
     virtual ~hkAction() {}
+    static void operator delete(void* pvMemory);
     virtual void getPhantoms(hkArray<hkPhantom*>& rParam1) {}
 
     hkWorld* m_world;             // offset 0x8, size 0x4
@@ -2780,7 +3138,7 @@ public:
                           hkVector4& rsParam4);
 };
 
-// === No-DWARF stubs: stream base classes ===
+// RECONSTRUCTED
 
 class hkStreamWriter {
 public:
@@ -2807,47 +3165,51 @@ public:
     virtual s32 tell() const { return -1; }
 };
 
-// === No-DWARF stubs: motion classes ===
+// RECONSTRUCTED
 
-class hkBoxMotion {
+class hkBoxMotion : public hkMotion {
 public:
-    hkBoxMotion(const hkVector4&, const hkQuaternion&) {}
+    hkBoxMotion(const hkVector4&, const hkQuaternion&);
+    hkBoxMotion(hkFinishLoadedObjectFlag sParam1) : hkMotion(sParam1) {}
     virtual ~hkBoxMotion() {}
-    virtual void getInertiaLocal(hkMatrix3&) const {}
-    virtual void setInertiaLocal(const hkMatrix3&) {}
-    virtual void getInertiaInvLocal(hkMatrix3&) const {}
-    virtual void setInertiaInvLocal(const hkMatrix3&) {}
-    virtual void getInertiaInvWorld(hkMatrix3&) const {}
-    virtual void getInertiaWorld(hkMatrix3&) const {}
-    virtual void setMass(f32) {}
-    virtual void applyPointImpulse(const hkVector4&, const hkVector4&) {}
-    virtual void applyAngularImpulse(const hkVector4&) {}
-    virtual void applyForce(f32, const hkVector4&) {}
-    virtual void applyForce(f32, const hkVector4&, const hkVector4&) {}
-    virtual void applyTorque(f32, const hkVector4&) {}
+    virtual void getInertiaLocal(hkMatrix3&) const;
+    virtual void setInertiaLocal(const hkMatrix3&);
+    virtual void getInertiaInvLocal(hkMatrix3&) const;
+    virtual void setInertiaInvLocal(const hkMatrix3&);
+    virtual void getInertiaInvWorld(hkMatrix3&) const;
+    virtual void getInertiaWorld(hkMatrix3&) const;
+    virtual void setMass(f32);
+    virtual void applyPointImpulse(const hkVector4&, const hkVector4&);
+    virtual void applyAngularImpulse(const hkVector4&);
+    virtual void applyForce(f32, const hkVector4&);
+    virtual void applyForce(f32, const hkVector4&, const hkVector4&);
+    virtual void applyTorque(f32, const hkVector4&);
 };
 
-class hkStabilizedBoxMotion {
+class hkStabilizedBoxMotion : public hkBoxMotion {
 public:
-    hkStabilizedBoxMotion(const hkVector4&, const hkQuaternion&) {}
+    hkStabilizedBoxMotion(const hkVector4& rPosition, const hkQuaternion& rRotation);
+    hkStabilizedBoxMotion(hkFinishLoadedObjectFlag sParam1) : hkBoxMotion(sParam1) {}
     virtual ~hkStabilizedBoxMotion() {}
 };
 
-class hkThinBoxMotion {
+class hkThinBoxMotion : public hkBoxMotion {
 public:
-    hkThinBoxMotion(const hkVector4&, const hkQuaternion&) {}
+    hkThinBoxMotion(const hkVector4& rPosition, const hkQuaternion& rRotation);
+    hkThinBoxMotion(hkFinishLoadedObjectFlag sParam1) : hkBoxMotion(sParam1) {}
     virtual ~hkThinBoxMotion() {}
 };
 
-class hkFixedRigidMotion {
+class hkFixedRigidMotion : public hkKeyframedRigidMotion {
 public:
-    hkFixedRigidMotion(const hkVector4&, const hkQuaternion&) {}
+    hkFixedRigidMotion(const hkVector4&, const hkQuaternion&);
+    hkFixedRigidMotion(hkFinishLoadedObjectFlag sParam1) : hkKeyframedRigidMotion(sParam1) {}
     virtual ~hkFixedRigidMotion() {}
-    virtual void setStepPosition(f32, f32) {}
-    virtual void getPositionAndVelocities(hkMotion*) {}
+    virtual void setStepPosition(f32, f32);
+    virtual void getPositionAndVelocities(hkMotion*);
 };
 
-// === No-DWARF stubs: shape classes ===
+// RECONSTRUCTED
 
 class hkCylinderShape {
 public:
@@ -2857,10 +3219,10 @@ public:
 class hkFastMeshShape {
 public:
     virtual ~hkFastMeshShape() {}
-    virtual const hkShape* getChildShape(u32, c8 (&)[512]) const { return 0; }
+    virtual const hkShape* getChildShape(u32, c8 (&)[512]) const { return NULL; }
 };
 
-// === No-DWARF stubs: collector classes ===
+// RECONSTRUCTED
 
 class hkFlagCdBodyPairCollector {
 public:
@@ -2874,11 +3236,11 @@ public:
     virtual void addCdBodyPair(const hkCdBody&, const hkCdBody&) {}
 };
 
-// === No-DWARF stubs: utility classes ===
+// RECONSTRUCTED
 
 class hkVector4Util {
 public:
-    static u32 packQuaternionIntoInt32(const hkVector4&) { return 0; }
+    static u32 packQuaternionIntoInt32(const hkVector4&);
 };
 
 class hkTriangleUtil {
@@ -2894,18 +3256,12 @@ public:
     static void calcAabb(const f32*, s32, s32, hkAabb&) {}
 };
 
-class hkSmallArrayUtil {
-public:
-    static void _reserve(void*, s32, s32) {}
-    static void _reserveMore(void*, s32) {}
-};
-
 class hkMoppBvTreeStreamAgent {
 public:
     static void registerAgent(hkCollisionDispatcher*) {}
 };
 
-// === No-DWARF stubs: constraint atom classes ===
+// RECONSTRUCTED
 
 class hkMassChangerModifierConstraintAtom {
 public:
@@ -2945,7 +3301,7 @@ public:
     }
 };
 
-// === No-DWARF stubs: error/tracer classes ===
+// RECONSTRUCTED
 
 class hkErrStream {
 public:
@@ -2961,14 +3317,14 @@ public:
     s32 getStackTrace(u32*, s32) { return 0; }
 };
 
-// === No-DWARF stubs: deactivator / monitor ===
+// RECONSTRUCTED
 
-class hkFakeRigidBodyDeactivator {
+class hkFakeRigidBodyDeactivator : public hkRigidBodyDeactivator {
 public:
     virtual ~hkFakeRigidBodyDeactivator() {}
-    virtual s32 getRigidBodyDeactivatorType() const { return 0; }
-    virtual bool shouldDeactivateHighFrequency(const hkEntity*) { return false; }
-    virtual bool shouldDeactivateLowFrequency(const hkEntity*) { return false; }
+    virtual s32 getRigidBodyDeactivatorType() const { return DEACTIVATOR_NEVER; }
+    virtual hkBool shouldDeactivateHighFrequency(const hkEntity*) { return hkBool(0); }
+    virtual hkBool shouldDeactivateLowFrequency(const hkEntity*) { return hkBool(0); }
     static hkFakeRigidBodyDeactivator m_fakeRigidBodyDeactivator;
 };
 
@@ -2985,7 +3341,7 @@ public:
     static u8 m_sinCosTable[744];
 };
 
-// === No-DWARF stubs: batch 3 ===
+// RECONSTRUCTED
 
 class hkUnionFind {
 public:
@@ -3011,14 +3367,23 @@ public:
     static void sprintf(c8* buf, const c8* fmt, ...);
     static s32 strLen(const c8* s);
     static void memCpy(void* dst, const void* src, s32 n);
+    static inline void memCpy16(void* dst, const void* src, s32 n)
+    {
+        const u32* pSrc = static_cast<const u32*>(src);
+        u32* pDst = static_cast<u32*>(dst);
+        for (s32 i = 0; i < n; ++i) {
+            pDst[0] = pSrc[0];
+            pDst[1] = pSrc[1];
+            pDst[2] = pSrc[2];
+            pDst[3] = pSrc[3];
+            pDst += 4;
+            pSrc += 4;
+        }
+    }
     static void memMove(void* dst, const void* src, s32 n);
     static void memSet(void* ptr, s32 val, s32 n);
     hkString operator+(const hkString&) const { return hkString(); }
-    bool beginsWith(const c8* p) const
-    {
-        (void)p;
-        return false;
-    }
+    bool beginsWith(const c8*) const { return false; }
     static c8 s_emptyStringRep[13];
 };
 
@@ -3050,13 +3415,6 @@ public:
     }
 };
 
-class hkArrayUtil {
-public:
-    static void _reserve(void*, s32, s32);
-    static void _reserveMore(void*, s32);
-    static void _reduce(void*, s32, c8*, s32);
-};
-
 class hkProcessFactory {
 public:
     hkProcessFactory() {}
@@ -3065,37 +3423,79 @@ public:
     virtual void unused1() {}
 };
 
-class hkSpatialRigidBodyDeactivator {
+class hkSpatialRigidBodyDeactivator : public hkRigidBodyDeactivator {
 public:
-    hkSpatialRigidBodyDeactivator() {}
+    hkSpatialRigidBodyDeactivator();
     virtual ~hkSpatialRigidBodyDeactivator() {}
-    virtual s32 getRigidBodyDeactivatorType() const { return 0; }
-    virtual bool shouldDeactivateHighFrequency(const hkEntity*) { return false; }
-    virtual bool shouldDeactivateLowFrequency(const hkEntity*) { return false; }
+    static void* operator new(size_t uSize);
+    static void operator delete(void* pvMemory);
+    virtual s32 getRigidBodyDeactivatorType() const { return DEACTIVATOR_SPATIAL; }
+    virtual hkBool shouldDeactivateHighFrequency(const hkEntity*) { return hkBool(0); }
+    virtual hkBool shouldDeactivateLowFrequency(const hkEntity*) { return hkBool(0); }
+
+    u32 m_highFrequencyState;                      // offset 0x08
+    u32 m_lowFrequencyState;                       // offset 0x0C
+    hkVector4 m_highFrequencyReferencePosition;    // offset 0x10
+    hkQuaternion m_highFrequencyReferenceRotation; // offset 0x20
+    hkVector4 m_lowFrequencyReferencePosition;     // offset 0x30
+    hkQuaternion m_lowFrequencyReferenceRotation;  // offset 0x40
+    f32 m_referenceRadius;                         // offset 0x50
+    f32 m_highFrequencyLinearThreshold;            // offset 0x54
+    f32 m_highFrequencyAngularThreshold;           // offset 0x58
+    f32 m_lowFrequencyLinearThreshold;             // offset 0x5C
+    f32 m_lowFrequencyAngularThreshold;            // offset 0x60
+    u32 m_highFrequencyFlags;                      // offset 0x64
+    u32 m_lowFrequencyFlags;                       // offset 0x68
+    u32 m_reservedState;                           // offset 0x6C
 };
 
-class hkMath {
-public:
-    static f32 hkFloor(f32 v);
-    static s32 hkFloorToInt(f32 v);
-    static s32 hkFloatToInt(f32 v);
-    static bool isNegative(f32 v);
-};
+inline void* hkSpatialRigidBodyDeactivator::operator new(size_t uSize)
+{
+    void* pvMemory =
+        hkThreadMemory::s_threadMemoryInstance->allocateChunk(uSize, HK_MEMORY_CLASS_DEACTIVATOR);
+    static_cast<hkSpatialRigidBodyDeactivator*>(pvMemory)->m_memSizeAndFlags = uSize;
+    return pvMemory;
+}
 
-class hkSphereMotion {
+inline void hkSpatialRigidBodyDeactivator::operator delete(void* pvMemory)
+{
+    hkSpatialRigidBodyDeactivator* pDeactivator =
+        static_cast<hkSpatialRigidBodyDeactivator*>(pvMemory);
+    hkThreadMemory::s_threadMemoryInstance->deallocateChunk(
+        pvMemory, pDeactivator->m_memSizeAndFlags, HK_MEMORY_CLASS_DEACTIVATOR);
+}
+
+class hkSphereMotion : public hkMotion {
 public:
+    hkSphereMotion(const hkVector4& rPosition, const hkQuaternion& rRotation)
+        : hkMotion(rPosition, rRotation, false)
+    {
+        m_type = MOTION_SPHERE_INERTIA;
+    }
+    hkSphereMotion(hkFinishLoadedObjectFlag sParam1) : hkMotion(sParam1) {}
     virtual ~hkSphereMotion() {}
-    virtual void getInertiaLocal(hkMatrix3&) const {}
-    virtual void getInertiaWorld(hkMatrix3&) const {}
-    virtual void setInertiaLocal(const hkMatrix3&) {}
-    virtual void setInertiaInvLocal(const hkMatrix3&) {}
-    virtual void getInertiaInvLocal(hkMatrix3&) const {}
-    virtual void getInertiaInvWorld(hkMatrix3&) const {}
-    virtual void applyPointImpulse(const hkVector4&, const hkVector4&) {}
-    virtual void applyAngularImpulse(const hkVector4&) {}
-    virtual void applyForce(f32, const hkVector4&) {}
-    virtual void applyForce(f32, const hkVector4&, const hkVector4&) {}
-    virtual void applyTorque(f32, const hkVector4&) {}
+    virtual void getInertiaLocal(hkMatrix3&) const;
+    virtual void getInertiaWorld(hkMatrix3&) const;
+    virtual void setInertiaLocal(const hkMatrix3&);
+    virtual void setInertiaInvLocal(const hkMatrix3&);
+    virtual void getInertiaInvLocal(hkMatrix3&) const;
+    virtual void getInertiaInvWorld(hkMatrix3&) const;
+    virtual void applyPointImpulse(const hkVector4&, const hkVector4&);
+    virtual void applyAngularImpulse(const hkVector4&);
+    virtual void applyForce(f32, const hkVector4&);
+    virtual void applyForce(f32, const hkVector4&, const hkVector4&);
+    virtual void applyTorque(f32, const hkVector4&);
+};
+
+class hkStabilizedSphereMotion : public hkSphereMotion {
+public:
+    hkStabilizedSphereMotion(const hkVector4& rPosition, const hkQuaternion& rRotation)
+        : hkSphereMotion(rPosition, rRotation)
+    {
+        m_type = MOTION_SPHERE_STABILIZED;
+    }
+    hkStabilizedSphereMotion(hkFinishLoadedObjectFlag sParam1) : hkSphereMotion(sParam1) {}
+    virtual ~hkStabilizedSphereMotion() {}
 };
 
 class hkMatrix6 {
@@ -3181,6 +3581,7 @@ public:
 
 class hkSweptTransformUtil {
 public:
+    static void _stepMotionState(const hkStepInfo&, hkVector4&, hkVector4&, hkMotionState&);
     static void lerp2(const hkSweptTransform&, f32, hkTransform&);
     static void lerp2Ha(const hkSweptTransform&, f32, f32, hkTransform&);
     static void backStepMotionState(f32, hkMotionState&);
@@ -3193,7 +3594,7 @@ public:
     static void setCentreOfRotationLocal(const hkVector4&, hkMotionState&);
 };
 
-// === No-DWARF stubs: batch 4 ===
+// RECONSTRUCTED
 
 class hkNullBroadPhaseListener {
 public:
@@ -3323,7 +3724,7 @@ public:
     static void replaceMotionObject(hkRigidBody*, hkMotion::MotionType, hkBool, hkBool, hkWorld*);
 };
 
-// === No-DWARF stubs: batch 5+ remaining classes ===
+// RECONSTRUCTED
 
 class hkBufferedStreamWriter {
 public:
@@ -4836,5 +5237,41 @@ public:
                                        hkArray<PlaneAndPoints>&,
                                        f32);
 };
+
+inline void* hkShape::operator new(size_t uSize)
+{
+    void* pvMemory =
+        hkThreadMemory::s_threadMemoryInstance->allocateChunk(uSize, HK_MEMORY_CLASS_CDINFO);
+    static_cast<hkShape*>(pvMemory)->m_memSizeAndFlags = uSize;
+    return pvMemory;
+}
+
+inline void hkShape::operator delete(void* pvMemory)
+{
+    hkShape* pShape = static_cast<hkShape*>(pvMemory);
+    hkThreadMemory::s_threadMemoryInstance->deallocateChunk(
+        pvMemory, pShape->m_memSizeAndFlags, HK_MEMORY_CLASS_CDINFO);
+}
+
+inline void hkAction::operator delete(void* pvMemory)
+{
+    hkAction* pAction = static_cast<hkAction*>(pvMemory);
+    hkThreadMemory::s_threadMemoryInstance->deallocateChunk(
+        pvMemory, pAction->m_memSizeAndFlags, HK_MEMORY_CLASS_ACTION);
+}
+
+inline void hkConstraintData::operator delete(void* pvMemory)
+{
+    hkConstraintData* pConstraintData = static_cast<hkConstraintData*>(pvMemory);
+    hkThreadMemory::s_threadMemoryInstance->deallocateChunk(
+        pvMemory, pConstraintData->m_memSizeAndFlags, HK_MEMORY_CLASS_CONSTRAINT);
+}
+
+inline void hkCollisionAgent::operator delete(void* pvMemory)
+{
+    hkCollisionAgent* pAgent = static_cast<hkCollisionAgent*>(pvMemory);
+    hkThreadMemory::s_threadMemoryInstance->deallocateChunk(
+        pvMemory, pAgent->m_memSizeAndFlags, HK_MEMORY_CLASS_AGENT);
+}
 
 #endif // HAVOKHEAP_HPP

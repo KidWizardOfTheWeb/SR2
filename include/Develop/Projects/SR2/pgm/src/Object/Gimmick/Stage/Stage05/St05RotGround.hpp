@@ -1,6 +1,8 @@
 #ifndef ST05ROTGROUND_HPP
 #define ST05ROTGROUND_HPP
 
+#include "usr/local/sega/nn/src/System/nnsystem.h"
+#include "usr/local/sce/ee/gcc/ee/lib/libc/memset.h"
 #include "Develop/Projects/SR2/pgm/src/Object/Collision/BaseThroughCollision.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickObj.hpp"
@@ -21,7 +23,14 @@ struct stcRotGroundPath {
 // total size: 0x10
 class clsRotGroundThroughCollision : public clsBaseThroughCollision {
 public:
-    virtual ~clsRotGroundThroughCollision() {}
+    virtual ~clsRotGroundThroughCollision()
+    {
+        destroy();
+        if (m_pcShape != NULL) {
+            delete m_pcShape;
+        }
+        m_pcShape = NULL;
+    }
 
     virtual void contactTriggerEvent(clsPlayerTask* pcPlayer);
     virtual void contactRemoveEvent(clsPlayerTask* pcPlayer);
@@ -38,8 +47,18 @@ public:
         MODE_MAIN = 1,
     };
 
-    clsRotGround_Obj() {}
-    virtual ~clsRotGround_Obj() {}
+    clsRotGround_Obj() : m_eMode(MODE_INIT), m_u32PlayerFlg(0)
+    {
+        m_cThroughCollision.m_pcRotGroundObj = NULL;
+        m_cThroughCollision.m_pcShape = NULL;
+        m_pcPlaySe2D = NULL;
+        m_bPlaySeFlg = 0;
+        memset(m_af32Rot, 0, sizeof(m_af32Rot));
+        memset(m_af32LengthRate, 0, sizeof(m_af32LengthRate));
+        memset(m_asParticleMtx, 0, sizeof(m_asParticleMtx));
+        memset(m_apcParticleTask, 0, sizeof(m_apcParticleTask));
+    }
+    virtual ~clsRotGround_Obj() { destroyData(); }
 
     virtual void createData();
     virtual void destroyData();
@@ -60,7 +79,7 @@ public:
     f32 m_af32LengthRate[8];                          // offset 0x78, size 0x20
     clsRotGroundThroughCollision m_cThroughCollision; // offset 0x98, size 0x10
     clsTask* m_apcParticleTask[5];                    // offset 0xA8, size 0x14
-    f32 m_asParticleMtx[5][4][4];                     // offset 0xC0, size 0x140
+    NNS_MATRIX m_asParticleMtx[5];                    // offset 0xC0, size 0x140
     clsPlaySe_2D* m_pcPlaySe2D;                       // offset 0x200, size 0x4
     u8 m_bPlaySeFlg;                                  // offset 0x204, size 0x1
 };
@@ -69,7 +88,11 @@ public:
 class clsRotGround_Task
     : public clsSingleModelGimmick_Task<clsRotGround_Task, clsRotGround_Obj, clsModelType_OB_TX> {
 public:
-    clsRotGround_Task(u32 u32ObjectAreaNum) : clsSingleModelGimmick_Task(0, u32ObjectAreaNum) {}
+    clsRotGround_Task(u32 u32ObjectAreaNum)
+        : clsSingleModelGimmick_Task<clsRotGround_Task, clsRotGround_Obj, clsModelType_OB_TX>(
+              u32ObjectAreaNum, 99999)
+    {
+    }
     virtual ~clsRotGround_Task() {}
 
     virtual void execute();

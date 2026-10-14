@@ -14,7 +14,7 @@ clsMovie_Task::stcSubTitleFontDetail* oasSubTitleFontDetail_Ending[2];
 
 } // namespace
 
-stcData clsMovie_Task::m_otsData[14];
+clsMovie_Task::stcData clsMovie_Task::m_otsData[14];
 s32 SUB_TITLE_POS_Y_60;
 s32 OFF_WII_Y;
 

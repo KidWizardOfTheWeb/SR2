@@ -47,10 +47,11 @@ void clsColossus_Task::draw()
 {
 }
 
-clsColossus_Obj::clsColossus_Obj()
+clsColossus_Obj::clsColossus_Obj() : m_eMode(MODE_MAIN), m_pcSe3DControl(0)
 {
 }
 
 clsColossus_Obj::~clsColossus_Obj()
 {
+    destroyData();
 }

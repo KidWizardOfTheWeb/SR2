@@ -6,12 +6,12 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Player/Gear/CtrlData.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Player/Gear/Gear.hpp"
 
+namespace nspGear {
+extern f32 tof32OneRingAddSpeed;
+
 c8* getGearCtrlBinName(u16 u16GearCtrlNo);
 u16 getGearCtrlNoForModel(u16 u16GearCtrlNo, u8 u8CharaNo);
 enmDraw2DType getGearDraw2DType(enmGear eGear);
-
-namespace nspGear {
-extern f32 tof32OneRingAddSpeed;
 } // namespace nspGear
 
 #endif // GEARDATA_HPP

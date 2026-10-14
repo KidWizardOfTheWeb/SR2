@@ -5,12 +5,13 @@
 #include "Develop/Projects/SR2/pgm/src/Stage/BaseStage.hpp"
 #include "Develop/Projects/SR2/pgm/src/Data/Portal.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
+#include "Develop/Projects/SR2/pgm/lib/OO/core/OOLibChecker.hpp"
 
 // total size: 0x498
 class clsDivStage_Task : public clsBaseStage_Task {
 public:
     clsDivStage_Task(stcBinInfo& rsBinInfoI);
-    virtual ~clsDivStage_Task() {}
+    virtual ~clsDivStage_Task() { nspOOLibChecker::ClassD("clsDivStage_Task"); }
     virtual void execute();
     virtual void draw();
     virtual void reset();

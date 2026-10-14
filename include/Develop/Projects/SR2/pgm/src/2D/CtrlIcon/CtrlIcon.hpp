@@ -4,12 +4,13 @@
 #include "types.h"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 #include "Develop/Projects/SR2/pgm/src/Task/TaskManager.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 // total size: 0x2A0
 class clsCtrlIcon_Task : public clsTask {
 public:
-    f32 m_sGhostDrawMtx[4][4];      // offset 0x60, size 0x40
-    f32 m_asPlayerDrawMtx[8][4][4]; // offset 0xA0, size 0x200
+    NNS_MATRIX m_sGhostDrawMtx;      // offset 0x60, size 0x40
+    NNS_MATRIX m_asPlayerDrawMtx[8]; // offset 0xA0, size 0x200
 
     virtual ~clsCtrlIcon_Task() {}
     virtual void draw();

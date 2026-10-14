@@ -21,7 +21,7 @@ enum enmPathMode {
 class clsPathGravityObj_Obj : public clsRigidBodyGimmickObj {
 public:
     clsPathGravityObj_Obj() {}
-    virtual ~clsPathGravityObj_Obj() {}
+    virtual ~clsPathGravityObj_Obj() { destroyData(); }
 
     virtual void reset();
     virtual void init();

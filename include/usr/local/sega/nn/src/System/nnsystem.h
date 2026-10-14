@@ -1,7 +1,7 @@
 #ifndef NNSYSTEM_H
 #define NNSYSTEM_H
 
-typedef float NNS_MATRIX[4][4];
+typedef float NNS_MATRIX[4][4] __attribute__((aligned(16)));
 
 enum NNE_BOOL {
     NNE_FALSE = 0,

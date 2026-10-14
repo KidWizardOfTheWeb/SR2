@@ -54,6 +54,7 @@ void clsPathGravityObj_Obj::requestDrawBreakEffect()
 
 void clsPathGravityObj_Obj::setData()
 {
+    clsRigidBodyGimmickObj::setData();
 }
 
 void clsPathGravityObj_Obj::adminSe()

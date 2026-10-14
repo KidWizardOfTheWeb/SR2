@@ -2,6 +2,7 @@
 
 void clsStage00_Task::init()
 {
+    clsBaseStage_Task::init();
 }
 
 clsStage00_Task::~clsStage00_Task()

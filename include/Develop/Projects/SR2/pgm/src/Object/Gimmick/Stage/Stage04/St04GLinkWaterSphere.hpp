@@ -29,7 +29,7 @@ enum enmWaterSphereMode {
 class clsGLinkWaterSphere_Object : public clsBaseGravityLinkObject {
 public:
     clsGLinkWaterSphere_Object() {}
-    virtual ~clsGLinkWaterSphere_Object();
+    virtual ~clsGLinkWaterSphere_Object() {}
     virtual void reset();
     virtual void setData();
     virtual void createData();

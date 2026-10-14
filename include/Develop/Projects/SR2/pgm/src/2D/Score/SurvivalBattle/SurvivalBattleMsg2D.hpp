@@ -14,7 +14,7 @@ public:
         DRAW_MODE__MISSILE_DISTANCE = 1,
     };
 
-    virtual ~clsSurvivalBattleMsg2D_Task();
+    virtual ~clsSurvivalBattleMsg2D_Task() {}
 
     clsSurvivalBattleMsg2D_Task(u32 u32ViewNo, enmDrawType enmType, u32 u32DrawNum);
 

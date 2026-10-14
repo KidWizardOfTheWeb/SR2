@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include "Develop/Projects/SR2/pgm/src/Task/TaskManager.hpp"
+#include "Develop/Projects/SR2/pgm/lib/OO/core/OOLibChecker.hpp"
 
 // total size: 0x60
 class clsBaseRacePause_Task : public clsTask {
@@ -15,7 +16,7 @@ public:
     };
 
     clsBaseRacePause_Task();
-    virtual ~clsBaseRacePause_Task() {}
+    virtual ~clsBaseRacePause_Task() { nspOOLibChecker::ClassD("clsBaseRacePause_Task"); }
 
     s32& m_reRacePauseRet;             // offset 0x54, size 0x4
     u8 m_u8PushPausePadNo;             // offset 0x58, size 0x1

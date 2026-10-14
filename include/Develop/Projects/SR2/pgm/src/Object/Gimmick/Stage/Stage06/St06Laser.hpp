@@ -13,7 +13,7 @@ class hkContactPoint;
 class clsLaser_Obj : public clsPhantomGimmickObject {
 public:
     clsLaser_Obj() {}
-    virtual ~clsLaser_Obj() {}
+    virtual ~clsLaser_Obj() { destroyData(); }
     virtual void contactTriggerEvent(hkContactPoint* pcObject, clsObject* pParam2);
     virtual void createData();
     virtual void destroyData();

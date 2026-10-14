@@ -4,6 +4,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Player/Gear/Gear.hpp"
 #include "Develop/Projects/SR2/pgm/src/Task/TaskManager.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 // total size: 0xB0
 class clsGearBurnLight_Task : public clsTask {
@@ -14,7 +15,7 @@ public:
 
     virtual void draw();
 
-    f32 m_sMtxWork[4][4];          // offset 0x60, size 0x40
+    NNS_MATRIX m_sMtxWork;         // offset 0x60, size 0x40
     clsModelType_OB_TX& m_rcModel; // offset 0xA0, size 0x4
     clsGear* m_pcGear;             // offset 0xA4, size 0x4
     s16 m_s16DrawNum;              // offset 0xA8, size 0x2

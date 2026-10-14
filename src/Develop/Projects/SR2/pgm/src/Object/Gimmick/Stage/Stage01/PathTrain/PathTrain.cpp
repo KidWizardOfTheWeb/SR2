@@ -37,14 +37,6 @@ static u8 chk__asTrainLineFrontSubParam_SizeCheck_[1];
 static u8 chk__asTrainLineBackSubParam_SizeCheck_[1];
 } // namespace
 
-clsPathTrain_Obj::clsPathTrain_Obj()
-{
-}
-
-clsPathTrain_Obj::~clsPathTrain_Obj()
-{
-}
-
 void clsPathTrain_Obj::setData()
 {
 }

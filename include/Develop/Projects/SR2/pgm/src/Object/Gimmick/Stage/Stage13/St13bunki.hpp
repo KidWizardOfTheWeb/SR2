@@ -34,7 +34,7 @@ enum enmBunkiMode {
 class clsBunki_Obj : public clsRigidBodyGimmickObj {
 public:
     clsBunki_Obj() {}
-    virtual ~clsBunki_Obj() {}
+    virtual ~clsBunki_Obj() { destroyData(); }
 
     // Name collision with other TUs — nested inside class per scaffold rule
     // Note: enmAiMode name collision — other TUs declare different values at global scope

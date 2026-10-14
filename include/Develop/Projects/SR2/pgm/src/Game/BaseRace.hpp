@@ -285,7 +285,7 @@ public:
                      s32 s32LapNumI,
                      const stcSendAdv* opsSendAdvI,
                      void** ppvMapBufferI,
-                     enmMode eModeI,
+                     clsGameMgr::enmMode eModeI,
                      s32 s32LoadNo);
     virtual ~clsBaseRace_Task();
     virtual void execute();

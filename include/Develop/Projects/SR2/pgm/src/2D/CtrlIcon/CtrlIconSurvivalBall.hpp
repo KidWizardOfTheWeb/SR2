@@ -5,7 +5,7 @@
 
 class clsCtrlIconSurvivalBall_Task : public clsTask {
 public:
-    virtual ~clsCtrlIconSurvivalBall_Task();
+    virtual ~clsCtrlIconSurvivalBall_Task() {}
     virtual void draw();
 };
 

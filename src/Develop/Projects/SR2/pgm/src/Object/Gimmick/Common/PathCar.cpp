@@ -19,6 +19,7 @@ clsPathCar_Obj::clsPathCar_Obj()
 
 clsPathCar_Obj::~clsPathCar_Obj()
 {
+    destroyData();
 }
 
 void clsPathCar_Obj::init()

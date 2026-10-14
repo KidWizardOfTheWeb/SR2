@@ -1,3 +1,5 @@
+#include "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionGearRail.hpp"
+
 #include "types.h"
 
 u32 BO_NUM;
@@ -9,4 +11,12 @@ f32 CLIP_Z;
 
 namespace nspAgp {
 f32 toaf32BonusSpeed[3] = {0.1f, 0.12f, 0.15f};
+}
+
+void clsPlayerTask::initGearRail()
+{
+}
+
+void clsPlayerTask::actionGearRail()
+{
 }

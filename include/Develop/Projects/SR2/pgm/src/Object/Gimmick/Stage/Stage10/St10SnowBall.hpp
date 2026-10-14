@@ -5,6 +5,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/RigidBodyGimmickObj.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsSe3DControl;
 struct hkContactPointConfirmedEvent;
@@ -18,7 +19,7 @@ enum enmSnowBallMode {
 // total size: 0x130
 class clsSnowBall_Obj : public clsRigidBodyGimmickObj {
 public:
-    virtual ~clsSnowBall_Obj() {}
+    virtual ~clsSnowBall_Obj() { destroyData(); }
     virtual nspPackId::enm getPackId() const
     {
         return nspPackId::ST10_SNOWBALL_20010;
@@ -51,7 +52,7 @@ public:
     f32 m_f32Scale;                       // offset 0xDC, size 0x4
     clsSe3DControl* m_pcSe3DControl;      // offset 0xE0, size 0x4
     u8 m_bDrawFlag;                       // offset 0xE4, size 0x1
-    f32 m_sShadowMtx[4][4];               // offset 0xF0, size 0x40
+    NNS_MATRIX m_sShadowMtx;              // offset 0xF0, size 0x40
 };
 
 // total size: 0x9C

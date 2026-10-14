@@ -2,6 +2,7 @@
 
 void clsGearPtnEmpty::clearChangeActionParam()
 {
+    clsGearBasePrototype::clearChangeActionParam();
 }
 
 void clsGearPtnEmpty::behavior()

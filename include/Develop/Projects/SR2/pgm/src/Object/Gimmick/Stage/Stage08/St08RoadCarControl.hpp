@@ -48,7 +48,7 @@ public:
 
     // Weak/inline functions
 public:
-    ~clsRoadCarControl();
+    ~clsRoadCarControl() {}
     clsRoadCarControl(clsRigidBodyGimmickObj* param_1, clsRoadBase_Obj* param_2);
 
     enmState getState() const { return m_eState; }

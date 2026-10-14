@@ -6,6 +6,10 @@ stcAttentionData DrawData2v = {0, -8, 150, 0.8f, 0.65f, 0.3f, 2.5f, 15.0f};
 stcAttentionData DrawData4v = {0, -8, 100, 0.65f, 0.65f, 0.08f, 2.5f, 15.0f};
 } // namespace nspAttention2D
 
+clsScoreAttentionAttack2D::clsScoreAttentionAttack2D(clsScore2D_Task* pcParent) : clsScore2D_Task(0)
+{
+}
+
 clsScoreAttentionAttack2D::~clsScoreAttentionAttack2D()
 {
 }

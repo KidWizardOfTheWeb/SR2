@@ -33,7 +33,7 @@ public:
     };
 
     clsWallThroughCollision_Obj() : clsGimmickObj() {}
-    virtual ~clsWallThroughCollision_Obj() {}
+    virtual ~clsWallThroughCollision_Obj() { destroyData(); }
 
     virtual void setData();
     virtual void createData();

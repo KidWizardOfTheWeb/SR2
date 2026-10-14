@@ -8,6 +8,7 @@
 #include "Develop/Projects/SR2/pgm/src/Data/Path.hpp"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 #include "usr/local/sega/nn/src/Object/nnobject.h"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsSe3DControl;
 class clsBackLineEffectTask;
@@ -43,7 +44,7 @@ public:
     f32 m_f32Speed;                          // offset 0x150, size 0x4
     clsSe3DControl* m_pcSe3DControl;         // offset 0x154, size 0x4
     u8 m_bDraw;                              // offset 0x158, size 0x1
-    f32 m_sDrawMtx[4][4];                    // offset 0x160, size 0x40
+    NNS_MATRIX m_sDrawMtx;                   // offset 0x160, size 0x40
     clsBackLineEffectTask* m_apcLineTask[2]; // offset 0x1A0, size 0x8
 
     static clsGravityGimmickParam t_ocGravityGimmickParam;

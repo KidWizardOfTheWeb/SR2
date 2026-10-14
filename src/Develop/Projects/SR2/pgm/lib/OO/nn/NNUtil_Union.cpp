@@ -37,3 +37,7 @@ void nspNnUtil::transformVectorFast44(NNS_VECTORFAST& rsParam1,
                                       const NNS_VECTORFAST& rsParam3)
 {
 }
+
+void utilSafetyTexRelease(_NNS_TEXLIST* psTexList)
+{
+}

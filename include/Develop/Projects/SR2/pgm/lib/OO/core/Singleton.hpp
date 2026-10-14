@@ -7,7 +7,7 @@
 template <class T>
 class clsSingleton {
 public:
-    clsSingleton() { m_tpcSingleton = static_cast<T*>(this); }
+    clsSingleton() { m_tpcSingleton = &static_cast<T&>(*this); }
     virtual ~clsSingleton() { m_tpcSingleton = NULL; }
     static T* GS() { return m_tpcSingleton; }
     static T& RS() { return *m_tpcSingleton; }

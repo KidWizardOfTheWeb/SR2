@@ -11,7 +11,7 @@
 class clsLineObj_Obj : public clsPathGravityObj_Obj {
 public:
     clsLineObj_Obj() {}
-    virtual ~clsLineObj_Obj() {}
+    virtual ~clsLineObj_Obj() { destroyData(); }
     virtual void createData();
     virtual void destroyData();
     virtual nspPackId::enm getPackId() const { return nspPackId::ST11_LINE_OBJ_21060; }

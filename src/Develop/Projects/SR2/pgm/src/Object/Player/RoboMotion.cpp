@@ -4,6 +4,7 @@ u8 m_bModelFlag;
 
 void clsRoboMotion::reset()
 {
+    m_bRoboFlag = 0;
 }
 
 void clsRoboMotion::init(s8 s8CharaType, s8 s8ModelType, s8 s8MotionType)

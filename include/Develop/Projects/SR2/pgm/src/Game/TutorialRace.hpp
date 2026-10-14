@@ -14,7 +14,7 @@ class clsRacePauseTutorial_Task;
 class clsTutorialRace_Task : public clsMissionRace_Task {
 public:
     inline clsTutorialRace_Task(u32 param_1)
-        : clsMissionRace_Task(0, 0, 0, 0, static_cast<enmMode>(0))
+        : clsMissionRace_Task(0, 0, 0, 0, static_cast<clsGameMgr::enmMode>(0))
     {
     }
     virtual ~clsTutorialRace_Task() {}

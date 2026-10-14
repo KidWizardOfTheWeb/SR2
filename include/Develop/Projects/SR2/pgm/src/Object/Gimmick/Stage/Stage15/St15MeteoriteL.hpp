@@ -9,6 +9,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 #include "Develop/Projects/SR2/pgm/src/Task/TaskManager.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 enum enmMeteoriteLMode {
     MODE_INIT = 0,
@@ -23,7 +24,7 @@ enum enmMeteoriteLMode {
 class clsMeteoriteL_Obj : public clsRigidBodyGimmickObj {
 public:
     clsMeteoriteL_Obj() {}
-    virtual ~clsMeteoriteL_Obj() {}
+    virtual ~clsMeteoriteL_Obj() { destroyData(); }
     virtual void setData();
     virtual void createData();
     virtual void destroyData();
@@ -45,7 +46,7 @@ public:
     f32 m_f32Speed;                      // offset 0xF4, size 0x4
     s32 m_s32ObjNo;                      // offset 0xF8, size 0x4
     u8 m_bDrawFlag;                      // offset 0xFC, size 0x1
-    f32 m_sEffectMtx[4][4];              // offset 0x100, size 0x40
+    NNS_MATRIX m_sEffectMtx;             // offset 0x100, size 0x40
     NNS_VECTORFAST m_sEffectBombPos;     // offset 0x140, size 0x10
     NNS_VECTORFAST m_sEffectBombUpVec;   // offset 0x150, size 0x10
     NNS_QUATERNION m_sEffectQuat;        // offset 0x160, size 0x10

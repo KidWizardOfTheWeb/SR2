@@ -21,7 +21,7 @@ public:
                        s32 s32LapNumI,
                        const stcSendAdv* opsSendAdvI,
                        void** ppvMapBufferI,
-                       enmMode eModeI);
+                       clsGameMgr::enmMode eModeI);
     virtual ~clsTimeAttack_Task();
     virtual void execute();
     virtual void start();

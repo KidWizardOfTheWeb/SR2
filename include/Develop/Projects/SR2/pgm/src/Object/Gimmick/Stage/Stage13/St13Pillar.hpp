@@ -9,6 +9,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Collision/BaseThroughCollision.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/ItemBomb.hpp"
 #include "Develop/Projects/SR2/pgm/src/Havok/Havok.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsPillar_Obj;
 class clsPillarThroughCollision;
@@ -56,7 +57,7 @@ public:
     };
 
     clsPillar_Obj() {}
-    virtual ~clsPillar_Obj() {}
+    virtual ~clsPillar_Obj() { destroyData(); }
 
     virtual void destroyData();
     virtual nspPackId::enm getPackId() const { return nspPackId::ST13_PILLAR_23070; }
@@ -87,7 +88,7 @@ public:
     f32 m_f32RotY;                            // offset 0x90, size 0x4
     f32 m_f32MoveAngle;                       // offset 0x94, size 0x4
     s16 m_s16Count;                           // offset 0x98, size 0x2
-    f32 m_sPosturalMtx[4][4];                 // offset 0xA0, size 0x40
+    NNS_MATRIX m_sPosturalMtx;                // offset 0xA0, size 0x40
     // gap 0xE0-0xDF (alignment)
     clsSe3DControl* m_pcSe3DControl; // offset 0xE0, size 0x4
 };

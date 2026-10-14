@@ -6,6 +6,7 @@
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 #include "usr/local/sega/nn/src/Object/nnobject.h"
 #include "types.h"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 enum enmSurvivalRaceWalkRunLineMode {
     MODE_INIT = 0,
@@ -18,7 +19,7 @@ class clsSurvivalRelayWalkRunLine_Obj : public clsGimmickObj {
     // Members
 public:
     enmSurvivalRaceWalkRunLineMode m_eSurvivalRaceWalkRunLineMode; // offset 0x50, size 0x4
-    f32 m_asDrawMtx[3][4][4];                                      // offset 0x60, size 0xC0
+    NNS_MATRIX m_asDrawMtx[3];                                     // offset 0x60, size 0xC0
     s32 m_s32PlayerNo;                                             // offset 0x120, size 0x4
     s32 m_s32NextPlayerNo;                                         // offset 0x124, size 0x4
     u8 m_bGravityFlag;                                             // offset 0x128, size 0x1
@@ -35,7 +36,7 @@ public:
 
     // Virtual functions
 public:
-    inline clsSurvivalRelayWalkRunLine_Obj(int s32TeamNo) : clsGimmickObj() {}
+    clsSurvivalRelayWalkRunLine_Obj(int s32TeamNo);
     virtual ~clsSurvivalRelayWalkRunLine_Obj();
 
     void reset();

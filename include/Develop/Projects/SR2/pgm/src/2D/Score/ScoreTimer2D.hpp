@@ -23,6 +23,27 @@ struct stcTimerData {
 // total size: 0x24
 class clsScoreTimer2D {
 public:
+    // total size: 0x14
+    struct stcUnionStatus {
+        u32 u32Mode;      // offset 0x0, size 0x4
+        f32 f32WaitFrame; // offset 0x4, size 0x4
+        s16 s16CenterX;   // offset 0x8, size 0x2
+        s16 s16TopY;      // offset 0xA, size 0x2
+        s8 s8LineY;       // offset 0xC, size 0x1
+        s8 s8LineYEnd;    // offset 0xD, size 0x1
+        s8 s8LineW;       // offset 0xE, size 0x1
+        u8 u8Open;        // offset 0xF, size 0x1
+        u8 u8OpenEnd;     // offset 0x10, size 0x1
+        u8 u8LocalAlpha;  // offset 0x11, size 0x1
+    };
+
+    stcUnionStatus m_sUnionStatus; // offset 0x0, size 0x14
+    u8 m_bDraw;                    // offset 0x14, size 0x1
+    u8 m_bLine;                    // offset 0x15, size 0x1
+    clsScore2D_Task* m_pcParent;   // offset 0x18, size 0x4
+    stcTimerData* m_opsDrawData;   // offset 0x1C, size 0x4
+    // vtable pointer: offset 0x20
+
     clsScoreTimer2D(clsScore2D_Task* pParam1);
     virtual ~clsScoreTimer2D();
 
@@ -31,12 +52,6 @@ public:
     void draw();
     void _drawLine();
     void _drawTime();
-
-    stcUnionStatus m_sUnionStatus; // offset 0x0, size 0x14
-    u8 m_bDraw;                    // offset 0x14, size 0x1
-    u8 m_bLine;                    // offset 0x15, size 0x1
-    clsScore2D_Task* m_pcParent;   // offset 0x18, size 0x4
-    stcTimerData* m_opsDrawData;   // offset 0x1C, size 0x4
 };
 
 #endif // SCORETIMER2D_HPP

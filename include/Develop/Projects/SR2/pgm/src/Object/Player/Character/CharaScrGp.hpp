@@ -9,7 +9,7 @@
 // total size: 0x90
 class clsCharaScrGp : public clsCharaRoboBase {
 public:
-    clsCharaScrGp(clsPlayerTask* pcPlayer) : clsCharaRoboBase(pcPlayer, 0, 0) {}
+    clsCharaScrGp(clsPlayerTask* pcPlayer);
     virtual ~clsCharaScrGp() {}
 
     virtual void draw(u32 u32Param1);

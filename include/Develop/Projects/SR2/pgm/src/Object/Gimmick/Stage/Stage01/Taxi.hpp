@@ -8,6 +8,7 @@
 #include "Develop/Projects/SR2/pgm/src/Effect/FollowLine/FollowLine.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class hkShape;
 class hkContactPoint;
@@ -119,7 +120,7 @@ public:
     f32 m_f32WidthDist;                      // offset 0x1E0, size 0x4
     f32 m_f32RotY;                           // offset 0x1E4, size 0x4
     s32 m_s32SeId;                           // offset 0x1E8, size 0x4
-    f32 m_sDrawMtx[4][4];                    // offset 0x1F0, size 0x40
+    NNS_MATRIX m_sDrawMtx;                   // offset 0x1F0, size 0x40
     clsBackLineEffectTask* m_apcLineTask[2]; // offset 0x230, size 0x8
     clsSe3DControl* m_pcSe3DControl;         // offset 0x238, size 0x4
 };

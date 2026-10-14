@@ -4,6 +4,7 @@
 #include "types.h"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 #include "Develop/Projects/SR2/pgm/src/Task/TaskManager.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsPlayerTask;
 
@@ -49,7 +50,7 @@ public:
         NNS_VECTOR sAddScale;     // offset 0x30, size 0xC
         NNS_VECTOR sVec;          // offset 0x3C, size 0xC
         NNS_VECTOR sPower;        // offset 0x48, size 0xC
-        f32 sDrawMtx[4][4];       // offset 0x60, size 0x40
+        NNS_MATRIX sDrawMtx;      // offset 0x60, size 0x40
         NNS_VECTOR asDrawPos[16]; // offset 0xA0, size 0xC0
     };
 

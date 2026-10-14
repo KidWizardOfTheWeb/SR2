@@ -6,6 +6,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Player/Character/CharaNodeBase.hpp"
 #include "types.h"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsRainDrops_Task;
 
@@ -29,8 +30,8 @@ public:
     static f32 tof32CollisionRadius;
 
     clsBackLineEffectTask* m_pcLineTask;  // offset 0x60, size 0x4
-    f32 m_sLMtx[4][4];                    // offset 0x70, size 0x40
-    f32 m_sRMtx[4][4];                    // offset 0xB0, size 0x40
+    NNS_MATRIX m_sLMtx;                   // offset 0x70, size 0x40
+    NNS_MATRIX m_sRMtx;                   // offset 0xB0, size 0x40
     NNS_VECTORFAST m_asParticlePos[2];    // offset 0xF0, size 0x20
     NNS_VECTORFAST m_asDFieldPosVF[2];    // offset 0x110, size 0x20
     clsTask* m_apcParticleTask[2];        // offset 0x130, size 0x8

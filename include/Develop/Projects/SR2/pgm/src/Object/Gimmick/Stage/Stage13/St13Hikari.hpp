@@ -17,7 +17,7 @@ public:
     };
 
     clsSt13Hikari_Object() {}
-    virtual ~clsSt13Hikari_Object() {}
+    virtual ~clsSt13Hikari_Object() { destroyData(); }
     virtual void setData();
     virtual void createData();
     virtual void destroyData();

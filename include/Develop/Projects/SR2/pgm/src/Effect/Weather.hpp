@@ -4,6 +4,7 @@
 #include "types.h"
 #include "Develop/Projects/SR2/pgm/src/Task/TaskManager.hpp"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsPlaySe_2D;
 
@@ -100,8 +101,8 @@ public:
     void setDeafaultInfo(u8 u8A);
     s32 DebugInfo(s32 s32A, s32 s32B, s32 s32C, s32 s32D);
 
-    f32 m_sWindMtx[4][4];               // offset 0x60, size 0x40
-    f32 m_sSpdMtx[4][4];                // offset 0xA0, size 0x40
+    NNS_MATRIX m_sWindMtx;              // offset 0x60, size 0x40
+    NNS_MATRIX m_sSpdMtx;               // offset 0xA0, size 0x40
     stcStatus m_sStatus;                // offset 0xE0, size 0x68
     stcWaterDropStatus* m_opsWaterDrop; // offset 0x148, size 0x4
     u8 m_u8Weather;                     // offset 0x14C, size 0x1
@@ -111,7 +112,7 @@ public:
     s32 m_s32RotX;                      // offset 0x15C, size 0x4
     s32 m_s32RotY;                      // offset 0x160, size 0x4
     u32 m_u32Col;                       // offset 0x164, size 0x4
-    f32 m_sDrawMtx[4][4];               // offset 0x170, size 0x40
+    NNS_MATRIX m_sDrawMtx;              // offset 0x170, size 0x40
     stcSeed m_asSeed[128];              // offset 0x1B0, size 0x1800
     clsPlaySe_2D* m_pcPlaySe2D;         // offset 0x19B0, size 0x4
 };

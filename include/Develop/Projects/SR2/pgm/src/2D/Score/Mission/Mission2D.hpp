@@ -4,6 +4,7 @@
 #include "Develop/Projects/SR2/pgm/src/Task/TaskManager.hpp"
 #include "Develop/Projects/SR2/pgm/src/2D/Score/ScoreParts2D.hpp"
 #include "Develop/Projects/SR2/pgm/src/2D/Screen2D.hpp"
+#include "Develop/Projects/SR2/pgm/src/Game/MissionRace.hpp"
 
 struct _NNS_TEXLIST;
 
@@ -49,31 +50,7 @@ extern stcEnergyLine asEnergyLine;
 extern f32 tf32EnergyFrameMax;
 } // namespace nspMission2D
 
-// Global enum (no Q2 mangling); may logically belong to MissionRace TU
-enum enmMissionInfo {
-    MISSION__TIMEATTACK_COUNTUP = 0,
-    MISSION__TIMEATTACK_COUNTDOWN = 1,
-    MISSION__RING = 2,
-    MISSION__TRICK = 3,
-    MISSION__SKILL = 4,
-    MISSION__GD_TIME = 5,
-    MISSION__GD_REMOVE = 6,
-    MISSION__GRIND_RINK = 7,
-    MISSION__GRIND_RINK_P = 8,
-    MISSION__TAG_G = 9,
-    MISSION__TAG_PT = 10,
-    MISSION__DESTRUCTION = 11,
-    MISSION__MARK_GD = 12,
-    MISSION__MARK_GC = 13,
-    MISSION__AGP = 14,
-    MISSION__ATTACK = 15,
-    MISSION__MARK = 16,
-    MISSION__GEAR_CHANGE = 17,
-    MISSION__START_DASH = 18,
-    MISSION__TRICK_A = 19,
-    MISSION__MAX = 20,
-    MISSION__NONE = -1,
-};
+typedef clsMissionRace_Task::enmMissionInfo enmMissionInfo;
 
 // Global struct used as pointer member
 // total size: 0x4

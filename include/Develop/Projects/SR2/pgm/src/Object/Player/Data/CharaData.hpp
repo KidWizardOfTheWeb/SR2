@@ -67,6 +67,8 @@ extern stcMotionFlgs asMotionFlgsEgg[8];               // size: 0x40, address: 0
 extern stcMotionFlgs asMotionFlgsOther[8];             // size: 0x40, address: 0x6657D0
 extern stcMotionFlgs asMotionFlgsWave[8];              // size: 0x40, address: 0x665810
 extern stcMotionFlgs asMotionFlgsBily[8];              // size: 0x40, address: 0x665850
+
+enmModelType getCharaModelType(u16 u16GearCtrlNo);
 } // namespace nspChara
 
 #endif // CHARADATA_HPP

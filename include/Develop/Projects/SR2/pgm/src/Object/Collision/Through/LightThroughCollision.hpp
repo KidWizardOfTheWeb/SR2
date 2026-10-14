@@ -6,7 +6,7 @@
 
 class clsLightThroughCollision : public clsThroughCollision {
 public:
-    virtual ~clsLightThroughCollision();
+    virtual ~clsLightThroughCollision() {}
 
     virtual void contactTriggerEvent(clsPlayerTask* pcPlayer);
     virtual void contactRemoveEvent(clsPlayerTask* pcPlayer);

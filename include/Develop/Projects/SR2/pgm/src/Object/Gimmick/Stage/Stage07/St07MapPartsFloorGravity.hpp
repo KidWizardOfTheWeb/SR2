@@ -7,6 +7,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickPath.hpp"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsTask;
 class clsSe3DControl;
@@ -15,10 +16,10 @@ class clsSe3DControl;
 class clsMapPartsFloorGravity_Object : public clsMapPartsObject {
 public:
     inline clsMapPartsFloorGravity_Object() : clsMapPartsObject() {}
-    virtual ~clsMapPartsFloorGravity_Object() {}
+    virtual ~clsMapPartsFloorGravity_Object() { destroyData(); }
 
     u8 m_StateChangeFlag;            // offset 0xE0, size 0x1
-    f32 m_sEffectMtx[4][4];          // offset 0xF0, size 0x40
+    NNS_MATRIX m_sEffectMtx;         // offset 0xF0, size 0x40
     f32 m_f32EffectCount;            // offset 0x130, size 0x4
     NNS_VECTORFAST m_sPosVec;        // offset 0x140, size 0x10
     NNS_QUATERNION m_sInitRotQuat;   // offset 0x150, size 0x10

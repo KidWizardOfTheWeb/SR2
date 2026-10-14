@@ -24,7 +24,7 @@ public:
 class clsDetention_Obj : public clsRigidBodyGimmickObj {
 public:
     clsDetention_Obj() {}
-    virtual ~clsDetention_Obj() {}
+    virtual ~clsDetention_Obj() { destroyData(); }
 
     virtual void setData();
     virtual void createData();

@@ -6,6 +6,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/ItemBox.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class hkContactPoint;
 class clsSe3DControl;
@@ -37,7 +38,7 @@ public:
     enum enmFloatingMeteoriteMode m_eFloatingMeteoriteMode; // offset 0xE0, size 0x4
     f32 m_f32DelayFrame;                                    // offset 0xE4, size 0x4
     f32 m_f32EndFrame;                                      // offset 0xE8, size 0x4
-    f32 m_sEffectMtx[4][4];                                 // offset 0xF0, size 0x40
+    NNS_MATRIX m_sEffectMtx;                                // offset 0xF0, size 0x40
     NNS_QUATERNION m_sRotQuat;                              // offset 0x130, size 0x10
     clsSe3DControl* m_pcSe3DControl;                        // offset 0x140, size 0x4
     clsTask* m_psEffectTask;                                // offset 0x144, size 0x4

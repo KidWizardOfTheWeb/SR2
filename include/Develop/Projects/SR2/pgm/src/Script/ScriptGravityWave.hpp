@@ -18,7 +18,7 @@ public:
                        f32 f32EndFrame,
                        f32 f32WaitFrame,
                        clsTask* pcTask);
-    virtual ~clsScriptNega_Task();
+    virtual ~clsScriptNega_Task() {}
     virtual void execute();
     virtual void draw();
     virtual void reset();
@@ -44,7 +44,7 @@ public:
 class clsScriptWave_Task : public clsGravityWave_Task {
 public:
     clsScriptWave_Task(u8 u8Param1, f32 fParam1, f32 fParam2, clsTask* pcTask);
-    virtual ~clsScriptWave_Task();
+    virtual ~clsScriptWave_Task() {}
     virtual void execute();
     virtual void draw();
 

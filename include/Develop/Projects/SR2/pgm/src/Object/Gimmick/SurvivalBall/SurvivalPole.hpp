@@ -24,8 +24,8 @@ enum enmSurvivalBallPoleType {
 // total size: 0xF0
 class clsSurvivalBallPole_Obj : public clsRigidBodyGimmickObj {
 public:
-    inline clsSurvivalBallPole_Obj() : clsRigidBodyGimmickObj() {}
-    virtual ~clsSurvivalBallPole_Obj() {}
+    clsSurvivalBallPole_Obj();
+    virtual ~clsSurvivalBallPole_Obj() { destroyData(); }
 
     enmSurvivalBallPoleMode m_enMode;      // offset 0xD0, size 0x4
     enmSurvivalBallPoleType m_enPointType; // offset 0xD4, size 0x4

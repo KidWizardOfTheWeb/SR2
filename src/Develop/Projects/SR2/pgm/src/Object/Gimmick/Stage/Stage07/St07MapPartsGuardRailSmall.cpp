@@ -31,4 +31,5 @@ clsMapPartsGuardRailSmall_Object::clsMapPartsGuardRailSmall_Object()
 
 clsMapPartsGuardRailSmall_Object::~clsMapPartsGuardRailSmall_Object()
 {
+    destroyData();
 }

@@ -33,7 +33,7 @@ public:
     };
 
     clsProductRoboManager_Obj() {}
-    virtual ~clsProductRoboManager_Obj() {}
+    virtual ~clsProductRoboManager_Obj() { destroyData(); }
 
     virtual void setData();
     virtual void createData();

@@ -38,10 +38,6 @@ static u8 chk__asTrainLineBackSubParam_SizeCheck_[1];
 
 f32 clsGCtrlTrain_Obj::m_tof32CLIP_DISTx2 = 0.0f;
 
-clsGCtrlTrain_Obj::clsGCtrlTrain_Obj()
-{
-}
-
 void clsGCtrlTrain_Obj::init()
 {
 }

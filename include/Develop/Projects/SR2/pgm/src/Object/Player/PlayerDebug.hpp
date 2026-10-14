@@ -4,6 +4,7 @@
 #include "types.h"
 #include "Develop/Projects/SR2/pgm/lib/OO/core/OOVector.hpp"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsPlayerTask;
 
@@ -39,7 +40,7 @@ public:
     clsPlayerTask* getPlayerTaskPtr();
 
 private:
-    f32 m_sDrawSphereMtx[4][4];          // offset 0x0, size 0x40
+    NNS_MATRIX m_sDrawSphereMtx;         // offset 0x0, size 0x40
     NNS_VECTORFAST m_sFixPosVecFast;     // offset 0x40, size 0x10
     NNS_VECTORFAST m_sDistVecFast[2];    // offset 0x50, size 0x20
     NNS_VECTOR m_asNrmLineBuff[512][2];  // offset 0x70, size 0x3000

@@ -4,6 +4,7 @@
 
 void clsGearPtnSkate::clearChangeActionParam()
 {
+    clsGearBasePrototype::clearChangeActionParam();
 }
 
 void clsGearPtnSkate::behavior()

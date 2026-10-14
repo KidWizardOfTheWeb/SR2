@@ -4,6 +4,7 @@
 #include "types.h"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 #include "usr/local/sega/nn/src/Object/nnobject.h"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsScore2D_Task;
 namespace nspOOMisc {
@@ -53,7 +54,7 @@ public:
     f32 m_f32AttackScale;        // offset 0x14, size 0x4
     f32 m_f32UserScale;          // offset 0x18, size 0x4
     s32 m_as32DamageRot[8];      // offset 0x1C, size 0x20
-    f32 m_sMtx[4][4];            // offset 0x40, size 0x40
+    NNS_MATRIX m_sMtx;           // offset 0x40, size 0x40
 };
 
 #endif // SCOREMAP2D_HPP

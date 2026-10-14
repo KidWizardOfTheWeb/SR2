@@ -14,7 +14,7 @@ class clsSe3DControl;
 class clsRoadTrailer_Obj : public clsRoadCarBase_Obj {
 public:
     clsRoadTrailer_Obj() {}
-    virtual ~clsRoadTrailer_Obj() {}
+    virtual ~clsRoadTrailer_Obj() { destroyData(); }
 
     virtual void createData();
     virtual void destroyData();

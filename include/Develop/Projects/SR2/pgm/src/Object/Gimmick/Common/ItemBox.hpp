@@ -122,7 +122,7 @@ class clsItemBox_Task
     : public clsBaseGimmickBody<clsItemBox_Task, clsItemBox_Obj, clsItemBoxModels>,
       public clsGimmickCommon {
 public:
-    virtual ~clsItemBox_Task();
+    virtual ~clsItemBox_Task() {}
 
     clsItemBox_Task(u32 u32ObjectAreaNum, u32 u32TpI);
 

@@ -20,16 +20,16 @@ template <class T_TASK, class T_OBJ, class T_MODEL>
 class clsBaseGimmickBody : public clsBaseGimmickHead, public clsSingleton<T_TASK> {
 public:
     clsBaseGimmickBody(u32 packId, u32 objectMax) : clsBaseGimmickHead(packId, objectMax) {}
-    virtual ~clsBaseGimmickBody() {}
-    virtual T_OBJ* getModelRef();
+    virtual ~clsBaseGimmickBody() { delete[] m_pcObjArray; }
     virtual void setSetData(const stcSetDataDetail&);
     virtual u32 getMultiDrawNum();
-    T_OBJ* getObject(u32 u32NoI) { return static_cast<T_OBJ**>(m_vecGmkObjArray._data)[u32NoI]; }
+    T_OBJ* getModelRef();
+    T_OBJ* getObject(u32 u32NoI) { return m_vecGmkObjArray.data_ptr()[u32NoI]; }
     clsGmkBurnLight_Task<T_MODEL>* getBurnLightTask() const { return pcGmkBurnLight_Task; }
 
     T_OBJ* m_pcObjArray;                                // offset 0x6C, size 0x4
-    vector m_vecGmkObjArray;                            // offset 0x70, size 0xC
-    vector m_vecUnusedGmkObjArray;                      // offset 0x7C, size 0xC
+    std::vector<T_OBJ*, std::allocator<T_OBJ*> > m_vecGmkObjArray;       // offset 0x70, size 0xC
+    std::vector<T_OBJ*, std::allocator<T_OBJ*> > m_vecUnusedGmkObjArray; // offset 0x7C, size 0xC
     T_MODEL m_cModel;                                   // offset 0x88, size varies by T_MODEL
     clsGmkBurnLight_Task<T_MODEL>* pcGmkBurnLight_Task; // after m_cModel
 };

@@ -48,14 +48,12 @@ enum enmTempState {
 template <typename T>
 class clsBitset {
 public:
-    clsBitset(T* pBuffer = 0, u32 size = 0) : m_pBuffer(pBuffer), m_BufferSize(size), m_pVTable(0)
-    {
-    }
-    ~clsBitset() {}
+    T* m_pBuffer;     // offset 0x0, size 0x4
+    u32 m_BufferSize; // offset 0x4, size 0x4
+    // vtable pointer: offset 0x8
 
-    T* m_pBuffer;          // offset 0x0, size 0x4
-    u32 m_BufferSize;      // offset 0x4, size 0x4
-    const void* m_pVTable; // offset 0x8, size 0x4
+    clsBitset(T* pBuffer = 0, u32 size = 0) : m_pBuffer(pBuffer), m_BufferSize(size) {}
+    virtual ~clsBitset() {}
 
     u8 get(u32 u32Pos) const;
     u32 getOnBitCnt() const;
@@ -141,7 +139,7 @@ public:
 // total size: 0x6C
 class clsSaveDataCtrl {
 public:
-    inline clsSaveDataCtrl();
+    clsSaveDataCtrl();
 
     stcSaveGameData* m_psSaveData;        // offset 0x0, size 0x4
     stcGameData* m_psGameData;            // offset 0x4, size 0x4
@@ -186,7 +184,7 @@ public:
     void SetAllMissinSelFlag();
     void SetAllTutorialSelFlag();
     void SetAllGameFlag();
-    u8 CheckSaveDataCrc(const void* pvParam1) const;
+    u8 CheckSaveDataCrc(const void* pvParam1);
     inline u8 IsGearUnlock(u32 u32Param1) const;
     inline u8 IsCharaUnlock(nspSaveData::enmUnlockChara) const;
 };

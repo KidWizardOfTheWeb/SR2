@@ -22,9 +22,9 @@ class clsPlayerTask;
 
 class clsCharaScrHd : public clsCharaRoboBase {
 public:
-    virtual ~clsCharaScrHd();
+    virtual ~clsCharaScrHd() {}
 
-    clsCharaScrHd(clsPlayerTask* pcPlayerTask) : clsCharaRoboBase(pcPlayerTask, 0, 0) {}
+    clsCharaScrHd(clsPlayerTask* pcPlayerTask);
 
     virtual void draw(u32 u32Arg);
     virtual void reset();

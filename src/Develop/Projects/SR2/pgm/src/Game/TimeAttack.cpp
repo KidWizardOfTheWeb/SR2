@@ -18,7 +18,7 @@ clsTimeAttack_Task::clsTimeAttack_Task(s32 s32StageNoI,
                                        s32 s32LapNumI,
                                        const stcSendAdv* opsSendAdvI,
                                        void** ppvMapBufferI,
-                                       enmMode eModeI)
+                                       clsGameMgr::enmMode eModeI)
     : clsBaseRace_Task(s32StageNoI,
                        s32PlayerNumI,
                        s32UserNumI,
@@ -101,4 +101,5 @@ u8 clsTimeAttack_Task::saveGhostData()
 
 void clsTimeAttack_Task::checkPauseResult(s32 bOnI)
 {
+    clsBaseRace_Task::checkPauseResult(bOnI);
 }

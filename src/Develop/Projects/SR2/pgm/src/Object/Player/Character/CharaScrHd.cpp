@@ -1,5 +1,9 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Player/Character/CharaScrHd.hpp"
 
+clsCharaScrHd::clsCharaScrHd(clsPlayerTask* pcPlayerTask) : clsCharaRoboBase(pcPlayerTask, 0, 0)
+{
+}
+
 void clsCharaScrHd::reset()
 {
 }

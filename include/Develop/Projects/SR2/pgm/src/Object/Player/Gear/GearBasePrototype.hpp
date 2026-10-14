@@ -94,7 +94,7 @@ public:
     {
     }
 
-    virtual ~clsGearBasePrototype();
+    virtual ~clsGearBasePrototype() {}
 
     virtual void clearChangeActionParam();
 

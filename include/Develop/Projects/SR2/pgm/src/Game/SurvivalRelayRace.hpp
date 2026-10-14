@@ -32,8 +32,14 @@ public:
     static u32 m_u32BattleCount;
     static u32 m_au32PlayerWinCount[4];
 
-    clsSurvivalRelayRace_Task(
-        s32 p1, s32 p2, s32 p3, s32 p4, s32 p5, const stcSendAdv* p6, void** p7, enmMode p8);
+    clsSurvivalRelayRace_Task(s32 p1,
+                              s32 p2,
+                              s32 p3,
+                              s32 p4,
+                              s32 p5,
+                              const stcSendAdv* p6,
+                              void** p7,
+                              clsGameMgr::enmMode p8);
     virtual ~clsSurvivalRelayRace_Task() {}
     virtual void execute();
     virtual void draw();

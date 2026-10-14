@@ -19,7 +19,7 @@ public:
     };
 
     clsSurvivalBallPutObj_Obj();
-    virtual ~clsSurvivalBallPutObj_Obj() {}
+    virtual ~clsSurvivalBallPutObj_Obj() { destroyData(); }
     virtual void contactTriggerCallback(hkContactPointConfirmedEvent& cEvent);
     virtual void createData();
     virtual void destroyData();

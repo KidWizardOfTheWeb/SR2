@@ -92,6 +92,11 @@ static clsBackLineEffectTask::stcParam oasLineParamTest = {0,
 
 NNS_VECTORFAST clsBackLineEffectTask::m_asLastViewPosFast[5];
 
+clsBackLineEffectTask::clsBackLineEffectTask(u8 u8Type, const stcParam* opsParam, s32 s32SubNo)
+    : clsTask(0, 0)
+{
+}
+
 void clsBackLineEffectTask::execute()
 {
 }

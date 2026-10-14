@@ -5,6 +5,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/Se3DControl.hpp"
 #include "Develop/Projects/SR2/pgm/src/Task/TaskManager.hpp"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsPlayerTask;
 
@@ -59,7 +60,7 @@ public:
     f32 m_f32CurFrame;                     // offset 0x80, size 0x4
     u8 m_u8PlayFlg;                        // offset 0x84, size 0x1
     s32 m_s32SelectNo;                     // offset 0x88, size 0x4
-    f32 m_sMatrix[4][4];                   // offset 0x90, size 0x40
+    NNS_MATRIX m_sMatrix;                  // offset 0x90, size 0x40
     NNS_VECTORFAST m_sPosVecFast;          // offset 0xD0, size 0x10
     f32 m_SafetyWaitFrame;                 // offset 0xE0, size 0x4
     clsSe3DControl* m_pcSe3DControl;       // offset 0xE4, size 0x4

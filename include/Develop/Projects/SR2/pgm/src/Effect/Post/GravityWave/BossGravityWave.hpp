@@ -5,7 +5,7 @@
 
 class clsBossGravityWave_Task : public clsGravityWave_Task {
 public:
-    virtual ~clsBossGravityWave_Task();
+    virtual ~clsBossGravityWave_Task() {}
     virtual void execute();
     virtual void draw();
 

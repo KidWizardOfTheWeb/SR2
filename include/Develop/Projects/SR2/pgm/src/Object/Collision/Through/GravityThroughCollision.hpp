@@ -6,7 +6,7 @@
 
 class clsGravityThroughCollision : public clsThroughCollision {
 public:
-    virtual ~clsGravityThroughCollision();
+    virtual ~clsGravityThroughCollision() {}
 
     virtual void contactTriggerEvent(clsPlayerTask* pcPlayer);
     virtual void contactAlwaysEvent(clsPlayerTask* pcPlayer);

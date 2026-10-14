@@ -6,6 +6,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 #include "usr/local/sega/nn/src/Object/nnobject.h"
+#include "Develop/Projects/SR2/pgm/lib/OO/core/OOLibChecker.hpp"
 
 // total size: 0x30
 struct stcWaveVtxFmt {
@@ -17,7 +18,7 @@ struct stcWaveVtxFmt {
 // total size: 0xD0
 class clsGravityWave_Task : public clsBaseGravityWave_Task {
 public:
-    virtual ~clsGravityWave_Task() {}
+    virtual ~clsGravityWave_Task() { nspOOLibChecker::ClassD("clsGravityWave_Task"); }
     clsGravityWave_Task(u32 u32PrioI, s32 s32FlgI);
 
     virtual void execute();

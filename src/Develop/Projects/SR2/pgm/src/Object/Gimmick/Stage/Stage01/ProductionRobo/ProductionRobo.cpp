@@ -69,6 +69,7 @@ clsProductionRobo_Obj::clsProductionRobo_Obj()
 
 clsProductionRobo_Obj::~clsProductionRobo_Obj()
 {
+    destroyData();
 }
 
 void clsProductionRobo_Obj::setLineParam(NNS_OBJECT* pParam1, NNS_MOTION* pParam2, f32* pParam3)

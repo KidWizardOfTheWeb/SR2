@@ -4,6 +4,7 @@
 #include "types.h"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 #include "Develop/Projects/SR2/pgm/src/Task/TaskManager.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsScript_Task;
 
@@ -38,7 +39,7 @@ public:
     f32 m_f32EndFrame;            // offset 0x7C, size 0x4
     f32 m_f32WaitFrame;           // offset 0x80, size 0x4
     NNS_VECTORFAST m_sPosVecFast; // offset 0x90, size 0x10
-    f32 m_sMatrix[4][4];          // offset 0xA0, size 0x40
+    NNS_MATRIX m_sMatrix;         // offset 0xA0, size 0x40
 };
 
 #endif // SCRIPTPARTICLE_HPP

@@ -41,7 +41,7 @@ class clsSignBoard_Task
     : public clsSingleModelGimmick_Task<clsSignBoard_Task, clsSignBoard_Obj, clsModelType_OB_TX> {
 public:
     clsSignBoard_Task(u32 u32Param1);
-    virtual ~clsSignBoard_Task();
+    virtual ~clsSignBoard_Task() {}
     virtual void reset();
     virtual void execute();
     virtual void draw();

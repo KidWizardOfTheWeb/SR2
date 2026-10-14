@@ -112,6 +112,7 @@ void clsFusionMachine_Obj::reset()
 
 void clsFusionMachine_Obj::init()
 {
+    clsFusionMachine_Obj::reset();
 }
 
 void clsFusionMachine_Obj::debugDead()

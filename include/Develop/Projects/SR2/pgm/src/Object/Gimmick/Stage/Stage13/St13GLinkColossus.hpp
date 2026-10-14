@@ -22,7 +22,7 @@ public:
         MODE_MAIN = 1,
     };
 
-    u8 m_eMode;                      // offset 0xE0, size 0x4
+    enmMode m_eMode;                 // offset 0xE0, size 0x4
     clsSe3DControl* m_pcSe3DControl; // offset 0xE4, size 0x4
 
     static NNS_VECTOR tosCollisionHalfSizeVec;

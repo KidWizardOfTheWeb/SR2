@@ -31,7 +31,7 @@ enum enmEnergyBulletMode {
 class clsEnergyBullet_Obj : public clsRigidBodyGimmickObj {
 public:
     clsEnergyBullet_Obj() {}
-    virtual ~clsEnergyBullet_Obj() {}
+    virtual ~clsEnergyBullet_Obj() { destroyData(); }
     virtual void setData();
     virtual void createData();
     virtual void destroyData();

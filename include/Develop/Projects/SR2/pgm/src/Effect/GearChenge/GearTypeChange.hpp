@@ -19,7 +19,7 @@ public:
 // total size: 0x110
 class clsGearTypeChengeEffect_Task : public clsBaseEffect_Task {
 public:
-    virtual ~clsGearTypeChengeEffect_Task();
+    virtual ~clsGearTypeChengeEffect_Task() {}
     virtual void execute();
     virtual void draw();
 

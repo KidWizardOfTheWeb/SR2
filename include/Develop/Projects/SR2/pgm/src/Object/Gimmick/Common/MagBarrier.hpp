@@ -21,7 +21,7 @@ public:
     };
 
     clsMagBarrier_Obj() {}
-    virtual ~clsMagBarrier_Obj() {}
+    virtual ~clsMagBarrier_Obj() { destroyData(); }
 
     virtual void destroyData();
     void execute();

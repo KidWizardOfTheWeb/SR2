@@ -15,7 +15,7 @@ class hkShape;
 class clsMissionPathTarget_Obj : public clsMissionTarget_Obj, public clsPathGravityObj_Obj {
 public:
     clsMissionPathTarget_Obj();
-    virtual ~clsMissionPathTarget_Obj() {}
+    virtual ~clsMissionPathTarget_Obj() { destroyData(); }
 
     virtual void init();
     virtual void main();

@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickPath.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsPlayerTask;
 class clsPathPoint;
@@ -35,7 +36,7 @@ public:
         PATH_TYPE_COURSE = 2,
     };
 
-    f32 m_sBaseMtx[4][4];               // offset 0x0, size 0x40
+    NNS_MATRIX m_sBaseMtx;              // offset 0x0, size 0x40
     NNS_VECTORFAST m_asPointVecFast[2]; // offset 0x40, size 0x20
     NNS_VECTORFAST m_asCrossVecFast[2]; // offset 0x60, size 0x20
     NNS_VECTORFAST m_sPathDirVecFast;   // offset 0x80, size 0x10

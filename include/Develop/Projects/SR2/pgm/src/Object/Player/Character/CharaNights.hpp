@@ -5,6 +5,7 @@
 #include "Develop/Projects/SR2/pgm/src/Data/Pack.hpp"
 #include "Develop/Projects/SR2/pgm/src/Effect/FollowLine/FollowLine.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Player/Character/CharaNodeBase.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsTask;
 class clsBackLineEffectTask;
@@ -29,8 +30,8 @@ public:
     static clsBackLineEffectTask::stcParam asNightsLineParam[2];
     static f32 tof32CollisionRadius;
 
-    f32 m_sLMtx[4][4];                       // offset 0x60, size 0x40
-    f32 m_sRMtx[4][4];                       // offset 0xA0, size 0x40
+    NNS_MATRIX m_sLMtx;                      // offset 0x60, size 0x40
+    NNS_MATRIX m_sRMtx;                      // offset 0xA0, size 0x40
     NNS_VECTORFAST m_asParticlePos[2];       // offset 0xE0, size 0x20
     clsTask* m_apcParticleTask[2];           // offset 0x100, size 0x8
     clsBackLineEffectTask* m_apcLineTask[2]; // offset 0x108, size 0x8

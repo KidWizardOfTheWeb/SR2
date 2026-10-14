@@ -30,7 +30,7 @@ clsSurvivalBattleRace_Task::clsSurvivalBattleRace_Task(enmRule eRule,
                                                        s32 s32Param2,
                                                        const stcSendAdv* pcSendAdv,
                                                        void** ppvParam,
-                                                       enmMode eMode)
+                                                       clsGameMgr::enmMode eMode)
     : clsBaseRace_Task(s32Param0, s32Param1, s32Param2, 0, 0, pcSendAdv, ppvParam, eMode, 0)
 {
 }

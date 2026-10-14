@@ -1,5 +1,9 @@
 #include "Develop/Projects/SR2/pgm/src/Script/ScriptBlur.hpp"
 
+clsScriptBlur_Task::clsScriptBlur_Task(u8 p0, clsTask* p1) : clsBlur_Task(0, 0)
+{
+}
+
 void clsScriptBlur_Task::initSet(
     u8 p0, u8 p1, f32 p2, f32 p3, f32 p4, u8 p5, u8 p6, f32 p7, f32 p8, f32 p9)
 {

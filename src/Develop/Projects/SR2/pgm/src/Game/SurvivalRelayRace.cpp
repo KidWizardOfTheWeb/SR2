@@ -77,7 +77,7 @@ void clsSurvivalRelayRace_Task::setPlayerGear(u32 u32Param1, stcSendAdv* pParam2
 }
 
 clsSurvivalRelayRace_Task::clsSurvivalRelayRace_Task(
-    s32 p1, s32 p2, s32 p3, s32 p4, s32 p5, const stcSendAdv* p6, void** p7, enmMode p8)
+    s32 p1, s32 p2, s32 p3, s32 p4, s32 p5, const stcSendAdv* p6, void** p7, clsGameMgr::enmMode p8)
     : clsBaseRace_Task(p1, p2, p3, p4, p5, p6, p7, p8, 0)
 {
 }

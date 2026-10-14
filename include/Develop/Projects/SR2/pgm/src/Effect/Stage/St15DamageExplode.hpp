@@ -5,6 +5,7 @@
 #include "Develop/Projects/SR2/pgm/src/Task/TaskManager.hpp"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 #include "usr/local/sega/nn/src/Matrix/nnquaternion.h"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 // total size: 0xB0
 class clsSt15DamageExplode_Task : public clsTask {
@@ -18,7 +19,7 @@ public:
     virtual void execute();
 
     NNS_VECTORFAST* m_opsPosFast; // offset 0x54, size 0x4
-    f32 m_sOfsMatrix[4][4];       // offset 0x60, size 0x40
+    NNS_MATRIX m_sOfsMatrix;      // offset 0x60, size 0x40
     u32 m_u32Count;               // offset 0xA0, size 0x4
     f32 m_f32Frame;               // offset 0xA4, size 0x4
     f32 m_f32HappenFrame;         // offset 0xA8, size 0x4

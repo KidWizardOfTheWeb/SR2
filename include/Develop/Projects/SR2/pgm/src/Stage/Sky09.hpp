@@ -5,6 +5,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 #include "Develop/Projects/SR2/pgm/src/Task/TaskManager.hpp"
 #include "types.h"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 // total size: 0x4
 struct stcThunderFogRange {
@@ -28,7 +29,7 @@ public:
     virtual void execute();
     virtual void draw();
 
-    f32 m_sTrsMtx[4][4];                 // offset 0x60, size 0x40
+    NNS_MATRIX m_sTrsMtx;                // offset 0x60, size 0x40
     clsModelType_OB_TX_MO_MA m_cModel;   // offset 0xA0, size 0x20
     clsBaseRace_Task* m_pcBaseRace_Task; // offset 0xC0, size 0x4
     stcDetail m_asDetail[4];             // offset 0xC4, size 0xC

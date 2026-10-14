@@ -13,20 +13,6 @@ class clsPathTrainManager_Obj;
 class clsPathTrain_Obj;
 struct stcTrainData;
 
-// total size: 0xAC
-class clsPathTrain_Task : public clsBaseGimmickBody<clsPathTrain_Task,
-                                                    clsPathTrainManager_Obj,
-                                                    clsModelType_OB_TX_MO_MA> {
-public:
-    clsPathTrain_Task(u32 param);
-    virtual ~clsPathTrain_Task();
-
-    virtual void reset();
-    virtual void createModel(stcBinInfo& rBinInfo);
-    virtual void execute();
-    virtual void draw();
-};
-
 // total size: 0x18
 class clsPathTrainThroughCol : public clsBaseThroughCollision {
 public:
@@ -72,6 +58,20 @@ public:
     stcSetDataDetail* m_psSetData;        // offset 0x7C, size 0x4
     stcTrainData* m_psTrainData;          // offset 0x80, size 0x4
     clsPathTrain_Obj* m_pcTrainObj;       // offset 0x84, size 0x4
+};
+
+// total size: 0xAC
+class clsPathTrain_Task : public clsBaseGimmickBody<clsPathTrain_Task,
+                                                    clsPathTrainManager_Obj,
+                                                    clsModelType_OB_TX_MO_MA> {
+public:
+    clsPathTrain_Task(u32 param);
+    virtual ~clsPathTrain_Task();
+
+    virtual void reset();
+    virtual void createModel(stcBinInfo& rBinInfo);
+    virtual void execute();
+    virtual void draw();
 };
 
 #endif // PATHTRAINMANAGER_HPP

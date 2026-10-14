@@ -29,4 +29,5 @@ clsMapPartsGuardRailCurve_Object::clsMapPartsGuardRailCurve_Object()
 
 clsMapPartsGuardRailCurve_Object::~clsMapPartsGuardRailCurve_Object()
 {
+    destroyData();
 }

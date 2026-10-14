@@ -5,6 +5,7 @@
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 #include "Develop/Projects/SR2/pgm/src/Task/TaskManager.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsScript_Task;
 
@@ -29,7 +30,7 @@ public:
 
     void codeEffect(u8* pu8Ptr, clsScript_Task* pParam2);
 
-    f32 m_sTrsMtx[4][4];                    // offset 0x60, size 0x40
+    NNS_MATRIX m_sTrsMtx;                   // offset 0x60, size 0x40
     u32 m_eFlag;                            // offset 0xA0, size 0x4
     u32 m_u32View;                          // offset 0xA4, size 0x4
     u32 m_u32EffectNo;                      // offset 0xA8, size 0x4

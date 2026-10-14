@@ -8,7 +8,7 @@ class clsStory2D_Task : public clsTask {
 public:
     clsStory2D_Task();
 
-    virtual ~clsStory2D_Task();
+    virtual ~clsStory2D_Task() {}
     virtual void execute();
     virtual void draw();
 

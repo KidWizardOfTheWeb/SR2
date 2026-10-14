@@ -23,7 +23,7 @@ public:
     };
 
     clsBeeRobo_Obj() {}
-    virtual ~clsBeeRobo_Obj() {}
+    virtual ~clsBeeRobo_Obj() { destroyData(); }
 
     virtual nspPackId::enm getPackId() const { return nspPackId::ST02_BEE_ROBO_12010; }
 

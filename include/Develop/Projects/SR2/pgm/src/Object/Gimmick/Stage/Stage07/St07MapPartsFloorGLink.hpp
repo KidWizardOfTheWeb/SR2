@@ -8,6 +8,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickPath.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsPlayerTask;
 class clsSe3DControl;
@@ -39,7 +40,7 @@ public:
 
     stcInfo m_sColInfo;              // offset 0xE0, size 0x10
     u8 m_StateChangeFlag;            // offset 0xF0, size 0x1
-    f32 m_sEffectMtx[4][4];          // offset 0x100, size 0x40
+    NNS_MATRIX m_sEffectMtx;         // offset 0x100, size 0x40
     f32 m_f32EffectCount;            // offset 0x140, size 0x4
     NNS_VECTORFAST m_sPosVec;        // offset 0x150, size 0x10
     clsSe3DControl* m_pcSe3DControl; // offset 0x160, size 0x4

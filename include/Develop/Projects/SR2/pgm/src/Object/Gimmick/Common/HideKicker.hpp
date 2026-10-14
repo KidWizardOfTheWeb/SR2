@@ -21,20 +21,6 @@ public:
     clsHideKicker_Obj* m_pcObj; // offset 0x8, size 0x4
 };
 
-// total size: 0xA0
-class clsHideKicker_Task : public clsSingleModelGimmick_Task<clsHideKicker_Task,
-                                                             clsHideKicker_Obj,
-                                                             clsModelType_OB_TX_MO>,
-                           public clsGimmickCommon {
-public:
-    clsHideKicker_Task(u32 u32ObjectAreaNum);
-    virtual ~clsHideKicker_Task() {}
-
-    virtual void execute();
-    virtual void draw();
-    virtual void reset();
-};
-
 // total size: 0x130
 class clsHideKicker_Obj : public clsRigidBodyGimmickObj {
 public:
@@ -75,6 +61,20 @@ public:
     u8 m_bFix;                           // offset 0x121, size 0x1
 
     static f32 m_tof32ClipSqDist;
+};
+
+// total size: 0xA0
+class clsHideKicker_Task : public clsSingleModelGimmick_Task<clsHideKicker_Task,
+                                                             clsHideKicker_Obj,
+                                                             clsModelType_OB_TX_MO>,
+                           public clsGimmickCommon {
+public:
+    clsHideKicker_Task(u32 u32ObjectAreaNum);
+    virtual ~clsHideKicker_Task() {}
+
+    virtual void execute();
+    virtual void draw();
+    virtual void reset();
 };
 
 #endif // HIDEKICKER_HPP

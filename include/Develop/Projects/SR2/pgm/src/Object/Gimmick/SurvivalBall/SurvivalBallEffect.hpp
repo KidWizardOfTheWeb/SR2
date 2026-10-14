@@ -7,17 +7,17 @@
 
 class clsPlaySe_2D;
 
-enum enmDrawType {
-    DRAW_TYPE__DRAW = 0,
-    DRAW_TYPE__STOP = 1,
-    DRAW_TYPE__NOT = 2,
-    DRAW_TYPE__END = 3,
-    AFTERIMAGE_COUNT = 20,
-};
-
 // total size: 0x240
 class clsSurvivalBallBallEffect_Task : public clsTask {
 public:
+    enum enmDrawType {
+        DRAW_TYPE__DRAW = 0,
+        DRAW_TYPE__STOP = 1,
+        DRAW_TYPE__NOT = 2,
+        DRAW_TYPE__END = 3,
+        AFTERIMAGE_COUNT = 20,
+    };
+
     clsSurvivalBallBallEffect_Task(u32 eEffectType,
                                    enmDrawType* peDrawFlag,
                                    NNS_VECTORFAST* psPosVec,

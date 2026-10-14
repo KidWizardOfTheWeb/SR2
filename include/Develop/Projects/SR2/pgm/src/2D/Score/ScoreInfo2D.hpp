@@ -62,6 +62,13 @@ struct stcUserStatus {
 // total size: 0x70
 class clsScoreInfo2D {
 public:
+    stcInfoData* m_opsDrawData;      // offset 0x0, size 0x4
+    u8 m_bDraw;                      // offset 0x4, size 0x1
+    clsScore2D_Task* m_pcParent;     // offset 0x8, size 0x4
+    stcUnionStatus m_sUnionStatus;   // offset 0xC, size 0x30
+    stcUserStatus m_asUserStatus[4]; // offset 0x3C, size 0x30
+    // vtable pointer: offset 0x6C
+
     clsScoreInfo2D(clsScore2D_Task* pcParent);
     virtual ~clsScoreInfo2D();
     virtual void draw();
@@ -73,12 +80,6 @@ public:
     void _drawLap(s32 s32Arg0, s32 s32Arg1, s32 s32Arg2, s32 s32Arg3, s32 s32Arg4);
     void _drawLapBack(s32 s32Arg0, s32 s32Arg1, s32 s32Arg2, s32 s32Arg3, s32 s32Arg4);
     void _drawRank(s32 s32Arg0, s32 s32Arg1, s32 s32Arg2, s32 s32Arg3, s32 s32Arg4, f32 f32Arg5);
-
-    stcInfoData* m_opsDrawData;      // offset 0x0, size 0x4
-    u8 m_bDraw;                      // offset 0x4, size 0x1
-    clsScore2D_Task* m_pcParent;     // offset 0x8, size 0x4
-    stcUnionStatus m_sUnionStatus;   // offset 0xC, size 0x30
-    stcUserStatus m_asUserStatus[4]; // offset 0x3C, size 0x30
 };
 
 #endif // SCOREINFO2D_HPP

@@ -56,6 +56,7 @@ clsSt13Catapult_Obj::clsSt13Catapult_Obj()
 
 clsSt13Catapult_Obj::~clsSt13Catapult_Obj()
 {
+    destroyData();
 }
 
 void clsSt13Catapult_Obj::shootPlayerToGround()

@@ -42,7 +42,7 @@ void clsChairB_Task::draw()
 {
 }
 
-clsChairB_Obj::clsChairB_Obj()
+clsChairB_Obj::clsChairB_Obj() : m_enBulletinBoardMode(INIT)
 {
 }
 

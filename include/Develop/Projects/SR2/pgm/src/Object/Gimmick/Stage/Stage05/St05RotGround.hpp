@@ -6,6 +6,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickObj.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 #include "types.h"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsPlaySe_2D;
 class clsRotGround_Obj;
@@ -60,7 +61,7 @@ public:
     f32 m_af32LengthRate[8];                          // offset 0x78, size 0x20
     clsRotGroundThroughCollision m_cThroughCollision; // offset 0x98, size 0x10
     clsTask* m_apcParticleTask[5];                    // offset 0xA8, size 0x14
-    f32 m_asParticleMtx[5][4][4];                     // offset 0xC0, size 0x140
+    NNS_MATRIX m_asParticleMtx[5];                    // offset 0xC0, size 0x140
     clsPlaySe_2D* m_pcPlaySe2D;                       // offset 0x200, size 0x4
     u8 m_bPlaySeFlg;                                  // offset 0x204, size 0x1
 };

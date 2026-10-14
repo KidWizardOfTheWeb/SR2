@@ -14,19 +14,6 @@
 class clsRunBee_Obj;
 class clsRunBee;
 
-// total size: 0x94
-class clsRunBee_Task
-    : public clsBaseGimmickBody<clsRunBee_Task, clsRunBee_Obj, clsModelType_OB_TX> {
-public:
-    clsRunBee_Task(u32 u32ObjectAreaNum);
-    virtual ~clsRunBee_Task();
-
-    virtual void execute();
-    virtual void draw();
-    virtual void reset();
-    virtual void createModel(stcBinInfo& rsBinInfoI);
-};
-
 // total size: 0xC
 class clsRunBeeCollision : public clsBaseThroughCollision {
 public:
@@ -74,6 +61,19 @@ public:
     inline enmRunBeeMode getMode() const { return m_eRunBeeMode; }
     inline f32 getMinSpeed() const { return m_f32MinSpeed; }
     inline void elaseExexute(clsRunBee*) {}
+};
+
+// total size: 0x94
+class clsRunBee_Task
+    : public clsBaseGimmickBody<clsRunBee_Task, clsRunBee_Obj, clsModelType_OB_TX> {
+public:
+    clsRunBee_Task(u32 u32ObjectAreaNum);
+    virtual ~clsRunBee_Task();
+
+    virtual void execute();
+    virtual void draw();
+    virtual void reset();
+    virtual void createModel(stcBinInfo& rsBinInfoI);
 };
 
 // total size: 0x3B0

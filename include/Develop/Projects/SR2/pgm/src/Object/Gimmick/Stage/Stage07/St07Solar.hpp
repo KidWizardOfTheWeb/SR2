@@ -8,12 +8,13 @@
 #include "Develop/Projects/SR2/pgm/src/Effect/FollowLine/FollowLine.hpp"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 // total size: 0x2A0
 class clsSolar_Obj : public clsPathGravityObj_Obj {
 public:
     clsSe3DControl* m_pcSe3DControl;         // offset 0x220, size 0x4
-    f32 m_sDrawMtx[4][4];                    // offset 0x230, size 0x40
+    NNS_MATRIX m_sDrawMtx;                   // offset 0x230, size 0x40
     clsBackLineEffectTask* m_apcLineTask[2]; // offset 0x270, size 0x8
     u8 m_u8ContactSeCount;                   // offset 0x278, size 0x1
     u8 m_u8ModelNo;                          // offset 0x279, size 0x1
@@ -24,7 +25,7 @@ public:
     static f32 t_of32CLIP_DISTx2;
 
     clsSolar_Obj();
-    virtual ~clsSolar_Obj() {}
+    virtual ~clsSolar_Obj() { destroyData(); }
     virtual void setData();
     virtual void createData();
     virtual void destroyData();

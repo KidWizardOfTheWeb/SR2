@@ -23,7 +23,7 @@ public:
 class clsSt12MotionObj_Obj : public clsGimmickObj {
 public:
     inline clsSt12MotionObj_Obj() : clsGimmickObj() {}
-    virtual ~clsSt12MotionObj_Obj() {}
+    virtual ~clsSt12MotionObj_Obj() { destroyData(); }
 
     enum enmBridgeMode {
         MODE_INIT = 0,

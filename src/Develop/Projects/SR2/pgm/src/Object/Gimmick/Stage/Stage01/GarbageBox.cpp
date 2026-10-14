@@ -42,7 +42,7 @@ void clsGarbageBox_Task::draw()
 {
 }
 
-clsGarbageBox_Obj::clsGarbageBox_Obj()
+clsGarbageBox_Obj::clsGarbageBox_Obj() : m_enBulletinBoardMode(INIT)
 {
 }
 

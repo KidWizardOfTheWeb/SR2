@@ -4,12 +4,13 @@
 #include "types.h"
 #include "Develop/Projects/SR2/pgm/src/Task/TaskManager.hpp"
 #include "Develop/Projects/SR2/pgm/src/Advertise/AdvertiseMgr.hpp"
+#include "Develop/Projects/SR2/pgm/lib/OO/core/OOLibChecker.hpp"
 
 // total size: 0x5C
 class clsFreeRaceSelect_Task : public clsTask {
 public:
     clsFreeRaceSelect_Task() : clsTask(0, 0) {}
-    virtual ~clsFreeRaceSelect_Task() {}
+    virtual ~clsFreeRaceSelect_Task() { nspOOLibChecker::ClassD("clsFreeRaceSelect_Task"); }
 
     clsAdvertiseMgr_Task* m_pcAdvertiseMgr_Task; // offset 0x54, size 0x4
     s8 m_s8MaxRuleNum;                           // offset 0x58, size 0x1

@@ -22,7 +22,7 @@ public:
                       s32 param4,
                       const stcSendAdv* param5,
                       void** param6,
-                      enmMode param7,
+                      clsGameMgr::enmMode param7,
                       s32 param8);
     virtual ~clsStoryRace_Task();
 

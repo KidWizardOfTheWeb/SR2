@@ -5,6 +5,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/BaseGimmick.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/PathGravityObj.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsSe3DControl;
 class clsBackLineEffectTask;
@@ -36,7 +37,7 @@ public:
     static u32 otau32SeTbl[3][3];
 
     clsSe3DControl* m_pcSe3DControl;         // offset 0x220, size 0x4
-    f32 m_sDrawMtx[4][4];                    // offset 0x230, size 0x40
+    NNS_MATRIX m_sDrawMtx;                   // offset 0x230, size 0x40
     clsBackLineEffectTask* m_apcLineTask[2]; // offset 0x270, size 0x8
     u8 m_u8ContactSeCount;                   // offset 0x278, size 0x1
     u8 m_u8ModelNo;                          // offset 0x279, size 0x1

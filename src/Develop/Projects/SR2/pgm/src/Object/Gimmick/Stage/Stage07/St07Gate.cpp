@@ -70,6 +70,7 @@ void clsSt07Gate_Obj::main()
 
 void clsSt07Gate_Obj::setData()
 {
+    clsRigidBodyGimmickObj::setData();
 }
 
 void clsSt07Gate_Obj::createData()

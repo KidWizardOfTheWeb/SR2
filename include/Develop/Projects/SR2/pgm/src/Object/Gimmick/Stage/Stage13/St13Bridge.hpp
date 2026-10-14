@@ -7,6 +7,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickObj.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsBridgeThroughCollision;
 class clsBridge_Obj;
@@ -39,7 +40,7 @@ public:
     };
 
     clsBridge_Obj() {}
-    virtual ~clsBridge_Obj() {}
+    virtual ~clsBridge_Obj() { destroyData(); }
 
     enmBridgeMode m_eMode;                    // offset 0x50, size 0x4
     enmBridgeState m_eState;                  // offset 0x54, size 0x4
@@ -51,7 +52,7 @@ public:
     f32 m_sScale;                             // offset 0x80, size 0x4
     f32 m_f32Wait;                            // offset 0x84, size 0x4
     s16 m_s16Count;                           // offset 0x88, size 0x2
-    f32 m_sPosturalMtx[4][4];                 // offset 0x90, size 0x40
+    NNS_MATRIX m_sPosturalMtx;                // offset 0x90, size 0x40
     clsSe3DControl* m_pcSe3DControl;          // offset 0xD0, size 0x4
 
     static f32 tof32ClipSqDist;

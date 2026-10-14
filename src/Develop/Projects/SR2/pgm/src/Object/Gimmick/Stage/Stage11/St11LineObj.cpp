@@ -36,6 +36,7 @@ void clsLineObj_Obj::requestDrawBreakEffect()
 
 void clsLineObj_Obj::callbackGravityEvent()
 {
+    clsPathGravityObj_Obj::callbackGravityEvent();
 }
 
 void clsLineObj_Obj::draw(clsModelType_OB_TX& rcObj,

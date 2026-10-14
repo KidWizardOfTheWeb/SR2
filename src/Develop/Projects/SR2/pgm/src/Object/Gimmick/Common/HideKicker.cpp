@@ -70,6 +70,7 @@ clsHideKicker_Obj::clsHideKicker_Obj()
 
 clsHideKicker_Obj::~clsHideKicker_Obj()
 {
+    destroyData();
 }
 
 nspPackId::enm clsHideKicker_Obj::getPackId() const

@@ -8,6 +8,12 @@
 // total size: 0x1C
 class clsPfTextureBase {
 public:
+    void* m_pvTex;          // offset 0x0, size 0x4
+    void* m_pvTexLocalBuff; // offset 0x4, size 0x4
+    _NNS_TEXLIST* m_psTex;  // offset 0x8, size 0x4
+    vector m_cSizeList;     // offset 0xC, size 0xC
+    // vtable pointer: offset 0x18
+
     clsPfTextureBase(void* pvTex, bool bSetUp) { SetTexture_Base(pvTex, bSetUp); }
     virtual ~clsPfTextureBase() {}
     virtual void* GetSize_Base(s32 s32Param1) const
@@ -16,11 +22,6 @@ public:
     }
 
     void SetTexture_Base(void* pvTex, bool bSetUp);
-
-    void* m_pvTex;          // offset 0x0, size 0x4
-    void* m_pvTexLocalBuff; // offset 0x4, size 0x4
-    _NNS_TEXLIST* m_psTex;  // offset 0x8, size 0x4
-    vector m_cSizeList;     // offset 0xC, size 0xC
 };
 
 #endif // PS2NNFONTSYSTEM_HPP

@@ -1,4 +1,5 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage01/PathTrain/PathTrainManager.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage01/PathTrain/PathTrain.hpp"
 
 u32 clsPathTrainManager_Obj::otau32Se_TrainHorn[2] = {2734 /* 0xAAE */, 135854 /* 0x212AE */};
 u32 clsPathTrainManager_Obj::otau32Se_TrainL[2] = {68270 /* 0x10AAE */, 201390 /* 0x312AE */};
@@ -50,4 +51,13 @@ clsPathTrain_Task::clsPathTrain_Task(u32 param)
 
 clsPathTrain_Task::~clsPathTrain_Task()
 {
+}
+
+clsPathTrain_Obj::clsPathTrain_Obj()
+{
+}
+
+clsPathTrain_Obj::~clsPathTrain_Obj()
+{
+    destroyData();
 }

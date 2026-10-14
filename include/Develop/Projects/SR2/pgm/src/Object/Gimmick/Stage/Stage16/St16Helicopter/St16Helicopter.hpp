@@ -42,7 +42,7 @@ public:
     };
 
     clsHelicopter_Obj() {}
-    virtual ~clsHelicopter_Obj() {}
+    virtual ~clsHelicopter_Obj() { destroyData(); }
     virtual nspPackId::enm getPackId() const { return nspPackId::ST16_HELICOPTER_OBJ_26001; }
 
     virtual void setData();

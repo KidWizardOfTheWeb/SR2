@@ -1,5 +1,9 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage03/St03PathRobo.hpp"
 
+clsPathRobo_Obj::clsPathRobo_Obj() : clsPathGravityObj_Obj()
+{
+}
+
 void clsPathRobo_Obj::reset()
 {
 }

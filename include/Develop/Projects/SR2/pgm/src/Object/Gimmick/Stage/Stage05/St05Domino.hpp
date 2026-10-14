@@ -18,7 +18,7 @@ class clsGimmickRigidBody;
 class clsDomino_Obj : public clsRigidBodyGimmickObj {
 public:
     inline clsDomino_Obj() : clsRigidBodyGimmickObj() {}
-    virtual ~clsDomino_Obj() {}
+    virtual ~clsDomino_Obj() { destroyData(); }
 
     enum enmMode {
         MODE_INIT = 0,

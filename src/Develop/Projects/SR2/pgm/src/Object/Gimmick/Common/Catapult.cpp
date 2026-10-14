@@ -20,6 +20,7 @@ void clsCatapult_Obj::setAiMode(clsCatapult_Obj::enmAiMode eMode)
 
 void clsCatapult_Obj::setData()
 {
+    clsRigidBodyGimmickObj::setData();
 }
 
 void clsCatapult_Obj::createData()

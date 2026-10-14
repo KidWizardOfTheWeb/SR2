@@ -10,6 +10,7 @@ void clsAutoGCtrlThrough_Object::createData()
 
 void clsAutoGCtrlThrough_Object::destroyData()
 {
+    clsBaseThroughCollision::destroy();
 }
 
 void clsAutoGCtrlThrough_Object::updateSetEditorCollision()

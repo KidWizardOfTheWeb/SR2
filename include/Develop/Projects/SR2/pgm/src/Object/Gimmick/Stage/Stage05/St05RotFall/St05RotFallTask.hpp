@@ -5,6 +5,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/BaseGimmick.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage05/St05RotFall/St05RotFallManager.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 // total size: 0xF0
 class clsRotFall_Task : public clsMultiModelGimmick_Task<clsRotFall_Task,
@@ -18,7 +19,7 @@ public:
     virtual void draw();
     virtual void reset();
 
-    f32 m_sBaseMtx[4][4];   // offset 0xA0, size 0x40
+    NNS_MATRIX m_sBaseMtx;  // offset 0xA0, size 0x40
     hkShape* m_apcShape[3]; // offset 0xE0, size 0xC
 };
 

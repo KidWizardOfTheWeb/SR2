@@ -351,4 +351,24 @@ struct stcClipAction {
     stcClipActRec* psClipActRec; // offset 0x18, size 0x4
 };
 
+struct stcFlash;
+struct stcImportAssets;
+struct stcPlaceObject2;
+struct stcPlaceObject3;
+struct stcScene;
+struct stcSprite;
+
+extern "C" {
+u32 Parse_ImportAssets(u8* pou8RowData, stcImportAssets* psIm);
+u32 Parse_PlaceObject3(u8* pou8RowData, stcPlaceObject3* psData, u32& ru32Depth);
+u32 Parse_PlaceObject2(u8* pou8RowData, stcPlaceObject2* psData, u32& ru32Depth);
+u32 Parse_ActionRec(u8* pou8RowData, stcActionRec* psActRec);
+u32 Parse_FMScene(u8* pou8RowData, stcScene* psScene);
+u32 Parse_FMSprite(u8* pou8RowData, stcSprite* psSprite);
+u32 Parse_StyleChangeRec(u8* pou8RowData, stcStyleChangeRec* psSCRec);
+u32 Parse_Shape(u8* pou8RowData, stcShape* psShape);
+u32 Parse_ShapeWithStyle(u8* pou8RowData, stcShapeWithStyle* psSWStyle);
+s32 Parse_FGB(void* pvRowData, stcFlash* psFlash);
+}
+
 #endif // OOFLASHPARSE_HPP

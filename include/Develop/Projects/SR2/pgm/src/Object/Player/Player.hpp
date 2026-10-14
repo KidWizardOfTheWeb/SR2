@@ -99,11 +99,6 @@ enum enmStatus {
     STATUS_NEXT_STOP = 128,
 };
 
-enum enmSystemFlag {
-    SYSTEM_FLAG__CLEAR = 0,
-    SYSTEM_FLAG__OBJ_PORTAL_FORWARD = 1,
-};
-
 template <class T>
 class clsFlag {
 public:
@@ -152,70 +147,6 @@ struct stcInitData {
 } // namespace nspPlayer
 typedef nspPlayer::stcInitData stcInitData;
 
-enum enmFlag {
-    FLAG_CLEAR = 0,
-    FLAG_UPDATE_POSTURAL_QUAT = 1,
-    FLAG_UPDATE_BEHAVIOR = 2,
-    FLAG_FACE_ROTATE = 4,
-    FLAG_SLOPE_SLOWDOWN = 8,
-    FLAG_CENTRIFUGAL_FORCE = 16,
-    FLAG_REVERSE = 32,
-    FLAG_NON_MOVE = 64,
-    FLAG_ALL_TIME_ATTACK = 128,
-    FLAG_LOSE = 256,
-    FLAG_INIT = 59,
-};
-
-enum enmActionType {
-    ACTION_TYPE_NULL = 0,
-    ACTION_TYPE_DAMAGE00 = 1,
-    ACTION_TYPE_DAMAGE01 = 2,
-    ACTION_TYPE_DEMO = 3,
-    ACTION_TYPE_WALK_WAIT = 4,
-    ACTION_TYPE_WALK_RUN = 5,
-    ACTION_TYPE_WALK_BACK = 6,
-    ACTION_TYPE_WALK_BRAKE = 7,
-    ACTION_TYPE_WALK_FLIGHT = 8,
-    ACTION_TYPE_WALK_SPRING = 9,
-    ACTION_TYPE_INERTIA = 10,
-    ACTION_TYPE_RUN = 11,
-    ACTION_TYPE_BRAKE = 12,
-    ACTION_TYPE_FLIGHT = 13,
-    ACTION_TYPE_JUMP = 14,
-    ACTION_TYPE_TRICK = 15,
-    ACTION_TYPE_PATH = 16,
-    ACTION_TYPE_ATTACK = 17,
-    ACTION_TYPE_RAIL = 18,
-    ACTION_TYPE_FLY = 19,
-    ACTION_TYPE_POWER = 20,
-    ACTION_TYPE_GDIVE = 21,
-    ACTION_TYPE_GDIVE_AUTO = 22,
-    ACTION_TYPE_GCTRL_SLIDE = 23,
-    ACTION_TYPE_GCTRL_TRICK = 24,
-    ACTION_TYPE_GCTRL_FLIGHT = 25,
-    ACTION_TYPE_DIR_REGULATE_RUN = 26,
-    ACTION_TYPE_TRANSLATION_MOVE_PATH = 27,
-    ACTION_TYPE_WHEELDRIFT = 28,
-    ACTION_TYPE_AUTOWALLRUN = 29,
-    ACTION_TYPE_FALSE_START = 30,
-    ACTION_TYPE_RESTART = 31,
-    ACTION_TYPE_ATTACKDAMAGE = 32,
-    ACTION_TYPE_BOOST = 33,
-    ACTION_TYPE_MAX = 34,
-    ACTION_TYPE_ = 35,
-};
-
-enum enmMoveFlag {
-    MOVE_FLAG_NULL = 0,
-    MOVE_FLAG_SPEED = 1,
-    MOVE_FLAG_GRAVITY = 2,
-    MOVE_FLAG_JUMP = 4,
-    MOVE_FLAG_VECTOR = 8,
-    MOVE_FLAG_PATH = 16,
-    MOVE_FLAG_SURFACE_ADJUST = 32,
-    DEFAULT_FLAG = 47,
-};
-
 enum enmLinkType {
     LINK_TYPE_NULL = 0,
     LINK_TYPE_SPEED = 1,
@@ -246,6 +177,7 @@ enum enPlayerCtrlType {
 
 #include "Develop/Projects/SR2/pgm/src/Data/PathData.hpp"
 #include "Develop/Projects/SR2/pgm/src/Effect/GearChenge/FlyAction.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 // total size: 0x18
 class _ActionFuncTbl {
@@ -257,7 +189,23 @@ public:
 // total size: 0x12F0
 class clsPlayerTask : public clsObject, public clsTask {
 public:
-    typedef ::enmFlag enmFlag;
+    enum enmSystemFlag {
+        SYSTEM_FLAG__CLEAR = 0,
+        SYSTEM_FLAG__OBJ_PORTAL_FORWARD = 1,
+    };
+    enum enmFlag {
+        FLAG_CLEAR = 0,
+        FLAG_UPDATE_POSTURAL_QUAT = 1,
+        FLAG_UPDATE_BEHAVIOR = 2,
+        FLAG_FACE_ROTATE = 4,
+        FLAG_SLOPE_SLOWDOWN = 8,
+        FLAG_CENTRIFUGAL_FORCE = 16,
+        FLAG_REVERSE = 32,
+        FLAG_NON_MOVE = 64,
+        FLAG_ALL_TIME_ATTACK = 128,
+        FLAG_LOSE = 256,
+        FLAG_INIT = 59,
+    };
     enum enmStatus {
         STATUS_NULL = 0,
         STATUS_END = 1,
@@ -269,8 +217,54 @@ public:
         STATUS_NEXT_UNLOOP = 64,
         STATUS_NEXT_STOP = 128,
     };
-    typedef ::enmActionType enmActionType;
-    typedef ::enmMoveFlag enmMoveFlag;
+    enum enmActionType {
+        ACTION_TYPE_NULL = 0,
+        ACTION_TYPE_DAMAGE00 = 1,
+        ACTION_TYPE_DAMAGE01 = 2,
+        ACTION_TYPE_DEMO = 3,
+        ACTION_TYPE_WALK_WAIT = 4,
+        ACTION_TYPE_WALK_RUN = 5,
+        ACTION_TYPE_WALK_BACK = 6,
+        ACTION_TYPE_WALK_BRAKE = 7,
+        ACTION_TYPE_WALK_FLIGHT = 8,
+        ACTION_TYPE_WALK_SPRING = 9,
+        ACTION_TYPE_INERTIA = 10,
+        ACTION_TYPE_RUN = 11,
+        ACTION_TYPE_BRAKE = 12,
+        ACTION_TYPE_FLIGHT = 13,
+        ACTION_TYPE_JUMP = 14,
+        ACTION_TYPE_TRICK = 15,
+        ACTION_TYPE_PATH = 16,
+        ACTION_TYPE_ATTACK = 17,
+        ACTION_TYPE_RAIL = 18,
+        ACTION_TYPE_FLY = 19,
+        ACTION_TYPE_POWER = 20,
+        ACTION_TYPE_GDIVE = 21,
+        ACTION_TYPE_GDIVE_AUTO = 22,
+        ACTION_TYPE_GCTRL_SLIDE = 23,
+        ACTION_TYPE_GCTRL_TRICK = 24,
+        ACTION_TYPE_GCTRL_FLIGHT = 25,
+        ACTION_TYPE_DIR_REGULATE_RUN = 26,
+        ACTION_TYPE_TRANSLATION_MOVE_PATH = 27,
+        ACTION_TYPE_WHEELDRIFT = 28,
+        ACTION_TYPE_AUTOWALLRUN = 29,
+        ACTION_TYPE_FALSE_START = 30,
+        ACTION_TYPE_RESTART = 31,
+        ACTION_TYPE_ATTACKDAMAGE = 32,
+        ACTION_TYPE_BOOST = 33,
+        ACTION_TYPE_MAX = 34,
+        ACTION_TYPE_ = 35,
+    };
+    enum enmMoveFlag {
+        MOVE_FLAG_NULL = 0,
+        MOVE_FLAG_SPEED = 1,
+        MOVE_FLAG_GRAVITY = 2,
+        MOVE_FLAG_JUMP = 4,
+        MOVE_FLAG_VECTOR = 8,
+        MOVE_FLAG_PATH = 16,
+        MOVE_FLAG_SURFACE_ADJUST = 32,
+        DEFAULT_FLAG = 47,
+    };
     typedef f32 (*MtxPtr)[4];
     typedef f32 (*Mtx44Ptr)[4][4];
 
@@ -619,10 +613,10 @@ public:
     u8 m_bDispCoursePoint;                           // offset 0xC5, size 0x1
     clsPlayerDebug* m_pcDebug;                       // offset 0xC8, size 0x4
     s32 m_s32SfId[23];                               // offset 0xCC, size 0x5C
-    f32 m_sDrawMtx[2][4][4];                         // offset 0x130, size 0x80
-    f32 m_sEffMtx[4][4];                             // offset 0x1B0, size 0x40
-    f32 m_asBoardMtx[4][4][4];                       // offset 0x1F0, size 0x100
-    f32 m_sGearDrawMtx[4][4];                        // offset 0x2F0, size 0x40
+    NNS_MATRIX m_sDrawMtx[2];                        // offset 0x130, size 0x80
+    NNS_MATRIX m_sEffMtx;                            // offset 0x1B0, size 0x40
+    NNS_MATRIX m_asBoardMtx[4];                      // offset 0x1F0, size 0x100
+    NNS_MATRIX m_sGearDrawMtx;                       // offset 0x2F0, size 0x40
     NNS_VECTORFAST m_sPosVecFast[2];                 // offset 0x330, size 0x20
     NNS_VECTORFAST m_sUpVecFast;                     // offset 0x350, size 0x10
     NNS_VECTORFAST m_sPreUpVecFast;                  // offset 0x360, size 0x10
@@ -737,7 +731,7 @@ public:
     clsTask* m_apcLoopParticle[4];                   // offset 0xF60, size 0x10
     clsTask* m_apcLoopEffect[4];                     // offset 0xF70, size 0x10
     NNS_VECTORFAST m_asNodePos[8];                   // offset 0xF80, size 0x80
-    f32 m_asNodeMatrix[8][4][4];                     // offset 0x1000, size 0x200
+    NNS_MATRIX m_asNodeMatrix[8];                    // offset 0x1000, size 0x200
     clsBackLineEffectTask* m_pcBackLineTask;         // offset 0x1200, size 0x4
     clsVaporTrail_Task* m_pcVaporTrailTask;          // offset 0x1204, size 0x4
     clsVaporTrail_Task* m_pcSlipStreamTask;          // offset 0x1208, size 0x4

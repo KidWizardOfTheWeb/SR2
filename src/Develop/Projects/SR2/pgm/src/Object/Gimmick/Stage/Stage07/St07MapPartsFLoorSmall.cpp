@@ -32,4 +32,5 @@ clsMapPartsFloorSmall_Object::clsMapPartsFloorSmall_Object()
 
 clsMapPartsFloorSmall_Object::~clsMapPartsFloorSmall_Object()
 {
+    destroyData();
 }

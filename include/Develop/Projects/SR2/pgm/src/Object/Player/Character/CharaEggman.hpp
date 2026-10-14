@@ -5,6 +5,7 @@
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 #include "Develop/Projects/SR2/pgm/src/Object/Player/Character/Character.hpp"
 #include "Develop/Projects/SR2/pgm/src/Data/Pack.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 // total size: 0xD0
 class clsCharaEggman : public clsCharacter {
@@ -23,7 +24,7 @@ public:
 
     void loadAdditionalData(stcBinInfo& rsBinInfo);
 
-    f32 m_sMtx[4][4];                  // offset 0x60, size 0x40
+    NNS_MATRIX m_sMtx;                 // offset 0x60, size 0x40
     NNS_VECTORFAST m_asParticlePos[2]; // offset 0xA0, size 0x20
     s32 m_a32BaseRot;                  // offset 0xC0, size 0x4
 

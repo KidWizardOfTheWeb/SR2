@@ -15,8 +15,8 @@ public:
                                  s32 s32SeId,
                                  clsModelType_OB_TX_MO_MA* pcModel,
                                  u32 u32StageNo,
-                                 enmNo eNo,
-                                 enmCalcNodePos eNodePos);
+                                 nspPlayer::enmNo eNo,
+                                 clsPlayerTask::enmCalcNodePos eNodePos);
 
     virtual void execute();
 

@@ -37,7 +37,7 @@ public:
         ATTR_CRASH = 2,
     } m_eAttr; // offset 0x58, size 0x4
 
-    virtual ~clsRingBase();
+    virtual ~clsRingBase() {}
     virtual void setSleep();
     virtual nspPackId::enm getPackId() const { return nspPackId::CHARA_0; }
     virtual void requestFollow(clsPlayerTask* pcPlayer, enmFollowType eFollowType);
@@ -53,7 +53,7 @@ typedef clsRingBase::enmFollowType enmFollowType;
 class clsRingCrash_Obj : public clsRingBase, public clsHaveGimmickRigidBody {
 public:
     clsRingCrash_Obj() : clsRingBase() {}
-    virtual ~clsRingCrash_Obj();
+    virtual ~clsRingCrash_Obj() {}
     virtual void createData();
     virtual void destroyData();
     virtual void drawCollision();
@@ -84,7 +84,7 @@ public:
 class clsRing_Obj : public clsRingBase, public clsHaveGimmickPhantom {
 public:
     clsRing_Obj() : clsRingBase() {}
-    virtual ~clsRing_Obj();
+    virtual ~clsRing_Obj() {}
     virtual void createData();
     virtual void destroyData();
     virtual void drawCollision();
@@ -112,7 +112,7 @@ public:
 class clsRingFollow_Obj : public clsRingBase {
 public:
     clsRingFollow_Obj() : clsRingBase() {}
-    virtual ~clsRingFollow_Obj();
+    virtual ~clsRingFollow_Obj() {}
     enum enmFollowType m_eFollowType; // offset 0x60, size 0x4
 
     clsPlayerTask* m_pcPlayer; // offset 0x64, size 0x4
@@ -164,7 +164,7 @@ class clsRing_Task
       public clsGimmickCommon {
 public:
     clsRing_Task(u32 u32ObjectAreaNum) : clsSingleModelGimmick_Task(0, 0) {}
-    virtual ~clsRing_Task();
+    virtual ~clsRing_Task() {}
     clsRingCrash_Obj m_cCrashRing[128]; // offset 0xA0, size 0x3800
 
     clsRingFollow_Obj m_cFollowRing[100]; // offset 0x38A0, size 0x3200

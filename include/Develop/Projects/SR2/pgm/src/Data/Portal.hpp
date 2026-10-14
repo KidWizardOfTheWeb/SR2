@@ -5,6 +5,7 @@
 #include "usr/local/sega/nn/src/DrawPrim/nndrawprim.h"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 #include "types.h"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 extern c8* ac8NameBool[2];
 
@@ -18,7 +19,7 @@ struct stcPortalBelongType {
 
 // total size: 0x50
 struct stcPortalMtx {
-    f32 aInvMtx[4][4]; // offset 0x0, size 0x40
+    NNS_MATRIX aInvMtx; // offset 0x0, size 0x40
     s16 s16LocalSx;    // offset 0x40, size 0x2
     s16 s16LocalSy;    // offset 0x42, size 0x2
     s16 s16LocalSz;    // offset 0x44, size 0x2

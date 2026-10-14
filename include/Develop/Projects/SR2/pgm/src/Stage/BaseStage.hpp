@@ -9,6 +9,7 @@
 #include "Develop/Projects/SR2/pgm/src/Data/Path/PathCom.hpp"
 #include "Develop/Projects/SR2/pgm/src/Data/Pack.hpp"
 #include "Develop/Projects/SR2/pgm/src/Data/Path/PathPoint.hpp"
+#include "Develop/Projects/SR2/pgm/lib/OO/core/OOLibChecker.hpp"
 
 struct stcBinDataDetail;
 class clsRainDrops_Task;
@@ -257,7 +258,7 @@ struct stcEtcBinaryStageData {
 class clsBaseStage_Task : public clsTask {
 public:
     clsBaseStage_Task(stcBinInfo& rsBinInfoI);
-    virtual ~clsBaseStage_Task() {}
+    virtual ~clsBaseStage_Task() { nspOOLibChecker::ClassD("clsBaseStage_Task"); }
     virtual void execute();
     virtual void draw();
     virtual void reset();

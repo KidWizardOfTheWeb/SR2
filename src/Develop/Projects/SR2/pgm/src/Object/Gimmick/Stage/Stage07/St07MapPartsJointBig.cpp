@@ -31,4 +31,5 @@ clsMapPartsJointBig_Object::clsMapPartsJointBig_Object()
 
 clsMapPartsJointBig_Object::~clsMapPartsJointBig_Object()
 {
+    destroyData();
 }

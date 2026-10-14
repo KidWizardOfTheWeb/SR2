@@ -19,21 +19,6 @@ enum enmPathCanoeMode {
 
 class clsPathCanoe_Obj;
 
-// total size: 0x9C
-class clsPathCanoe_Task
-    : public clsSingleModelGimmick_Task<clsPathCanoe_Task, clsPathCanoe_Obj, clsModelType_OB_TX> {
-public:
-    clsPathCanoe_Task(u32 packId);
-
-    virtual ~clsPathCanoe_Task() {}
-    virtual void execute();
-    virtual void draw();
-    virtual void reset();
-
-    u16* m_TexIdx;  // offset 0x94, size 0x4
-    u16* m_TexIdx2; // offset 0x98, size 0x4
-};
-
 // total size: 0x260
 class clsPathCanoe_Obj : public clsRigidBodyGimmickObj {
 public:
@@ -43,7 +28,7 @@ public:
     static u32 otau32Se_CanoeL[2];
 
     clsPathCanoe_Obj() : clsRigidBodyGimmickObj() {}
-    virtual ~clsPathCanoe_Obj() {}
+    virtual ~clsPathCanoe_Obj() { destroyData(); }
     virtual void contactTriggerEvent(hkContactPoint* pParam1, clsObject* pParam2);
     virtual void setData();
     virtual void createData();
@@ -94,6 +79,21 @@ public:
     u32 m_u32ObjectNum;              // offset 0x254, size 0x4
     u32 m_u32TexIdx;                 // offset 0x258, size 0x4
     clsSe3DControl* m_pcSe3DControl; // offset 0x25C, size 0x4
+};
+
+// total size: 0x9C
+class clsPathCanoe_Task
+    : public clsSingleModelGimmick_Task<clsPathCanoe_Task, clsPathCanoe_Obj, clsModelType_OB_TX> {
+public:
+    clsPathCanoe_Task(u32 packId);
+
+    virtual ~clsPathCanoe_Task() {}
+    virtual void execute();
+    virtual void draw();
+    virtual void reset();
+
+    u16* m_TexIdx;  // offset 0x94, size 0x4
+    u16* m_TexIdx2; // offset 0x98, size 0x4
 };
 
 #endif // ST04PATHCANOE_HPP

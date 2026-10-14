@@ -14,105 +14,11 @@ void (*clsScript_Task::m_oascodeFunc[114])(u8*, clsScript_Task*);
 u8* clsScript_Task::m_pu8DataBuf;
 s32 clsScript_Task::m_ts32DrawModelNum;
 
-void clsScript_Task::initLightStatus(stcLight* psLight)
-{
-}
-
-void clsScript_Task::codePrint(u8* pcParam1, clsScript_Task* pParam2)
-{
-}
-
-void clsScript_Task::codeDispStrBackFrame(u8* pcParam1, clsScript_Task* pParam2)
-{
-}
-
-void clsScript_Task::codeStartFrameBufTex(u8* pu8Ptr, clsScript_Task* pcTask)
-{
-}
-
-void clsScript_Task::codeEndFrameBufTex(u8* pcTask, clsScript_Task* pParam2)
-{
-}
-
-void clsScript_Task::codeShowFrameBufTex(u8* pu8Ptr, clsScript_Task* pcTask)
-{
-}
-
-void clsScript_Task::codeChangeFrameBufTexPos(u8* pu8Ptr, clsScript_Task* pcTask)
-{
-}
-
-void clsScript_Task::codeCopyFrameBufTex(u8* pcParam1, clsScript_Task* pParam2)
-{
-}
-
-void clsScript_Task::codeChangeCopyFrameBufTexPos(u8* pu8Ptr, clsScript_Task* pcTask)
-{
-}
-
-void clsScript_Task::setSunLenz()
-{
-}
-
-void clsScript_Task::codeInitHishakai(u8* pcParam1, clsScript_Task* pParam2)
-{
-}
-
-void clsScript_Task::codeYuragi(u8* pcParam1, clsScript_Task* pParam2)
-{
-}
-
-void clsScript_Task::codeHishakaiZ(u8* pcParam1, clsScript_Task* pParam2)
-{
-}
-
-void clsScript_Task::codeChangeLineEffectMov(u8* pcParam1, clsScript_Task* pParam2)
-{
-}
-
-void clsScript_Task::setNegaStatus(
-    u8 u8Pri, u8 u8Type, u8 u8rgb, f32 f32Frame, f32 f32SubFrame, f32 f32EndFrame, f32 f32WaitFrame)
-{
-}
-
-void clsScript_Task::setNegaEndStatus(s16 s16Frame)
-{
-}
-
 clsScript_Task::clsScript_Task(s32 s32No, u8 u8ModeType) : clsTask(0, 0)
 {
 }
 
-void clsScript_Task::codeOptionMot(u8* pcParam1, clsScript_Task* pParam2)
-{
-}
-
-void clsScript_Task::codeLastBgm(u8* pcParam1, clsScript_Task* pParam2)
-{
-}
-
-void clsScript_Task::setWaveStatus(u32 u32Pri, f32 f32Frame, f32 f32WaitFrame)
-{
-}
-
 clsScript_Task::~clsScript_Task()
-{
-}
-
-void clsScript_Task::setBlurStatus(u8 u8Type,
-                                   u8 u8a,
-                                   u8 u8Sa,
-                                   u8 u8Ea,
-                                   f32 f32Per,
-                                   f32 f32SPer,
-                                   f32 f32EPer,
-                                   f32 f32GFrame,
-                                   f32 f32WaitFrame,
-                                   f32 f32FadeFrame)
-{
-}
-
-void clsScript_Task::setBlurEndStatus(s16 s16Frame)
 {
 }
 

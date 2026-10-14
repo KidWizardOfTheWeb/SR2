@@ -12,8 +12,8 @@ public:
                        clsModelType_OB_TX_MO_MA* pcModelI,
                        u32 eFlagI,
                        u32 u32ViewNo,
-                       enmNo eNo,
-                       enmCalcNodePos eBornNo)
+                       nspPlayer::enmNo eNo,
+                       clsPlayerTask::enmCalcNodePos eBornNo)
         : clsBaseEffect_Task(u32TpI, s32TypeI, pcModelI, eFlagI, u32ViewNo, eNo, eBornNo, 0.0f)
     {
     }

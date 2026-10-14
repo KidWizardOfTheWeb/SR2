@@ -9,7 +9,7 @@
 class clsSvlBtlMapPartsFloorGravity_Object : public clsMapPartsFloorGravity_Object {
 public:
     clsSvlBtlMapPartsFloorGravity_Object() {}
-    virtual ~clsSvlBtlMapPartsFloorGravity_Object() {}
+    virtual ~clsSvlBtlMapPartsFloorGravity_Object() { destroyData(); }
     virtual void contactTriggerEvent(hkContactPoint* pcContact, clsObject* pcObject);
     virtual void setData();
     virtual void createData();

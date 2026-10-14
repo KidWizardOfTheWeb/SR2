@@ -31,10 +31,16 @@ class clsCollision : public clsObject {};
 class clsBaseGimmickHead : public clsTask {
 public:
     clsBaseGimmickHead(u32 packId, u32 objectMax) : clsTask(packId, 0) {}
-    virtual ~clsBaseGimmickHead() {}
+    virtual ~clsBaseGimmickHead()
+    {
+        delete m_pcPhantomShape;
+        delete m_pcRigidShape;
+    }
 
     virtual void execute() {}
     virtual void draw() {}
+    virtual void createModel(stcBinInfo& rsBinInfoI) = 0;
+    virtual void setSetData(const stcSetDataDetail& rsSetDataDetailI) = 0;
 
     void loadBinary(stcBinInfo&)
     {
@@ -56,7 +62,7 @@ public:
 class clsMultiObTxModels {
 public:
     clsMultiObTxModels() {}
-    virtual ~clsMultiObTxModels() {}
+    ~clsMultiObTxModels() {}
 
     void createModels(stcBinInfo& rsBinInfoI, u32 u32CalcObjNum);
 

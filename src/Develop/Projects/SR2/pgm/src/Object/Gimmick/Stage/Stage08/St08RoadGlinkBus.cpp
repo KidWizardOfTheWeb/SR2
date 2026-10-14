@@ -71,4 +71,5 @@ clsRoadGlinkBus_Obj::clsRoadGlinkBus_Obj()
 
 clsRoadGlinkBus_Obj::~clsRoadGlinkBus_Obj()
 {
+    destroyData();
 }

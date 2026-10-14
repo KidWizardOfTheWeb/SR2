@@ -2,6 +2,7 @@
 #define GEARPTNSURFING_HPP
 
 #include "Develop/Projects/SR2/pgm/src/Object/Player/Gear/GearBasePrototype.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 // total size: 0xA0
 class clsGearPtnSurfing : public clsGearBasePrototype {
@@ -22,7 +23,7 @@ public:
     virtual enmMotionType getBaseMotionType() const { return (enmMotionType)(6); }
     virtual s32 getGearRunSeNo() const { return 4; }
 
-    f32 m_sBordMtx[4][4]; // offset 0x60, size 0x40
+    NNS_MATRIX m_sBordMtx; // offset 0x60, size 0x40
 };
 
 #endif // GEARPTNSURFING_HPP

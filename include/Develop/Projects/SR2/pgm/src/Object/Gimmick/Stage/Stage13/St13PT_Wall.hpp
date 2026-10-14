@@ -54,7 +54,7 @@ public:
 class clsPT_Wall_Obj : public clsGimmickObj {
 public:
     clsPT_Wall_Obj() {}
-    virtual ~clsPT_Wall_Obj() {}
+    virtual ~clsPT_Wall_Obj() { destroyData(); }
     virtual void setData();
     virtual void createData();
     virtual void destroyData();

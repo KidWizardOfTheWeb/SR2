@@ -7,22 +7,11 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 #include "Develop/Projects/SR2/pgm/src/Data/Pack.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsPlayerTask;
 class clsSpain_Obj;
 class hkShape;
-
-class clsSpain_Task : public clsBaseGimmickBody<clsSpain_Task, clsSpain_Obj, clsModelType_OB_TX> {
-public:
-    clsSpain_Task(u32 p0) : clsBaseGimmickBody(0, 0) {}
-    virtual ~clsSpain_Task() {}
-
-    virtual void createModel(stcBinInfo& p0) {}
-
-    virtual void execute();
-    virtual void draw();
-    virtual void reset();
-};
 
 // total size: 0xF0
 class clsSpain_Obj : public clsPhantomGimmickObject {
@@ -54,8 +43,20 @@ public:
 
     enmMode m_eMode;                 // offset 0x60, size 0x4
     hkShape* m_pcShape;              // offset 0x64, size 0x4
-    f32 m_sInvMtx[4][4];             // offset 0x70, size 0x40
+    NNS_MATRIX m_sInvMtx;            // offset 0x70, size 0x40
     stcPlayerData m_asPlayerData[8]; // offset 0xB0, size 0x40
+};
+
+class clsSpain_Task : public clsBaseGimmickBody<clsSpain_Task, clsSpain_Obj, clsModelType_OB_TX> {
+public:
+    clsSpain_Task(u32 p0) : clsBaseGimmickBody(0, 0) {}
+    virtual ~clsSpain_Task() {}
+
+    virtual void createModel(stcBinInfo& p0) {}
+
+    virtual void execute();
+    virtual void draw();
+    virtual void reset();
 };
 
 #endif // ST05SPAIN_HPP

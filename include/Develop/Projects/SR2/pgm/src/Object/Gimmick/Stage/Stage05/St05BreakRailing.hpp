@@ -7,6 +7,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/RigidBodyGimmickObj.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Object.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsBreakRailing_Obj;
 class clsPlayerTask;
@@ -44,7 +45,7 @@ public:
 
     enmMode m_eMode;                 // offset 0xD0, size 0x4
     clsBreakRailingThrCol m_cThrCol; // offset 0xD4, size 0xC
-    f32 m_sInvMtx[4][4];             // offset 0xE0, size 0x40
+    NNS_MATRIX m_sInvMtx;            // offset 0xE0, size 0x40
 };
 
 // total size: 0x94

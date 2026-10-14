@@ -20,7 +20,7 @@ public:
     static f32 tof32ClipSqDist;
 
     clsSignBoardB_Object() {}
-    virtual ~clsSignBoardB_Object() {}
+    virtual ~clsSignBoardB_Object() { destroyData(); }
     virtual void setData();
     virtual void destroyData();
     virtual nspPackId::enm getPackId() const { return nspPackId::ST13_SIGNBOARD_B_23110; }

@@ -48,7 +48,7 @@ void clsPowerBreak_Task::draw()
 {
 }
 
-clsPowerBreak_Obj::clsPowerBreak_Obj()
+clsPowerBreak_Obj::clsPowerBreak_Obj() : m_eMode(MODE_MAIN), m_pcSe3DControl(0)
 {
 }
 

@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include "Develop/Projects/SR2/pgm/src/Task/TaskManager.hpp"
+#include "Develop/Projects/SR2/pgm/lib/OO/core/OOLibChecker.hpp"
 
 // total size: 0xA
 struct stcPrimitive {
@@ -27,7 +28,7 @@ public:
     u16 m_u16DrawBlur_BaseH1;     // offset 0x78, size 0x2
 
     clsBlur_Task(u32 u32a, s32 s32b);
-    virtual ~clsBlur_Task() {}
+    virtual ~clsBlur_Task() { nspOOLibChecker::ClassD("clsBlur_Task"); }
 
     virtual void execute();
     virtual void draw();

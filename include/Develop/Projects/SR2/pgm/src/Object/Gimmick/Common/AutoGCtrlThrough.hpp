@@ -10,7 +10,7 @@
 class clsAutoGCtrlThrough_Object : public clsBaseThroughCollision, public clsGimmickObj {
 public:
     clsAutoGCtrlThrough_Object() {}
-    virtual ~clsAutoGCtrlThrough_Object() {}
+    virtual ~clsAutoGCtrlThrough_Object() { destroyData(); }
 
     virtual void contactTriggerEvent(clsPlayerTask* pcPlayer);
     virtual void createData();

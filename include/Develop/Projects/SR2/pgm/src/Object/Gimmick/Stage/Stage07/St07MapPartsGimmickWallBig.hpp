@@ -5,6 +5,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage07/St07MapPartsGimmickWallObject.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class hkTransformShape;
 
@@ -12,7 +13,7 @@ class hkTransformShape;
 class clsMapPartsGimmickWallBig_Object : public clsMapPartsGimmickWall_Object {
 public:
     clsMapPartsGimmickWallBig_Object() {}
-    virtual ~clsMapPartsGimmickWallBig_Object() {}
+    virtual ~clsMapPartsGimmickWallBig_Object() { destroyData(); }
 
     virtual void createData();
     virtual void destroyData();
@@ -22,7 +23,7 @@ public:
 
     static f32 tof32ClipSqDist;
 
-    f32 m_sEffectMtx[4][4];          // offset 0x120, size 0x40
+    NNS_MATRIX m_sEffectMtx;         // offset 0x120, size 0x40
     clsSe3DControl* m_pcSe3DControl; // offset 0x160, size 0x4
 };
 

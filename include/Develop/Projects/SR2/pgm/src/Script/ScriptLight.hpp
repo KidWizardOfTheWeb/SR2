@@ -23,18 +23,6 @@ struct stcParallelLight {
     NNS_VECTOR sDir; // offset 0x18, size 0xC
 };
 
-// total size: 0x48
-struct stcLight {
-    u8 bUsed;           // offset 0x0, size 0x1
-    s32 s32No;          // offset 0x4, size 0x4
-    stcRgbF32 sAmb;     // offset 0x8, size 0xC
-    stcRgbF32 sPar;     // offset 0x14, size 0xC
-    f32 f32ParInten;    // offset 0x20, size 0x4
-    NNS_VECTOR sParDir; // offset 0x24, size 0xC
-    stcRgbF32 sSpe;     // offset 0x30, size 0xC
-    NNS_VECTOR sSpeDir; // offset 0x3C, size 0xC
-};
-
 // total size: 0x14
 struct stcSunLenz {
     u8 bUsed;        // offset 0x0, size 0x1
@@ -64,7 +52,7 @@ struct stcLightData {
 // total size: 0x560
 class clsScriptLight {
 public:
-    inline clsScriptLight();
+    clsScriptLight();
     virtual ~clsScriptLight();
 
     stcLightValue m_asLightValue[2];  // offset 0x4, size 0x250

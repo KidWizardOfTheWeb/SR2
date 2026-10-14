@@ -45,6 +45,7 @@ void clsComAI::clearData()
 
 void clsComAI::setPlannedRank(u8 u8Rank)
 {
+    m_u8PlannedRank = u8Rank;
 }
 
 void clsComAI::updateTime()

@@ -1,4 +1,5 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage01/GCtrTrain/GCtrTrainManager.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage01/GCtrTrain/GCtrTrain.hpp"
 
 s8 clsGCtrlTrainThroughCol::m_toas8ViewToEffectiveRanking[4] = {0, 1, 1, 1};
 u32 clsGCtrlTrainManager_Obj::otau32Se_TrainHorn[2] = {2734, 135854};
@@ -37,5 +38,9 @@ void clsGCtrlTrain_Task::execute()
 }
 
 void clsGCtrlTrain_Task::draw()
+{
+}
+
+clsGCtrlTrain_Obj::clsGCtrlTrain_Obj()
 {
 }

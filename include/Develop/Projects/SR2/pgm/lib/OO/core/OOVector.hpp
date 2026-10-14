@@ -148,6 +148,38 @@ public:
     ~__vector_deleter();
 };
 
+// Pointer elements: the destructor is inlined into vector<T*>::~vector and has
+// no elements to destroy, so it only releases the storage.
+// total size: 0xC
+template <class T, class A>
+class __vector_deleter<T*, A> {
+public:
+    typedef ::Metrowerks::compressed_pair<A, u32> capacity_pair;
+    capacity_pair capacity_; // offset 0x0, size 0x4
+    u32 size_;               // offset 0x4, size 0x4
+    T** data_;               // offset 0x8, size 0x4
+
+    A& alloc() { return capacity_.first(); }
+    const A& alloc() const { return capacity_.first(); }
+    u32& capacity() { return capacity_.second(); }
+    const u32& capacity() const { return capacity_.second(); }
+    T** end_data() { return data_ + size_; }
+
+    __vector_deleter()
+    {
+        capacity_.second() = 0;
+        size_ = 0;
+        data_ = 0;
+    }
+    void clear() { size_ = 0; }
+    T**& data() { return data_; }
+    ~__vector_deleter()
+    {
+        if (data() != 0)
+            ::operator delete(data());
+    }
+};
+
 // total size: 0xC
 template <class T, class A, int N>
 class __vector_imp : private __vector_deleter<T, A> {

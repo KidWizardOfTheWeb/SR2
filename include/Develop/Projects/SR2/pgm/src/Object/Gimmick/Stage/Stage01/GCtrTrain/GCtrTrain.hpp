@@ -6,6 +6,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/RigidBodyGimmickObj.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickPath.hpp"
 #include "Develop/Projects/SR2/pgm/src/Data/Path.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsPlayerTask;
 class clsBackLineEffectTask;
@@ -31,7 +32,7 @@ public:
     clsPlayerTask* m_pcPlayerTask[4];        // offset 0x2D8, size 0x10
     f32 m_f32PlayerDashEfcFrame[4];          // offset 0x2E8, size 0x10
     f32 m_f32Offset;                         // offset 0x2F8, size 0x4
-    f32 m_sDrawMtx[4][4];                    // offset 0x300, size 0x40
+    NNS_MATRIX m_sDrawMtx;                   // offset 0x300, size 0x40
     clsBackLineEffectTask* m_apcLineTask[2]; // offset 0x340, size 0x8
 
     static f32 m_tof32CLIP_DISTx2;

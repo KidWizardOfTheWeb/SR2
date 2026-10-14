@@ -32,4 +32,5 @@ clsMapPartsFloorKicker_Object::clsMapPartsFloorKicker_Object()
 
 clsMapPartsFloorKicker_Object::~clsMapPartsFloorKicker_Object()
 {
+    destroyData();
 }

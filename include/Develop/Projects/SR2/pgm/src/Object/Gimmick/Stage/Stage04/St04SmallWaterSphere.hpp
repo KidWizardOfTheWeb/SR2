@@ -17,7 +17,7 @@ class hkShape;
 class clsSmallWaterSphere_Object : public clsRigidBodyGimmickObj {
 public:
     clsSmallWaterSphere_Object();
-    virtual ~clsSmallWaterSphere_Object() {}
+    virtual ~clsSmallWaterSphere_Object() { destroyData(); }
 
     enum enmMode {
         MODE_INIT = 0,

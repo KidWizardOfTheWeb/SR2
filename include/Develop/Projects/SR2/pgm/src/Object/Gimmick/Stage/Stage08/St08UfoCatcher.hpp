@@ -9,6 +9,7 @@
 #include "Develop/Projects/SR2/pgm/src/Data/Pack.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/FrameControl.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsPlayerTask;
 class clsDebrisControl;
@@ -73,13 +74,13 @@ public:
     enmState m_eState;                       // offset 0x1C4, size 0x4
     clsUfoCatcher_Obj* m_pcUfoObj;           // offset 0x1C8, size 0x4
     f32 m_f32ArmMotionFrame;                 // offset 0x1CC, size 0x4
-    f32 m_sTrsMtxBall[4][4];                 // offset 0x1D0, size 0x40
+    NNS_MATRIX m_sTrsMtxBall;                // offset 0x1D0, size 0x40
     clsDebrisControl* m_pcDebrisControl;     // offset 0x210, size 0x4
     f32 m_f32PlayerScale;                    // offset 0x214, size 0x4
     clsFrameControl m_cFrameControl;         // offset 0x218, size 0x8
     u8 m_bCatch;                             // offset 0x220, size 0x1
     u8 m_u8UfoSeFlg;                         // offset 0x221, size 0x1
-    f32 m_sLineDrawMtx[4][4];                // offset 0x230, size 0x40
+    NNS_MATRIX m_sLineDrawMtx;               // offset 0x230, size 0x40
     clsBackLineEffectTask* m_apcLineTask[2]; // offset 0x270, size 0x8
 
     static f32 m_tof32CLIP_DISTx2;

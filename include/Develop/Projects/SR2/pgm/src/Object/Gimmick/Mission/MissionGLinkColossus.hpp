@@ -23,7 +23,7 @@ public:
         MODE_BREAK = 2,
     }; // Note: name collision with Game.hpp enmMode
 
-    u8 m_eMode;                      // offset 0xE0, size 0x4
+    enmMode m_eMode;                 // offset 0xE0, size 0x4
     clsSe3DControl* m_pcSe3DControl; // offset 0xE4, size 0x4
     u32 m_u32DrawFlg;                // offset 0xE8, size 0x4
 

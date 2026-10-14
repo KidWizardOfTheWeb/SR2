@@ -48,6 +48,7 @@ void clsFZoneEnemy_Obj::setVelocityAndFrame(f32 f32LengthRate, f32 f32Speed)
 
 void clsFZoneEnemy_Obj::contactTriggerEvent(hkContactPoint* pcContact, clsObject* pcObject)
 {
+    clsRigidBodyGimmickObj::contactTriggerEvent(pcContact, pcObject);
 }
 
 void clsFZoneEnemy_Obj::requestDrawBreakEffect()

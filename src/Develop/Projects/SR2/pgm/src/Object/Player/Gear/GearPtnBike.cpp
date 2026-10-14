@@ -3,6 +3,7 @@
 
 void clsGearPtnBike::clearChangeActionParam()
 {
+    clsGearBasePrototype::clearChangeActionParam();
 }
 
 void clsGearPtnBike::behavior()

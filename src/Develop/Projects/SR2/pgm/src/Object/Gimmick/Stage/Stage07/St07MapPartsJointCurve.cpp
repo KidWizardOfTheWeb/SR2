@@ -29,4 +29,5 @@ clsMapPartsJointCurve_Object::clsMapPartsJointCurve_Object()
 
 clsMapPartsJointCurve_Object::~clsMapPartsJointCurve_Object()
 {
+    destroyData();
 }

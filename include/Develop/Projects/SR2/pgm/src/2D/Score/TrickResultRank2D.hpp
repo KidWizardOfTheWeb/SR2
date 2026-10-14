@@ -5,6 +5,7 @@
 #include "Develop/Projects/SR2/pgm/src/2D/Score/Temporary2D.hpp"
 #include "Develop/Projects/SR2/pgm/src/2D/Score/EnergyFlow2D.hpp"
 #include "Develop/Projects/SR2/pgm/src/2D/Score/Score2D.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsPlayerTask;
 
@@ -79,7 +80,7 @@ public:
     f32 m_f32RotWait;              // offset 0x7C, size 0x4
     f32 m_f32OutWait;              // offset 0x80, size 0x4
     s32 m_s32Rot;                  // offset 0x84, size 0x4
-    f32 m_sDrawMtx[4][4];          // offset 0x90, size 0x40
+    NNS_MATRIX m_sDrawMtx;         // offset 0x90, size 0x40
     u8 m_bChanged;                 // offset 0xD0, size 0x1
     f32 m_f32EnergyFrame;          // offset 0xD4, size 0x4
     f32 m_f32EnergySubFrame;       // offset 0xD8, size 0x4

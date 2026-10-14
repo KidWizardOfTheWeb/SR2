@@ -20,6 +20,12 @@ public:
         SUB_TITLE_ON = 1,
     };
 
+    // total size: 0x10 (clsMovie_Task::m_otsData is 0xE0 bytes for 14 entries)
+    // Note: field layout not recovered yet; constructors mangle as clsCriMovie::stcData.
+    struct stcData {
+        u8 m_au8Data[0x10]; // offset 0x0, size 0x10
+    };
+
     clsCriMovie(const stcData& orsDataI,
                 s32 s32DrawXI,
                 s32 s32DrawYI,

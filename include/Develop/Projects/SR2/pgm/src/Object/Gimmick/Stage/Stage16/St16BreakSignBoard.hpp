@@ -23,7 +23,7 @@ public:
     enum enmBreakSignBoardMode m_eMode; // offset 0xD0, size 0x4
 
     clsBreakSignBoard_Obj() : clsRigidBodyGimmickObj() {}
-    virtual ~clsBreakSignBoard_Obj();
+    virtual ~clsBreakSignBoard_Obj() {}
     virtual void reset();
     virtual void setData();
     virtual void createData();

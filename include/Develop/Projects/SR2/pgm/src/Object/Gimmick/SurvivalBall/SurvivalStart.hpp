@@ -6,6 +6,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 #include "Develop/Projects/SR2/pgm/lib/OO/core/OOClock.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class hkShape;
 class clsPlaySe_2D;
@@ -14,7 +15,7 @@ class clsPlaySe_2D;
 class clsSurvivalBallStart_Obj : public clsPhantomGimmickObject {
 public:
     clsSurvivalBallStart_Obj();
-    virtual ~clsSurvivalBallStart_Obj() {}
+    virtual ~clsSurvivalBallStart_Obj() { destroyData(); }
     virtual nspPackId::enm getPackId() const { return nspPackId::SURVIVALBALL_START_28030; }
     virtual void contactTriggerEvent(hkContactPoint* pcContact, clsObject* pcObject);
     virtual void contactAlwaysEvent(hkContactPoint* pcObject, clsObject* pParam2);
@@ -29,7 +30,7 @@ public:
 
     hkShape* m_pcShape;            // offset 0x60, size 0x4
     f32 m_f32Scale;                // offset 0x64, size 0x4
-    f32 m_aObjMax[2][4][4];        // offset 0x70, size 0x80
+    NNS_MATRIX m_aObjMax[2];       // offset 0x70, size 0x80
     clsOOClock m_cClock_StartTime; // offset 0xF0, size 0x24
     clsPlaySe_2D* m_pcPlaySe2D;    // offset 0x114, size 0x4
 };

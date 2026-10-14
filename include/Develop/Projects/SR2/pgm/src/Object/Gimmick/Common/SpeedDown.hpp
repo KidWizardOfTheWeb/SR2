@@ -33,7 +33,7 @@ public:
     };
 
     clsSpeedDown_Obj() {}
-    virtual ~clsSpeedDown_Obj() {}
+    virtual ~clsSpeedDown_Obj() { destroyData(); }
 
     virtual void destroyData();
     virtual nspPackId::enm getPackId() const { return nspPackId::SPEED_DOWN_2240; }

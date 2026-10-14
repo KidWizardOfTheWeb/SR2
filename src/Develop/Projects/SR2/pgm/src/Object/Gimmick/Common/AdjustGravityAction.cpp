@@ -14,6 +14,7 @@ void clsAdjustGravityAction_Object::createData()
 
 void clsAdjustGravityAction_Object::destroyData()
 {
+    clsBaseThroughCollision::destroy();
 }
 
 void clsAdjustGravityAction_Object::updateSetEditorCollision()

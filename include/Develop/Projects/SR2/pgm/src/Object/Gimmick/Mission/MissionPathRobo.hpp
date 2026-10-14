@@ -9,6 +9,7 @@
 #include "types.h"
 #include "usr/local/sega/nn/src/Matrix/nnquaternion.h"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsBackLineEffectTask;
 class clsMissionPathRobo_Obj;
@@ -30,7 +31,7 @@ class clsMissionPathRobo_Obj : public clsMissionPathTarget_Obj {
     // Members
 public:
     f32 m_f32EffectFrame;                     // offset 0x260, size 0x4
-    f32 m_sDrawMtx[4][4];                     // offset 0x270, size 0x40
+    NNS_MATRIX m_sDrawMtx;                    // offset 0x270, size 0x40
     clsBackLineEffectTask* m_apcLineTask[2];  // offset 0x2B0, size 0x8
     u8 m_bStartFlag;                          // offset 0x2B8, size 0x1
     clsMissionPathRoboCollision m_cCollision; // offset 0x2BC, size 0xC

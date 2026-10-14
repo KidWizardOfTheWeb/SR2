@@ -7,6 +7,10 @@ static s32 tos32SpeedDownFrameDiv = 10;
 
 f32 clsSurvivalRelayWalkRunLine_Obj::m_tof32CLIP_DISTx2 = 0.0f;
 
+clsSurvivalRelayWalkRunLine_Obj::clsSurvivalRelayWalkRunLine_Obj(int s32TeamNo) : clsGimmickObj()
+{
+}
+
 void clsSurvivalRelayWalkRunLine_Obj::reset()
 {
 }

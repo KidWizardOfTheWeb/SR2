@@ -39,7 +39,7 @@ void clsBreakFloor_Task::draw()
 {
 }
 
-clsBreakFloor_Obj::clsBreakFloor_Obj()
+clsBreakFloor_Obj::clsBreakFloor_Obj() : m_eBreakFloorMode(MODE_INIT)
 {
 }
 

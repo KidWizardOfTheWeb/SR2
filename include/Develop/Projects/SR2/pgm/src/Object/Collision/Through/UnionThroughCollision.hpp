@@ -6,7 +6,7 @@
 
 class clsUnionThroughCollision : public clsThroughCollision {
 public:
-    virtual ~clsUnionThroughCollision();
+    virtual ~clsUnionThroughCollision() {}
 
     virtual void contactTriggerEvent(clsPlayerTask* pcPlayer);
     virtual void contactAlwaysEvent(clsPlayerTask* pcPlayer);

@@ -40,7 +40,7 @@ public:
 class clsSecurityRoboManager_Obj : public clsGimmickObj {
 public:
     clsSecurityRoboManager_Obj() {}
-    virtual ~clsSecurityRoboManager_Obj() {}
+    virtual ~clsSecurityRoboManager_Obj() { destroyData(); }
     virtual void setData();
     virtual void createData();
     virtual void destroyData();

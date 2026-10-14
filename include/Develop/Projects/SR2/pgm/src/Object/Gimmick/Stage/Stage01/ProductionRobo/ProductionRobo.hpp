@@ -4,6 +4,7 @@
 #include "types.h"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/RigidBodyGimmickObj.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickPath.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsPlayerTask;
 class clsSe3DControl;
@@ -56,7 +57,7 @@ public:
     f32 m_f32RotCounter;                         // offset 0x2A4, size 0x4
     f32 m_f32RotZ;                               // offset 0x2A8, size 0x4
     f32 m_f32EffectFrame;                        // offset 0x2AC, size 0x4
-    f32 m_sDrawMtx[4][4];                        // offset 0x2B0, size 0x40
+    NNS_MATRIX m_sDrawMtx;                       // offset 0x2B0, size 0x40
     clsBackLineEffectTask* m_apcLineTask[2];     // offset 0x2F0, size 0x8
 
     clsProductionRobo_Obj();

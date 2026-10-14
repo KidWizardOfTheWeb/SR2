@@ -55,7 +55,7 @@ nspPackId::enm clsGPFan_Obj::getPackId() const
 
 u32 clsGPFan_Obj::getTexNo() const
 {
-    return 0;
+    return m_u32Attr;
 }
 
 u8 clsGPFan_Obj::checkRequestDrawDebris()
@@ -69,4 +69,5 @@ clsGPFan_Task::~clsGPFan_Task()
 
 void clsGPFan_Task::setDrawTexNo(u32 param_1)
 {
+    m_u32DrawTexNo = param_1;
 }

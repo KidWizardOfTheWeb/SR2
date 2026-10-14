@@ -2,4 +2,5 @@
 
 void clsGearPtnGrind::clearChangeActionParam()
 {
+    clsGearPtnBoard::clearChangeActionParam();
 }

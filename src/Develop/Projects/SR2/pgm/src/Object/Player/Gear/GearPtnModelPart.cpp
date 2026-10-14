@@ -2,6 +2,7 @@
 
 void clsGearPtnModelPart::clearChangeActionParam()
 {
+    clsGear::clearChangeActionParam();
 }
 
 void clsGearPtnModelPart::behavior()

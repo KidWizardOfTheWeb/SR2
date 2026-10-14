@@ -24,15 +24,6 @@ struct stcPushData;
 // total size: 0x20
 class clsOOFlashPlayer {
 public:
-    clsOOFlashMovie* m_pcFlashMovie; // offset 0x4, size 0x4
-    c8* m_opc8SpriteName;            // offset 0x8, size 0x4
-    s32 m_s32PlayNo;                 // offset 0xC, size 0x4
-    u32 m_u32CharaId;                // offset 0x10, size 0x4
-    u8 m_u8SkipPlace;                // offset 0x14, size 0x1
-    u8 m_u8Stop;                     // offset 0x15, size 0x1
-    s32 m_s32OffsetX;                // offset 0x18, size 0x4
-    s32 m_s32OffsetY;                // offset 0x1C, size 0x4
-
     clsOOFlashPlayer();
     virtual ~clsOOFlashPlayer();
     virtual void execute();
@@ -50,6 +41,16 @@ public:
     void setSeqMode(u16 u16SeqMode) const {}
     u32 getRtnCode(u32 u32Param1) { return 0; }
     u16 getSeqMode() const { return 0; }
+
+    // vtable pointer: offset 0x0
+    clsOOFlashMovie* m_pcFlashMovie; // offset 0x4, size 0x4
+    c8* m_opc8SpriteName;            // offset 0x8, size 0x4
+    s32 m_s32PlayNo;                 // offset 0xC, size 0x4
+    u32 m_u32CharaId;                // offset 0x10, size 0x4
+    u8 m_u8SkipPlace;                // offset 0x14, size 0x1
+    u8 m_u8Stop;                     // offset 0x15, size 0x1
+    s32 m_s32OffsetX;                // offset 0x18, size 0x4
+    s32 m_s32OffsetY;                // offset 0x1C, size 0x4
 };
 
 // total size: 0x8
@@ -130,7 +131,7 @@ struct stcPlaceObject3 {
 // total size: 0x14
 class clsOOFMObject {
 public:
-    virtual ~clsOOFMObject();
+    virtual ~clsOOFMObject() {}
     clsOOFlashMovie* m_pcParent; // offset 0x4, size 0x4
     s32 m_s32CharID;             // offset 0x8, size 0x4
     u8 m_u8IsDraw;               // offset 0xC, size 0x1

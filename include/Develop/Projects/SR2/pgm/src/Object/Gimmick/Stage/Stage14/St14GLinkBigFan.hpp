@@ -11,6 +11,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Control/Se3DControl.hpp"
 #include "Develop/Projects/SR2/pgm/src/Task/TaskManager.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsPlayerTask;
 class clsGLinkFan_Object;
@@ -24,21 +25,6 @@ public:
 
     clsModelType_OB_TX m_cModelWick;  // offset 0x0, size 0x8
     clsModelType_OB_TX m_cModelBlade; // offset 0x8, size 0x8
-};
-
-// total size: 0xA0
-class clsGLinkFan_Task
-    : public clsBaseGimmickBody<clsGLinkFan_Task, clsGLinkFan_Object, clsGLinkFanModel> {
-public:
-    clsGLinkFan_Task(u32 u32ObjectAreaNum);
-    virtual ~clsGLinkFan_Task();
-
-    virtual void execute();
-    virtual void draw();
-    virtual void reset();
-    void createModel(stcBinInfo& rsBinInfoI);
-
-    clsGmkBurnLight_Task<clsModelType_OB_TX_MO_MA>* m_pcBurnLightTask; // offset 0x9C, size 0x4
 };
 
 enum enmStateType {
@@ -92,7 +78,7 @@ public:
     u8 m_bFilterChange;              // offset 0x106, size 0x1
     u8 m_bSeFlag;                    // offset 0x107, size 0x1
     u8 m_bGravityFlag;               // offset 0x108, size 0x1
-    f32 m_sEffectMatrix[4][4];       // offset 0x110, size 0x40
+    NNS_MATRIX m_sEffectMatrix;      // offset 0x110, size 0x40
     clsTask* m_pcEffectTask;         // offset 0x150, size 0x4
 };
 
@@ -106,7 +92,7 @@ public:
     };
 
     clsGLinkFan_Object() {}
-    virtual ~clsGLinkFan_Object() {}
+    virtual ~clsGLinkFan_Object() { destroyData(); }
     virtual void setData();
     virtual void createData();
     virtual void destroyData();
@@ -127,6 +113,21 @@ public:
     clsSe3DControl* m_pcSe3DControl;     // offset 0x490, size 0x4
     s32 m_A32RotateSpeed;                // offset 0x494, size 0x4
     enmFanMode m_eFanMode;               // offset 0x498, size 0x4
+};
+
+// total size: 0xA0
+class clsGLinkFan_Task
+    : public clsBaseGimmickBody<clsGLinkFan_Task, clsGLinkFan_Object, clsGLinkFanModel> {
+public:
+    clsGLinkFan_Task(u32 u32ObjectAreaNum);
+    virtual ~clsGLinkFan_Task();
+
+    virtual void execute();
+    virtual void draw();
+    virtual void reset();
+    void createModel(stcBinInfo& rsBinInfoI);
+
+    clsGmkBurnLight_Task<clsModelType_OB_TX_MO_MA>* m_pcBurnLightTask; // offset 0x9C, size 0x4
 };
 
 #endif // ST14GLINKBIGFAN_HPP

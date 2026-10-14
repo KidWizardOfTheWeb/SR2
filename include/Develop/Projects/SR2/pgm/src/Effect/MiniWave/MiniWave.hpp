@@ -6,6 +6,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Player/Data/CharaData.hpp"
 #include "usr/local/sega/nn/src/DrawPrim/nndrawprim.h"
 #include "usr/local/sega/nn/src/Texture/nntexture.h"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsPlayerTask;
 class clsPlaySe_2D;
@@ -33,8 +34,8 @@ public:
     NNS_PRIM3D_PCT m_asPrim3D_PCT[40];        // offset 0x54, size 0x3C0
     NNS_PRIM3D_PCT m_asPrim3D_L_PCT[40];      // offset 0x414, size 0x3C0
     NNS_PRIM3D_PCT m_asPrim3D_R_PCT[40];      // offset 0x7D4, size 0x3C0
-    f32 m_sVelocityMtxPtr[4][4];              // offset 0xBA0, size 0x40
-    f32 m_sPosturalMtxPtr[4][4];              // offset 0xBE0, size 0x40
+    NNS_MATRIX m_sVelocityMtxPtr;             // offset 0xBA0, size 0x40
+    NNS_MATRIX m_sPosturalMtxPtr;             // offset 0xBE0, size 0x40
     NNS_VECTORFAST m_sPosVecFast;             // offset 0xC20, size 0x10
     NNS_VECTORFAST m_asEffectLocalVecFast[2]; // offset 0xC30, size 0x20
     NNS_VECTORFAST m_asEffectPosVecFast[5];   // offset 0xC50, size 0x50

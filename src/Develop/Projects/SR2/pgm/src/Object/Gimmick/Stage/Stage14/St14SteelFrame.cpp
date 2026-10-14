@@ -35,12 +35,13 @@ void clsSteelFrame_Task::draw()
 {
 }
 
-clsSteelFrame_Obj::clsSteelFrame_Obj() : clsRigidBodyGimmickObj()
+clsSteelFrame_Obj::clsSteelFrame_Obj() : clsRigidBodyGimmickObj(), m_eSteelFrameMode(MODE_INIT)
 {
 }
 
 clsSteelFrame_Obj::~clsSteelFrame_Obj()
 {
+    destroyData();
 }
 
 void clsSteelFrame_Obj::init()

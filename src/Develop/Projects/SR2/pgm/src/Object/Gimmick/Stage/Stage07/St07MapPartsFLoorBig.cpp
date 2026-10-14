@@ -37,4 +37,5 @@ clsMapPartsFloorBig_Object::clsMapPartsFloorBig_Object()
 
 clsMapPartsFloorBig_Object::~clsMapPartsFloorBig_Object()
 {
+    destroyData();
 }

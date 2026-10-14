@@ -5,6 +5,7 @@
 #include "Develop/Projects/SR2/pgm/lib/OO/core/OODraw2d.hpp"
 #include "Develop/Projects/SR2/pgm/lib/OO/core/OOHeapFragment.hpp"
 #include "Develop/Projects/SR2/pgm/src/2D/Score/Keyboard2D.hpp"
+#include "Develop/Projects/SR2/pgm/lib/OO/core/OOLibChecker.hpp"
 
 // nspOOMisc namespace — template 2D math types used in function signatures
 namespace nspOOMisc {
@@ -223,7 +224,7 @@ public:
     stcUvRect m_sUvOffset;             // offset 0x38, size 0x10
 
     clsOOFontSystem(clsOODraw2d* pcDraw2d, u32 u32MaxFontObj, clsOOHeapFragment* pcAllocator);
-    virtual ~clsOOFontSystem() {}
+    virtual ~clsOOFontSystem() { nspOOLibChecker::ClassD("clsOOFontSystem"); }
 
     void SetBtnSplitTexture(clsOOSplitTexture* pcTex, u32 u32PointSize) {}
 

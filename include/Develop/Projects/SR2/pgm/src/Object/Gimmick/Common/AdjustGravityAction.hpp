@@ -10,7 +10,7 @@
 class clsAdjustGravityAction_Object : public clsBaseThroughCollision, public clsGimmickObj {
 public:
     clsAdjustGravityAction_Object() {}
-    virtual ~clsAdjustGravityAction_Object() {}
+    virtual ~clsAdjustGravityAction_Object() { destroyData(); }
 
     virtual void contactTriggerEvent(hkContactPoint* pcPoint, clsObject* pcObj) {}
     virtual void contactAlwaysEvent(hkContactPoint* pcPoint, clsObject* pcObj) {}

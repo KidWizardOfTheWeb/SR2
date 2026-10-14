@@ -38,7 +38,7 @@ public:
     };
 
     clsEnergyCylinder_Obj() {}
-    virtual ~clsEnergyCylinder_Obj() {}
+    virtual ~clsEnergyCylinder_Obj() { destroyData(); }
     virtual nspPackId::enm getPackId() const { return nspPackId::ST11_ENERGY_CYLINDER_21000; }
     virtual void setData();
     virtual void createData();

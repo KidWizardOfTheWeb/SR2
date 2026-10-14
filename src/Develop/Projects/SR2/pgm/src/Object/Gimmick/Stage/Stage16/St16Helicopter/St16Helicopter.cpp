@@ -130,6 +130,7 @@ clsHelicopter_Manager::clsHelicopter_Manager() : clsPhantomGimmickObject()
 
 clsHelicopter_Manager::~clsHelicopter_Manager()
 {
+    destroyData();
 }
 
 void clsHelicopter_Manager::init()

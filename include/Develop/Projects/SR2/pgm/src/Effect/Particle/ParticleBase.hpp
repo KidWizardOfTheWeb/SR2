@@ -4,6 +4,7 @@
 #include "Develop/Projects/SR2/pgm/src/Task/TaskManager.hpp"
 #include "usr/local/sega/nn/src/DrawPrim/nndrawprim.h"
 #include "types.h"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 // total size: 0x20
 struct stcParticleExtensionData {
@@ -114,7 +115,7 @@ public:
 
     NNS_VECTORFAST m_sPosFast;          // offset 0x60, size 0x10
     NNS_VECTORFAST m_sBasePosFast;      // offset 0x70, size 0x10
-    f32 m_sPosturMatrix[4][4];          // offset 0x80, size 0x40
+    NNS_MATRIX m_sPosturMatrix;         // offset 0x80, size 0x40
     NNS_RGBA m_sLinearDiffRGBA;         // offset 0xC0, size 0x10
     NNS_RGBA m_sStartRGBA;              // offset 0xD0, size 0x10
     NNS_VECTOR m_sLinearDiffScale;      // offset 0xE0, size 0xC

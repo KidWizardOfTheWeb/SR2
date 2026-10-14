@@ -18,8 +18,10 @@ void clsPlayerGhost::draw()
 
 void clsPlayerGhost::setEnableExecFlag(bool p0)
 {
+    m_bIsEnableExec = p0;
 }
 
 void clsPlayerGhost::setStartFlag(bool p0)
 {
+    m_bStartFlag = p0;
 }

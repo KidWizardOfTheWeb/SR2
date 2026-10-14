@@ -66,7 +66,7 @@ void* clsSaveDataCtrl::GetSaveDataBuff_Crc()
     return 0;
 }
 
-u8 clsSaveDataCtrl::CheckSaveDataCrc(const void* pvParam1) const
+u8 clsSaveDataCtrl::CheckSaveDataCrc(const void* pvParam1)
 {
     return 0;
 }

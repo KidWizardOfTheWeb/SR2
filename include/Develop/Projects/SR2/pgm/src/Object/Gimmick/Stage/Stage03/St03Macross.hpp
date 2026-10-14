@@ -85,24 +85,6 @@ public:
 };
 
 // total size: 0xB0
-class clsMacross_Task
-    : public clsBaseGimmickBody<clsMacross_Task, clsMacross_Obj, clsModelType_OB_TX> {
-public:
-    clsMacross_Task(u32 u32ObjectAreaNum);
-    virtual ~clsMacross_Task() {}
-
-    f32* m_pf32TexCoordV;                           // offset 0x94, size 0x4
-    clsModelType_OB_TX m_cModelCrane;               // offset 0x98, size 0x8
-    clsMacrossModels m_cModels;                     // offset 0xA0, size 0x8
-    clsMacrossThroughCollision m_cThroughCollision; // offset 0xA8, size 0x8
-
-    virtual void execute();
-    virtual void draw();
-    virtual void reset();
-    virtual void createModel(stcBinInfo& rsBinInfoI);
-};
-
-// total size: 0xB0
 class clsMacross_Obj : public clsPhantomGimmickObject {
 public:
     enum enmMacrossMode {
@@ -140,6 +122,24 @@ public:
     u32 m_u32PlayerFlg;                                   // offset 0x6C, size 0x4
     clsGimmickAutoRunBuffer<clsMacross> m_cMacrossBuffer; // offset 0x70, size 0x1C
     enmControlMode m_aeControlMode[8];                    // offset 0x8C, size 0x20
+};
+
+// total size: 0xB0
+class clsMacross_Task
+    : public clsBaseGimmickBody<clsMacross_Task, clsMacross_Obj, clsModelType_OB_TX> {
+public:
+    clsMacross_Task(u32 u32ObjectAreaNum);
+    virtual ~clsMacross_Task() {}
+
+    f32* m_pf32TexCoordV;                           // offset 0x94, size 0x4
+    clsModelType_OB_TX m_cModelCrane;               // offset 0x98, size 0x8
+    clsMacrossModels m_cModels;                     // offset 0xA0, size 0x8
+    clsMacrossThroughCollision m_cThroughCollision; // offset 0xA8, size 0x8
+
+    virtual void execute();
+    virtual void draw();
+    virtual void reset();
+    virtual void createModel(stcBinInfo& rsBinInfoI);
 };
 
 #endif // ST03MACROSS_HPP

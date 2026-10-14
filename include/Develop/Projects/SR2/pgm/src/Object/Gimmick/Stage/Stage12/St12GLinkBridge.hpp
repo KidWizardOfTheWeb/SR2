@@ -8,6 +8,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickPath.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsSe3DControl;
 
@@ -49,7 +50,7 @@ public:
     enum enmMode m_eMode;            // offset 0xE0, size 0x4
     clsSe3DControl* m_pcSe3DControl; // offset 0xE4, size 0x4
     u32 m_u32Attr;                   // offset 0xE8, size 0x4
-    f32 m_sEffectMartix[4][4];       // offset 0xF0, size 0x40
+    NNS_MATRIX m_sEffectMartix;      // offset 0xF0, size 0x40
 
     static NNS_VECTOR tosCollisionHalfSizeVec;
     static f32 tof32ClipSqDist;

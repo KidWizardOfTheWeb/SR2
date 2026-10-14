@@ -19,3 +19,12 @@ void clsRotFall_Task::execute()
 void clsRotFall_Task::draw()
 {
 }
+
+clsRotFallManager_Object::clsRotFallManager_Object()
+{
+}
+
+clsRotFallManager_Object::~clsRotFallManager_Object()
+{
+    destroyData();
+}

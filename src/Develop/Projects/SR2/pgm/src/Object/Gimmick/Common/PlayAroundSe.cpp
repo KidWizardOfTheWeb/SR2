@@ -48,6 +48,7 @@ clsPlayAroundSe_Obj::clsPlayAroundSe_Obj()
 
 clsPlayAroundSe_Obj::~clsPlayAroundSe_Obj()
 {
+    destroyData();
 }
 
 nspPackId::enm clsPlayAroundSe_Obj::getPackId() const

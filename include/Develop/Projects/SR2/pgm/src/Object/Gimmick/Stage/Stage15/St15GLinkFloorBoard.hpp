@@ -9,6 +9,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickBody.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickPath.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class hkShape;
 class clsPlayerTask;
@@ -51,7 +52,7 @@ public:
     u32 m_u32LinkMapUserDataNo;      // offset 0xEC, size 0x4
     u8 m_bDrawFlag;                  // offset 0xF0, size 0x1
     u8 m_StateChangeFlag;            // offset 0xF1, size 0x1
-    f32 m_sEffectMtx[4][4];          // offset 0x100, size 0x40
+    NNS_MATRIX m_sEffectMtx;         // offset 0x100, size 0x40
 
     static NNS_VECTOR tosCollisionHalfSizeVec;
     static f32 tof32ClipSqDist;

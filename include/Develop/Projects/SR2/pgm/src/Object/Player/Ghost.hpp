@@ -6,6 +6,7 @@
 #include "Develop/Projects/SR2/pgm/lib/OO/core/Singleton.hpp"
 #include "Develop/Projects/SR2/pgm/src/Game/Game.hpp"
 #include "Develop/Projects/SR2/pgm/src/Task/TaskManager.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsPlayerGhost;
 class clsPlayerTask;
@@ -56,7 +57,7 @@ struct stcGhostSaveData {
 struct stcGhostInfo {
     NNS_VECTORFAST sPos;   // offset 0x0, size 0x10
     NNS_QUATERNION sQuat;  // offset 0x10, size 0x10
-    f32 sDrawMatrix[4][4]; // offset 0x20, size 0x40
+    NNS_MATRIX sDrawMatrix; // offset 0x20, size 0x40
     u8 u8CharaType;        // offset 0x60, size 0x1
     u8 bIsEnable;          // offset 0x61, size 0x1
 };

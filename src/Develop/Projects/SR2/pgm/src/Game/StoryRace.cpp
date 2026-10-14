@@ -29,7 +29,7 @@ clsStoryRace_Task::clsStoryRace_Task(clsStoryMgr& rStoryMgr,
                                      s32 param4,
                                      const stcSendAdv* param5,
                                      void** param6,
-                                     enmMode param7,
+                                     clsGameMgr::enmMode param7,
                                      s32 param8)
     : clsBaseRace_Task(param1, param2, param3, param4, 0, param5, param6, param7, param8),
       m_rcStoryMgr(rStoryMgr)

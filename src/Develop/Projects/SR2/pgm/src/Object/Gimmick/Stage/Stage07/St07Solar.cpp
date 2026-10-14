@@ -8,6 +8,7 @@ clsSolar_Obj::clsSolar_Obj()
 
 void clsSolar_Obj::init()
 {
+    clsPathGravityObj_Obj::init();
 }
 
 void clsSolar_Obj::reset()

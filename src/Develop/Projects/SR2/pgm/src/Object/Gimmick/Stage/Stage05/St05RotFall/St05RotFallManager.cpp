@@ -2,14 +2,6 @@
 
 s8 clsRotFallManager_Object::t_oas8Numtable[14] = {0, 0, 1, 1, 1, 2, 2, 2, 2, 4, 3, 3, 3, 3};
 
-clsRotFallManager_Object::clsRotFallManager_Object()
-{
-}
-
-clsRotFallManager_Object::~clsRotFallManager_Object()
-{
-}
-
 void clsRotFallManager_Object::reset()
 {
 }

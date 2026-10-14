@@ -16,3 +16,12 @@ void clsRotFallGLink_Task::execute()
 void clsRotFallGLink_Task::draw()
 {
 }
+
+clsRotFallGLinkManager_Object::clsRotFallGLinkManager_Object()
+{
+}
+
+clsRotFallGLinkManager_Object::~clsRotFallGLinkManager_Object()
+{
+    destroyData();
+}

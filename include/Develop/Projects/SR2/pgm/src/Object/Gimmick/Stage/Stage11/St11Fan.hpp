@@ -54,31 +54,6 @@ enum enmState {
     STATE_STOP = 3,
 };
 
-// total size: 0xEC
-class clsFan_Task : public clsBaseGimmickBody<clsFan_Task, clsFan_Obj, clsFanModel> {
-public:
-    clsFan_Task(u32 u32ObjectAreaNum);
-    virtual ~clsFan_Task() {}
-
-    static NNS_VECTORFAST m_tosPartsOffsetFast[12];
-    static NNS_VECTOR m_tosThroughCollisionPosVec[5];
-    static f32 m_tof32ThroughCollisionRotY[5];
-
-    hkShape* m_pcThroughShape;               // offset 0xA0, size 0x4
-    clsFanThroughCollision m_acCollision[2]; // offset 0xA4, size 0x28
-    enmState m_eState;                       // offset 0xCC, size 0x4
-    u32 m_u32PlayerFlg;                      // offset 0xD0, size 0x4
-    s32 m_s32CollisionNum;                   // offset 0xD4, size 0x4
-    _stcShapeInfo* m_apcShape;               // offset 0xD8, size 0x4
-    NNS_NODE* m_psNodeList;                  // offset 0xDC, size 0x4
-    vector m_vctShapeSearch;                 // offset 0xE0, size 0xC
-
-    virtual void reset();
-    virtual void execute();
-    virtual void draw();
-    virtual void createModel(stcBinInfo& rsBinInfoI);
-};
-
 // total size: 0xE0
 class clsFan_Parts : public clsRigidBodyGimmickObj {
 public:
@@ -125,7 +100,7 @@ public:
     };
 
     clsFan_Obj() {}
-    virtual ~clsFan_Obj() {}
+    virtual ~clsFan_Obj() { destroyData(); }
 
     virtual void createData();
     virtual void destroyData();
@@ -148,6 +123,31 @@ public:
     u32 m_u32GroundFlg;        // offset 0x6C, size 0x4
     u32 m_u32WallFlg;          // offset 0x70, size 0x4
     clsFan_Parts m_acParts[3]; // offset 0x80, size 0x2A0
+};
+
+// total size: 0xEC
+class clsFan_Task : public clsBaseGimmickBody<clsFan_Task, clsFan_Obj, clsFanModel> {
+public:
+    clsFan_Task(u32 u32ObjectAreaNum);
+    virtual ~clsFan_Task() {}
+
+    static NNS_VECTORFAST m_tosPartsOffsetFast[12];
+    static NNS_VECTOR m_tosThroughCollisionPosVec[5];
+    static f32 m_tof32ThroughCollisionRotY[5];
+
+    hkShape* m_pcThroughShape;               // offset 0xA0, size 0x4
+    clsFanThroughCollision m_acCollision[2]; // offset 0xA4, size 0x28
+    enmState m_eState;                       // offset 0xCC, size 0x4
+    u32 m_u32PlayerFlg;                      // offset 0xD0, size 0x4
+    s32 m_s32CollisionNum;                   // offset 0xD4, size 0x4
+    _stcShapeInfo* m_apcShape;               // offset 0xD8, size 0x4
+    NNS_NODE* m_psNodeList;                  // offset 0xDC, size 0x4
+    vector m_vctShapeSearch;                 // offset 0xE0, size 0xC
+
+    virtual void reset();
+    virtual void execute();
+    virtual void draw();
+    virtual void createModel(stcBinInfo& rsBinInfoI);
 };
 
 #endif // ST11FAN_HPP

@@ -6,10 +6,6 @@ clsGravityGimmickParam clsSurvivalBallBall_Obj::t_ocGravityGimmickParamSt01;
 clsGravityGimmickParam clsSurvivalBallBall_Obj::t_ocGravityGimmickParamSt02;
 clsGravityGimmickParam clsSurvivalBallBall_Obj::t_ocGravityGimmickParamSt03;
 
-void clsSurvivalBallBall_Task::setSetDataBall(const stcSetDataDetail& rParam1)
-{
-}
-
 void clsSurvivalBallBallCollision::execute()
 {
 }

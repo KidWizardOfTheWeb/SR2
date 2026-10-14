@@ -2,4 +2,5 @@
 
 void clsGearPtnEffectPart::clearChangeActionParam()
 {
+    clsGear::clearChangeActionParam();
 }

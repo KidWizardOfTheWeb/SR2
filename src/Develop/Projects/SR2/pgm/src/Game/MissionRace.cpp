@@ -13,7 +13,7 @@ void clsMissionRace_Task::LoadTexture(clsGameMgr::enmMode eMode, s32 s32A)
 }
 
 clsMissionRace_Task::clsMissionRace_Task(
-    s32 s32A, s32 s32B, const stcSendAdv* pcAdv, void** ppv, enmMode eMode)
+    s32 s32A, s32 s32B, const stcSendAdv* pcAdv, void** ppv, clsGameMgr::enmMode eMode)
     : clsBaseRace_Task(0, 0, 0, 0, 0, pcAdv, ppv, eMode, 0)
 {
 }
@@ -54,6 +54,7 @@ void clsMissionRace_Task::wakeUpResult()
 
 void clsMissionRace_Task::setClearUnlock()
 {
+    clsMissionRace_Task::setMissionClearUnlock();
 }
 
 s8 clsMissionRace_Task::checkCondition()

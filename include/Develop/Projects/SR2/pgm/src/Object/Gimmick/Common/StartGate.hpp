@@ -22,21 +22,6 @@ public:
     clsModelType_OB_TX m_cLine;        // offset 0x40, size 0x8
 };
 
-// total size: 0xD4
-class clsStartGate_Task
-    : public clsBaseGimmickBody<clsStartGate_Task, clsStartGate_Obj, clsStartGateModels> {
-public:
-    clsStartGate_Task()
-        : clsBaseGimmickBody<clsStartGate_Task, clsStartGate_Obj, clsStartGateModels>(0, 0)
-    {
-    }
-    virtual ~clsStartGate_Task() {}
-    virtual void execute();
-    virtual void draw();
-    virtual void reset() {}
-    virtual void createModel(stcBinInfo& rParam1);
-};
-
 struct stcStGateFrame {
     f32 f32CEnd;     // offset 0x0, size 0x4
     f32 f32Wait;     // offset 0x4, size 0x4
@@ -84,6 +69,21 @@ public:
     static f32 tof32DenkiScaleX[17];
     static f32 tof32LineScaleX[17];
     static stcStGateSeFrame t_sStGateSeFrame[17];
+};
+
+// total size: 0xD4
+class clsStartGate_Task
+    : public clsBaseGimmickBody<clsStartGate_Task, clsStartGate_Obj, clsStartGateModels> {
+public:
+    clsStartGate_Task()
+        : clsBaseGimmickBody<clsStartGate_Task, clsStartGate_Obj, clsStartGateModels>(0, 0)
+    {
+    }
+    virtual ~clsStartGate_Task() {}
+    virtual void execute();
+    virtual void draw();
+    virtual void reset() {}
+    virtual void createModel(stcBinInfo& rParam1);
 };
 
 #endif // STARTGATE_HPP

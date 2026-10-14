@@ -59,6 +59,7 @@ u8 clsAutoRunHeli::draw(clsAutoRunHeliModel& rcModel,
 
 void clsAutoRunHeli_Obj::init()
 {
+    clsAutoRunHeli_Obj::reset();
 }
 
 void clsAutoRunHeli_Obj::reset()

@@ -49,12 +49,13 @@ void clsPutCanoeMotion_Task::draw()
 {
 }
 
-clsPutCanoeMotion_Obj::clsPutCanoeMotion_Obj()
+clsPutCanoeMotion_Obj::clsPutCanoeMotion_Obj() : m_eMode(MODE_INIT)
 {
 }
 
 clsPutCanoeMotion_Obj::~clsPutCanoeMotion_Obj()
 {
+    destroyData();
 }
 
 nspPackId::enm clsPutCanoeMotion_Obj::getPackId() const

@@ -4,12 +4,13 @@
 #include "types.h"
 #include "Develop/Projects/SR2/pgm/src/Task/TaskManager.hpp"
 #include "Develop/Projects/SR2/pgm/src/2D/Geometry.hpp"
+#include "Develop/Projects/SR2/pgm/lib/OO/core/OOLibChecker.hpp"
 
 // total size: 0xB0
 class clsBaseShimmer_Task : public clsTask {
 public:
     clsBaseShimmer_Task();
-    virtual ~clsBaseShimmer_Task() {}
+    virtual ~clsBaseShimmer_Task() { nspOOLibChecker::ClassD("clsBaseShimmer_Task"); }
 
     virtual void execute();
     virtual void draw();

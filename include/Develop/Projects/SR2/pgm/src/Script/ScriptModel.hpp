@@ -10,6 +10,7 @@
 #include "Develop/Projects/SR2/pgm/src/Havok/Havok.hpp"
 #include "Develop/Projects/SR2/pgm/src/Effect/FollowLine/FollowLine.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickRigidListener.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 // total size: 0x1F0
 class clsScriptModel_Task : public clsTask {
@@ -60,7 +61,7 @@ public:
     NNS_VECTOR m_sAddScaleVec;                            // offset 0xA8, size 0xC
     f32 m_f32WaitFrame;                                   // offset 0xB4, size 0x4
     f32 m_f32NextWaitFrame;                               // offset 0xB8, size 0x4
-    f32 m_sDrawMtx[4][4];                                 // offset 0xC0, size 0x40
+    NNS_MATRIX m_sDrawMtx;                                // offset 0xC0, size 0x40
     clsTask* m_pcScriptTask;                              // offset 0x100, size 0x4
     clsModelType_OB_TX_MO_MA_MF* m_pcModel;               // offset 0x104, size 0x4
     clsBackLineEffectTask* m_apcBackLine[2];              // offset 0x108, size 0x8

@@ -98,6 +98,18 @@ struct stcScriptBurnOut {
 // total size: 0x8B0
 class clsScript_Task : public clsTask {
 public:
+    // total size: 0x48
+    struct stcLight {
+        u8 bUsed;           // offset 0x0, size 0x1
+        s32 s32No;          // offset 0x4, size 0x4
+        stcRgbF32 sAmb;     // offset 0x8, size 0xC
+        stcRgbF32 sPar;     // offset 0x14, size 0xC
+        f32 f32ParInten;    // offset 0x20, size 0x4
+        NNS_VECTOR sParDir; // offset 0x24, size 0xC
+        stcRgbF32 sSpe;     // offset 0x30, size 0xC
+        NNS_VECTOR sSpeDir; // offset 0x3C, size 0xC
+    };
+
     clsScript_Task(s32 s32No, u8 u8ModeType);
     virtual ~clsScript_Task();
     virtual void execute();

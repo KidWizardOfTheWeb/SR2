@@ -5,6 +5,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Player/GravityAction/GravityActionManager.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Player/GravityAction/GravityDivePathRange.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickPath.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsSimpleShapePhantom;
 class clsBaseGravityLinkObject;
@@ -29,7 +30,7 @@ public:
 
     static f32 t_f32SystemReadyFrame;
 
-    f32 m_sDirMtx[4][4];                      // offset 0x20, size 0x40
+    NNS_MATRIX m_sDirMtx;                     // offset 0x20, size 0x40
     NNS_VECTORFAST m_sLocalVecFast;           // offset 0x60, size 0x10
     clsPath m_cPath;                          // offset 0x70, size 0x60
     clsGravityDivePathRange m_cPathRange;     // offset 0xD0, size 0xD0

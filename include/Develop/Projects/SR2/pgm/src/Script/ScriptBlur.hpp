@@ -8,7 +8,7 @@ class clsScript_Task;
 
 class clsScriptBlur_Task : public clsBlur_Task {
 public:
-    clsScriptBlur_Task(u8 p0, clsTask* p1) : clsBlur_Task(0, 0) {}
+    clsScriptBlur_Task(u8 p0, clsTask* p1);
 
     virtual ~clsScriptBlur_Task() {}
 

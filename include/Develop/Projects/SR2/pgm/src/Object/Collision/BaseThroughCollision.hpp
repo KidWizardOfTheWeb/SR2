@@ -12,6 +12,7 @@ class hkShape;
 // total size: 0x8
 class clsBaseThroughCollision : public clsCollision {
 public:
+    clsBaseThroughCollision() : m_pcPhantom(0) {}
     virtual ~clsBaseThroughCollision() { destroy(); }
     virtual void contactTriggerEvent(hkContactPoint* pcContact, clsObject* pcObject);
     virtual void contactAlwaysEvent(hkContactPoint* pcContact, clsObject* pcObject);

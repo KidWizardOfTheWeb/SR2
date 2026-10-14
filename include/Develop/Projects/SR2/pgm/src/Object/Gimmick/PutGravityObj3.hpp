@@ -41,7 +41,7 @@ class clsPutGravityObj3_Task : public clsMultiShape,
                                                                 clsMultiObTxModels> {
 public:
     clsPutGravityObj3_Task(u32 param);
-    virtual ~clsPutGravityObj3_Task();
+    virtual ~clsPutGravityObj3_Task() {}
 
     virtual void init();
     virtual void reset();

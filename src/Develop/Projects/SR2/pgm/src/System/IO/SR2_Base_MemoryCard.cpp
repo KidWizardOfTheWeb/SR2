@@ -22,6 +22,7 @@ void clsBaseMemoryCard_Task::reinit(
 
 void clsBaseMemoryCard_Task::setNextSeq(enmSeqReq eSeqReqI)
 {
+    m_eSeqReq_Next = eSeqReqI;
 }
 
 void clsBaseMemoryCard_Task::setBackSeq()

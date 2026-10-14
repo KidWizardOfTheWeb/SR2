@@ -2,7 +2,7 @@
 
 s32 clsSrPlatform::getSafeFrame_Width()
 {
-    return 0;
+    return 608;
 }
 
 s32 clsSrPlatform::getSafeFrame_Height()

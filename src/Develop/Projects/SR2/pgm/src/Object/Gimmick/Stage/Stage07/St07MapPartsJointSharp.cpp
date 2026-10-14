@@ -31,4 +31,5 @@ clsMapPartsJointSharp_Object::clsMapPartsJointSharp_Object()
 
 clsMapPartsJointSharp_Object::~clsMapPartsJointSharp_Object()
 {
+    destroyData();
 }

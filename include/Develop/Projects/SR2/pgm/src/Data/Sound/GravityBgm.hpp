@@ -7,7 +7,7 @@
 // total size: 0x78
 class clsGravityBgm_Task : public clsTask {
 public:
-    virtual ~clsGravityBgm_Task();
+    virtual ~clsGravityBgm_Task() {}
     virtual void execute();
 
     void getPlayerGravityInfo(u32& u32StatO);

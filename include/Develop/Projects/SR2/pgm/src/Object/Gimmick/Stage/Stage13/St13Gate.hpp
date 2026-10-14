@@ -16,7 +16,7 @@ class clsGateThroughCollision;
 class clsGate_Obj : public clsRigidBodyGimmickObj {
 public:
     inline clsGate_Obj() : clsRigidBodyGimmickObj() {}
-    virtual ~clsGate_Obj() {}
+    virtual ~clsGate_Obj() { destroyData(); }
 
     enum enmGateMode {
         MODE_INIT = 0,

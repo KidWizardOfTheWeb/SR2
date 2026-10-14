@@ -68,6 +68,7 @@ void clsMemoryCard_Task::draw_UnionError()
 
 void clsMemoryCard_Task::initCursorNo(s32 s32NextI, s32 s32CancelI)
 {
+    clsBaseMemoryCard_Task::initCursorNo(s32NextI, s32CancelI);
 }
 
 void clsMemoryCard_Task::setNextTaskMode(enmPollingMc_Ret eExecUnionRetI,

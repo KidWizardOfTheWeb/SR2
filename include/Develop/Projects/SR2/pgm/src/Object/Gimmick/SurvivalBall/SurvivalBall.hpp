@@ -77,7 +77,7 @@ public:
 
     clsSurvivalBallBall_Obj();
 
-    virtual ~clsSurvivalBallBall_Obj() {}
+    virtual ~clsSurvivalBallBall_Obj() { destroyData(); }
     virtual void contactTriggerEvent(hkContactPoint* pParam1, clsObject* pParam2);
     virtual void createData();
     virtual void destroyData();
@@ -112,8 +112,8 @@ public:
     u32 m_u32EffectFlag;                       // offset 0x114, size 0x4
     f32 m_f32LostOwnerCount;                   // offset 0x118, size 0x4
     f32 m_f32MatMotionAddFrame;                // offset 0x11C, size 0x4
-    enmDrawType m_aeEffectDraw[5];             // offset 0x120, size 0x14
-    enmDrawType m_aeOldEffectDraw[5];          // offset 0x134, size 0x14
+    clsSurvivalBallBallEffect_Task::enmDrawType m_aeEffectDraw[5];    // offset 0x120, size 0x14
+    clsSurvivalBallBallEffect_Task::enmDrawType m_aeOldEffectDraw[5]; // offset 0x134, size 0x14
     clsSurvivalBallBallCollision m_cCollision; // offset 0x148, size 0x10
     enmSurvivalBallBallMode m_eMoveMode;       // offset 0x158, size 0x4
     clsRetPath m_cRetCoursePath;               // offset 0x15C, size 0x20

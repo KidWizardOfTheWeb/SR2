@@ -33,7 +33,7 @@ public:
 
     // Virtual functions
 public:
-    clsScoreAttentionAttack2D(clsScore2D_Task* pcParent) : clsScore2D_Task(0) {}
+    clsScoreAttentionAttack2D(clsScore2D_Task* pcParent);
     virtual ~clsScoreAttentionAttack2D();
 
     virtual void execute();

@@ -14,9 +14,8 @@ stcMotionFlgs asMotionFlgsEgg[8];
 stcMotionFlgs asMotionFlgsOther[8];
 stcMotionFlgs asMotionFlgsWave[8];
 stcMotionFlgs asMotionFlgsBily[8];
-} // namespace nspChara
 
-enum enmModelType getCharaModelType(u16 u16GearCtrlNo)
+enmModelType getCharaModelType(u16 u16GearCtrlNo)
 {
     enmModelType eVar1;
     if (u16GearCtrlNo == 0x38) {
@@ -34,3 +33,4 @@ enum enmModelType getCharaModelType(u16 u16GearCtrlNo)
     }
     return eVar1;
 }
+} // namespace nspChara

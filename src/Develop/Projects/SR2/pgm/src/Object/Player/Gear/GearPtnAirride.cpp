@@ -3,6 +3,7 @@
 
 void clsGearPtnAirride::clearChangeActionParam()
 {
+    clsGearBasePrototype::clearChangeActionParam();
 }
 
 void clsGearPtnAirride::behavior()

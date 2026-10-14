@@ -17,3 +17,8 @@ void nspLoadingData::tRenderNowLoadingCircle(stcLoadingCircle* psParam1,
 void nspLoadingData::tRenderNowLoading_CallBack()
 {
 }
+
+int main(int argc, char** argv)
+{
+    return 0;
+}

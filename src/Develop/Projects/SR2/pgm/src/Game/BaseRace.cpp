@@ -27,7 +27,7 @@ clsBaseRace_Task::clsBaseRace_Task(s32 s32Param1,
                                    s32 s32Param5,
                                    const stcSendAdv* pParam6,
                                    void** pvParam7,
-                                   enmMode,
+                                   clsGameMgr::enmMode,
                                    s32 s32Param9)
     : clsTask(0, 0)
 {
@@ -94,7 +94,7 @@ u8 clsBaseRace_Task::setSeData()
 
 u8 clsBaseRace_Task::packEtc()
 {
-    return 0;
+    return 1;
 }
 
 void clsBaseRace_Task::start()

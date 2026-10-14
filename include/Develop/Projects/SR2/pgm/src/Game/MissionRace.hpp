@@ -65,6 +65,31 @@ struct uMissionCount32 {
 // total size: 0xD3C
 class clsMissionRace_Task : public clsBaseRace_Task {
 public:
+    enum enmMissionInfo {
+        MISSION__TIMEATTACK_COUNTUP = 0,
+        MISSION__TIMEATTACK_COUNTDOWN = 1,
+        MISSION__RING = 2,
+        MISSION__TRICK = 3,
+        MISSION__SKILL = 4,
+        MISSION__GD_TIME = 5,
+        MISSION__GD_REMOVE = 6,
+        MISSION__GRIND_RINK = 7,
+        MISSION__GRIND_RINK_P = 8,
+        MISSION__TAG_G = 9,
+        MISSION__TAG_PT = 10,
+        MISSION__DESTRUCTION = 11,
+        MISSION__MARK_GD = 12,
+        MISSION__MARK_GC = 13,
+        MISSION__AGP = 14,
+        MISSION__ATTACK = 15,
+        MISSION__MARK = 16,
+        MISSION__GEAR_CHANGE = 17,
+        MISSION__START_DASH = 18,
+        MISSION__TRICK_A = 19,
+        MISSION__MAX = 20,
+        MISSION__NONE = -1,
+    };
+
     static const f32 tof32MissionBreakFrame;
     static s32 sos32TrickPoint[7];
     static stcMissionRingAgp scosMissionRingAgp[20];
@@ -72,7 +97,8 @@ public:
     static void* m_pvMission2DPackBuffer;
     static void* m_pvMissionStg2DPackBuffer;
 
-    clsMissionRace_Task(s32 s32A, s32 s32B, const stcSendAdv* pcAdv, void** ppv, enmMode eMode);
+    clsMissionRace_Task(
+        s32 s32A, s32 s32B, const stcSendAdv* pcAdv, void** ppv, clsGameMgr::enmMode eMode);
     virtual ~clsMissionRace_Task() {}
     virtual void execute();
     virtual void draw();

@@ -88,6 +88,13 @@ public:
         stcTempParam sTempParam; // offset 0x24, size 0x10
     };
 
+    clsScore2D_Task* m_pcParent;     // offset 0x0, size 0x4
+    u8 m_bDraw;                      // offset 0x4, size 0x1
+    stcUnionStatus m_sUnionStatus;   // offset 0x8, size 0x2C
+    stcMeterData* m_opsDrawData;     // offset 0x34, size 0x4
+    stcUserStatus m_asUserStatus[4]; // offset 0x38, size 0xD0
+    // vtable pointer: offset 0x108
+
     virtual ~clsScoreMeter2D();
     virtual void draw();
     virtual void executeMeter(u32 u32View, u32 u32PlayerNo);
@@ -114,12 +121,6 @@ public:
         s32 s32PosX, s32 s32PosY, s32 s32Dir, f32 f32Width, f32 f32Gauge, f32 f32Back, f32 f32Max);
     void execute();
     void init();
-
-    clsScore2D_Task* m_pcParent;     // offset 0x0, size 0x4
-    u8 m_bDraw;                      // offset 0x4, size 0x1
-    stcUnionStatus m_sUnionStatus;   // offset 0x8, size 0x2C
-    stcMeterData* m_opsDrawData;     // offset 0x34, size 0x4
-    stcUserStatus m_asUserStatus[4]; // offset 0x38, size 0xD0
 };
 
 #endif // SCOREMETER2D_HPP

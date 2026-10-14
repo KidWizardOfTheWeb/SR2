@@ -7,7 +7,7 @@
 // total size: 0x30
 class clsPfTimer : public clsSingleton<clsPfTimer>, public clsOOTimer {
 public:
-    virtual ~clsPfTimer();
+    virtual ~clsPfTimer() {}
     virtual s32 getTick() const;
     virtual s32 TickDiff2MicroSec(s32 s32Tick) const;
     virtual s32 TickDiff2MicroSec(s32 s32TickA, s32 s32TickB) const;

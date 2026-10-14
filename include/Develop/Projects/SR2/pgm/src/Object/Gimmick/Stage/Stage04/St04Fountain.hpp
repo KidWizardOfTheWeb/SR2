@@ -7,6 +7,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Collision/BaseThroughCollision.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsSe3DControl;
 class clsTask;
@@ -29,7 +30,7 @@ public:
     };
 
     clsFountain_Obj() {}
-    virtual ~clsFountain_Obj() {}
+    virtual ~clsFountain_Obj() { destroyData(); }
     virtual void setData();
     virtual void createData();
     virtual void destroyData();
@@ -46,7 +47,7 @@ public:
     enmWaterColumnMode m_eWaterColumnMode;      // offset 0xD4, size 0x4
     u8 m_bWaterColumnDarw;                      // offset 0xD8, size 0x1
     NNS_VECTORFAST* m_opsPointVecFast;          // offset 0xDC, size 0x4
-    f32 m_psMtx[4][4];                          // offset 0xE0, size 0x40
+    NNS_MATRIX m_psMtx;                         // offset 0xE0, size 0x40
     f32 m_f32WaterColumnScale_y;                // offset 0x120, size 0x4
     f32 m_f32WaterColumnScale_xz;               // offset 0x124, size 0x4
     f32 m_f32WaterColumnFrame;                  // offset 0x128, size 0x4

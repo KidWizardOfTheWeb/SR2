@@ -7,6 +7,7 @@ u32 clsPathCanoe_Obj::otau32Se_CanoeL[2];
 
 void clsPathCanoe_Obj::init()
 {
+    clsPathCanoe_Obj::initParameter();
 }
 
 void clsPathCanoe_Obj::initParameter()
@@ -35,6 +36,7 @@ void clsPathCanoe_Obj::requestDrawBreakEffect()
 
 void clsPathCanoe_Obj::setData()
 {
+    clsRigidBodyGimmickObj::setData();
 }
 
 void clsPathCanoe_Obj::main()

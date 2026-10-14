@@ -9,8 +9,8 @@ clsElectricDamageEffect_Task::clsElectricDamageEffect_Task(f32 f32LifeFrame,
                                                            s32 s32SeId,
                                                            clsModelType_OB_TX_MO_MA* pcModel,
                                                            u32 u32StageNo,
-                                                           enmNo eNo,
-                                                           enmCalcNodePos eNodePos)
+                                                           nspPlayer::enmNo eNo,
+                                                           clsPlayerTask::enmCalcNodePos eNodePos)
     : clsBaseEffect_Task(u32Type, s32SeId, pcModel, u32StageNo, 0, eNo, eNodePos, f32LifeFrame)
 {
 }

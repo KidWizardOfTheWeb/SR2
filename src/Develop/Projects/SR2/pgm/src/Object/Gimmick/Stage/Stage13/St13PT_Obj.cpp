@@ -26,6 +26,14 @@ void clsSt13PTObj_Obj::destroyData()
 {
 }
 
+void clsSt13PTObj_Obj::SetWaitMode(f32 f32Param1)
+{
+}
+
+void clsSt13PTObj_Obj::SetReversMode(f32 f32Param1)
+{
+}
+
 clsSt13PTObj_Task::clsSt13PTObj_Task(u32 u32ObjectAreaNum)
     : clsSingleModelGimmick_Task(u32ObjectAreaNum, 0x18A88)
 {

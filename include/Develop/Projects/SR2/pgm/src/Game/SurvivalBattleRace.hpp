@@ -36,7 +36,7 @@ public:
                                s32 s32Param2,
                                const stcSendAdv* pcSendAdv,
                                void** ppvParam,
-                               enmMode eMode);
+                               clsGameMgr::enmMode eMode);
 
     virtual ~clsSurvivalBattleRace_Task() {}
 

@@ -9,7 +9,7 @@
 // total size: 0x220
 class clsPathRobo_Obj : public clsPathGravityObj_Obj {
 public:
-    inline clsPathRobo_Obj() : clsPathGravityObj_Obj() {}
+    clsPathRobo_Obj();
     virtual ~clsPathRobo_Obj() {}
 
     virtual void reset();

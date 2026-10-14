@@ -75,7 +75,7 @@ public:
     };
 
     clsSt07Gate_Obj() {}
-    virtual ~clsSt07Gate_Obj() {}
+    virtual ~clsSt07Gate_Obj() { destroyData(); }
 
     virtual void setData();
     virtual void createData();

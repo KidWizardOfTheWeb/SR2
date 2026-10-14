@@ -31,6 +31,7 @@
 #include "usr/local/sega/nn/src/Camera/nncamera.h"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 #include "usr/local/sega/nn/src/Object/nnobject.h"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsRainDrops_Task;
 
@@ -49,7 +50,7 @@ public:
     f32 m_f32Frame;                // offset 0x8, size 0x4
     f32 m_f32DrawSize;             // offset 0xC, size 0x4
     NNS_MOTION* m_psMotion;        // offset 0x10, size 0x4
-    f32 m_sDrawMtx[4][4];          // offset 0x20, size 0x40
+    NNS_MATRIX m_sDrawMtx;         // offset 0x20, size 0x40
     NNS_CAMERAPTR* m_psDataPtr;    // offset 0x60, size 0x4
     NNS_CAMERAPTR* m_psCalcCamera; // offset 0x64, size 0x4
 };
@@ -62,7 +63,7 @@ public:
     u32 m_u32Flg;                // offset 0x8, size 0x4
     f32 m_f32Frame;              // offset 0xC, size 0x4
     NNS_MOTION* m_psMotion;      // offset 0x10, size 0x4
-    f32 m_sDrawMtx[4][4];        // offset 0x20, size 0x40
+    NNS_MATRIX m_sDrawMtx;       // offset 0x20, size 0x40
     f32 m_f32DrawSize;           // offset 0x60, size 0x4
     NNS_LIGHTPTR* m_psDataPtr;   // offset 0x64, size 0x4
     NNS_LIGHTPTR* m_psCalcLight; // offset 0x68, size 0x4

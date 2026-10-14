@@ -49,6 +49,7 @@ void clsElevator_Task::draw()
 
 clsElevator_Obj::~clsElevator_Obj()
 {
+    destroyData();
 }
 
 clsElevator_Obj::clsElevator_Obj()

@@ -52,17 +52,19 @@ void clsPillar_Task::draw()
 {
 }
 
-void clsPillar_Obj::setState(enmPillarState)
+void clsPillar_Obj::setState(enmPillarState eStateI)
 {
+    m_eState = eStateI;
 }
 
 clsPillar_Obj::enmPillarState clsPillar_Obj::getState() const
 {
-    return PILLAR_STATE_MAIN;
+    return m_eState;
 }
 
-void clsPillar_Obj::setMode(enmPillarMode)
+void clsPillar_Obj::setMode(enmPillarMode eModeI)
 {
+    m_eMode = eModeI;
 }
 
 void clsPillar_Obj::init()
@@ -71,5 +73,5 @@ void clsPillar_Obj::init()
 
 clsPillar_Obj::enmPillarMode clsPillar_Obj::getMode() const
 {
-    return PILLAR_MODE_INIT;
+    return m_eMode;
 }

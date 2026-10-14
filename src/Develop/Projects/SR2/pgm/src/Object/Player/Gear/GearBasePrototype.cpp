@@ -3,6 +3,7 @@
 
 void clsGearBasePrototype::clearChangeActionParam()
 {
+    clsGear::clearChangeActionParam();
 }
 
 enmChangeRes clsGearBasePrototype::changeRide(clsGear** ppcPartsGears,

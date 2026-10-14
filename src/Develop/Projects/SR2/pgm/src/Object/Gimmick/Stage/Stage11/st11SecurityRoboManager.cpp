@@ -1,4 +1,5 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage11/st11SecurityRoboManager.hpp"
+#include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Stage/Stage11/st11SecurityRobo.hpp"
 
 stcRoboArray clsSecurityRoboManager_Obj::m_oastcRoboArray[3];
 
@@ -39,4 +40,13 @@ void clsSecurityRoboManager_Task::execute()
 
 void clsSecurityRoboManager_Task::draw()
 {
+}
+
+clsPathSecurityRobo_Obj::clsPathSecurityRobo_Obj()
+{
+}
+
+clsPathSecurityRobo_Obj::~clsPathSecurityRobo_Obj()
+{
+    destroyData();
 }

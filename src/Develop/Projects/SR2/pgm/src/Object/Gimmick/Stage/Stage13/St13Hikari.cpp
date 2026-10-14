@@ -13,6 +13,7 @@ void clsSt13Hikari_Object::draw(clsModelType_OB_TX_MO_MA& rcModel,
 
 void clsSt13Hikari_Object::reset()
 {
+    m_f32MatFrame = 0;
 }
 
 void clsSt13Hikari_Object::main()

@@ -4,6 +4,7 @@
 #include "types.h"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/RigidBodyGimmickObj.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsBackLineEffectTask;
 
@@ -27,7 +28,7 @@ public:
     static NNS_VECTOR tosOffsetVec_2nd;
     static NNS_VECTOR tosAccurcayVec_2nd;
 
-    f32 m_sDrawMtx[4][4];                   // offset 0xD0, size 0x40
+    NNS_MATRIX m_sDrawMtx;                  // offset 0xD0, size 0x40
     NNS_VECTOR m_sAccurcayVec;              // offset 0x110, size 0xC
     clsBackLineEffectTask* m_pcLineTask[2]; // offset 0x11C, size 0x8
     enmMode m_eMode;                        // offset 0x124, size 0x4

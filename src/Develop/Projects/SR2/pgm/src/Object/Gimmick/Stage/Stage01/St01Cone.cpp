@@ -44,7 +44,7 @@ void clsCone_Task::draw()
 {
 }
 
-clsCone_Obj::clsCone_Obj()
+clsCone_Obj::clsCone_Obj() : m_pcSe3DControl(0)
 {
 }
 

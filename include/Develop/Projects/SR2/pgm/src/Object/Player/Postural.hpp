@@ -5,6 +5,7 @@
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 #include "Develop/Projects/SR2/pgm/src/Object/SlerpQuat.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/LerpParam.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 // total size: 0xB0
 class clsPosturalCtrl {
@@ -13,7 +14,7 @@ public:
 
     clsPosturalCtrl();
     clsPosturalCtrl(const clsPosturalCtrl& rcOther);
-    ~clsPosturalCtrl();
+    ~clsPosturalCtrl() {}
 
     MtxPtr getMtxPtr() const;
     const NNS_VECTORFAST* getDirVecFastPtr() const;
@@ -28,7 +29,7 @@ public:
     void setSurface(const NNS_QUATERNION* psQuat, f32 f32Frame);
     void update();
 
-    f32 m_sMtx[4][4];             // offset 0x0, size 0x40
+    NNS_MATRIX m_sMtx;            // offset 0x0, size 0x40
     NNS_VECTORFAST m_sDirVecFast; // offset 0x40, size 0x10
     NNS_QUATERNION m_sQuat;       // offset 0x50, size 0x10
     clsSlerpQuat m_cSurface;      // offset 0x60, size 0x3C

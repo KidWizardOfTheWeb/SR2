@@ -35,7 +35,7 @@ public:
     };
 
     clsObjCrane_Object();
-    virtual ~clsObjCrane_Object() {}
+    virtual ~clsObjCrane_Object() { destroyData(); }
     virtual void setData();
     virtual void createData();
     virtual void destroyData();

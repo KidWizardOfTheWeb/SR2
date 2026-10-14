@@ -16,6 +16,7 @@ class hkShape;
 // total size: 0xC
 class clsSurvivalBallPointRing_Collision : public clsBaseThroughCollision {
 public:
+    clsSurvivalBallPointRing_Collision() : m_pcSurvivalBallPointRing_Obj(0) {}
     virtual ~clsSurvivalBallPointRing_Collision() {}
 
     void execute();
@@ -39,10 +40,10 @@ enum enmSurvivalBallPointRingPoint {
 class clsSurvivalBallPointRing_Obj : public clsRigidBodyGimmickObj {
 public:
     clsSurvivalBallPointRing_Obj();
-    virtual ~clsSurvivalBallPointRing_Obj() {}
+    virtual ~clsSurvivalBallPointRing_Obj() { destroyData(); }
 
-    u8 m_enMode;                                            // offset 0xD0, size 0x4
-    u8 m_enPointType;                                       // offset 0xD4, size 0x4
+    enmSurvivalBallPointRingMode m_enMode;                  // offset 0xD0, size 0x4
+    enmSurvivalBallPointRingPoint m_enPointType;            // offset 0xD4, size 0x4
     clsSurvivalBallPointRing_Collision m_cThroughCollision; // offset 0xD8, size 0xC
     u32 m_u32SetType;                                       // offset 0xE4, size 0x4
     clsPlaySe_2D* m_pcPlayGoalSe2D;                         // offset 0xE8, size 0x4

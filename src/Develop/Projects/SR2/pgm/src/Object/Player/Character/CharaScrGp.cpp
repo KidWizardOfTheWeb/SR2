@@ -3,6 +3,10 @@
 clsBackLineEffectTask::stcParam clsCharaScrGp::asScrGpLineParam[2] = {
     {0, 255, 120, 0, 458762, -1, 0.0f, 1.0f, 0.0f}, {0, 255, 120, 0, 458762, -1, 0.0f, 1.0f, 0.0f}};
 
+clsCharaScrGp::clsCharaScrGp(clsPlayerTask* pcPlayer) : clsCharaRoboBase(pcPlayer, 0, 0)
+{
+}
+
 void clsCharaScrGp::reset()
 {
 }

@@ -8,7 +8,7 @@
 // total size: 0x60
 class clsTutorial2D_Task : public clsTask {
 public:
-    virtual ~clsTutorial2D_Task();
+    virtual ~clsTutorial2D_Task() {}
     virtual void execute();
     virtual void draw();
 

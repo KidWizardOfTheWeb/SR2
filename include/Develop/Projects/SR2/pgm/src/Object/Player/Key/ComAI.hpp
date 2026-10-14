@@ -66,7 +66,7 @@ public:
     clsPlayerTask* m_pcPlayer;                // offset 0x4, size 0x4
     NNS_VECTORFAST m_sNextDestination;        // offset 0x10, size 0x10
     clsRetPath m_cRetComPath;                 // offset 0x20, size 0x20
-    enmActionType m_eOldActionType;           // offset 0x40, size 0x4
+    clsPlayerTask::enmActionType m_eOldActionType; // offset 0x40, size 0x4
     enmKickerRankZone m_eNextTrickZone;       // offset 0x44, size 0x4
     enmRunMode m_eRunMode;                    // offset 0x48, size 0x4
     u32 m_u32AdjustStates;                    // offset 0x4C, size 0x4

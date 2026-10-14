@@ -6,6 +6,7 @@
 #include "Develop/Projects/SR2/pgm/src/Task/TaskManager.hpp"
 #include "types.h"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
+#include "Develop/Projects/SR2/pgm/lib/OO/core/OOLibChecker.hpp"
 
 static u32 ALL_GS_PACKET_DRAW_RAINDROPS_NUM;
 static u32 DRAW_RAINDROPS_PRIMITIVE_N_NUM;
@@ -36,7 +37,7 @@ extern stcPrimitive tsPrimitive[10];
 class clsRainDrops_Task : public clsTask {
 public:
     clsRainDrops_Task(u32 u32Tp, s32 s32Flg);
-    virtual ~clsRainDrops_Task() {}
+    virtual ~clsRainDrops_Task() { nspOOLibChecker::ClassD("clsRainDrops_Task"); }
 
     virtual void draw();
     virtual void addDetail(u32 u32vI, u32 u32NumI, u32 bSnowI, f32 f32LifeFrameI, u8 u8IsGrowType);

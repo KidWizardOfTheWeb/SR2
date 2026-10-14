@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 // total size: 0x110
 class clsControlMatrix {
@@ -37,7 +38,7 @@ public:
     NNS_VECTORFAST* getAutoRotAxisVecFastRef() { return &m_sAutoRotAxisVecFast; }
     NNS_VECTORFAST* getScaleVecFastRef() { return &m_sScaleVecFast; }
 
-    f32 m_sMtx[4][4];                       // offset 0x0, size 0x40
+    NNS_MATRIX m_sMtx;                      // offset 0x0, size 0x40
     NNS_ROTATE_A32 m_sAutoRotA32;           // offset 0x40, size 0xC
     NNS_ROTATE_A32 m_sAutoRotRetAddA32;     // offset 0x4C, size 0xC
     NNS_VECTORFAST m_sAutoRotAxisVecFast;   // offset 0x60, size 0x10

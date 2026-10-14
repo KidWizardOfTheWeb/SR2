@@ -15,7 +15,7 @@ enum enmSafeTMode {
 class clsSafeTrampoline_Obj : public clsPhantomGimmickObject {
 public:
     clsSafeTrampoline_Obj();
-    virtual ~clsSafeTrampoline_Obj();
+    virtual ~clsSafeTrampoline_Obj() {}
 
     virtual void createData();
     virtual void destroyData();

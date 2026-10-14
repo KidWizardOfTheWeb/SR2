@@ -9,6 +9,7 @@ static f32 NODE_VIB__FOOT_ROTATE_Y;
 
 void clsGearPtnBoard::clearChangeActionParam()
 {
+    clsGearBasePrototype::clearChangeActionParam();
 }
 
 void clsGearPtnBoard::behavior()

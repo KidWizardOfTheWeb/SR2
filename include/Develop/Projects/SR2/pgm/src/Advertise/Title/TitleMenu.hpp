@@ -42,7 +42,7 @@ struct stcDrawUnlock {
 class clsTitleMenu_Task : public clsTask {
 public:
     clsTitleMenu_Task(clsAdvertiseMgr_Task* pcAdvertiseMgr) : clsTask(0, 0) {}
-    virtual ~clsTitleMenu_Task();
+    virtual ~clsTitleMenu_Task() {}
     virtual void execute();
     virtual void draw();
     virtual void reset();

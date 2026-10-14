@@ -27,7 +27,7 @@ public:
 class clsSurvivalRelayWalkRunObj_Obj : public clsPhantomGimmickObject {
 public:
     clsSurvivalRelayWalkRunObj_Obj() {}
-    virtual ~clsSurvivalRelayWalkRunObj_Obj() {}
+    virtual ~clsSurvivalRelayWalkRunObj_Obj() { destroyData(); }
     virtual void contactTriggerEvent(hkContactPoint* pcObject, clsObject* pParam2);
     virtual void contactAlwaysEvent(hkContactPoint* pcObject, clsObject* pParam2);
     virtual void contactRemoveEvent(hkContactPoint* pcObject, clsObject* pParam2);

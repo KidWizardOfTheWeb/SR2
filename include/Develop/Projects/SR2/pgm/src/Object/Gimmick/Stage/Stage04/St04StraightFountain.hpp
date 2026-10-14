@@ -7,6 +7,7 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/GimmickObj.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsStraightFountain_Obj;
 class clsStraightFountainThroughCollision;
@@ -37,7 +38,7 @@ public:
     };
 
     clsStraightFountain_Obj() {}
-    virtual ~clsStraightFountain_Obj() {}
+    virtual ~clsStraightFountain_Obj() { destroyData(); }
 
     enmStraightFountainMode getMode() const { return m_eMode; }
     enmStraightFountainState getState() const { return m_eState; }
@@ -67,7 +68,7 @@ public:
     f32 m_sScale;                                       // offset 0x80, size 0x4
     f32 m_f32Wait;                                      // offset 0x84, size 0x4
     clsTask* m_psWaterParticle;                         // offset 0x88, size 0x4
-    f32 m_sPosturalMtx[4][4];                           // offset 0x90, size 0x40
+    NNS_MATRIX m_sPosturalMtx;                          // offset 0x90, size 0x40
     clsSe3DControl* m_pcSe3DControl;                    // offset 0xD0, size 0x4
 };
 

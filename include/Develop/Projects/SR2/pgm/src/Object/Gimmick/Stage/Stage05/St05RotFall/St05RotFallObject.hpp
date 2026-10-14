@@ -5,6 +5,7 @@
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/RigidBodyGimmickObj.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/ModelTypes.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsSe3DControl;
 class clsMultiObTxModels;
@@ -52,8 +53,8 @@ public:
     static f32 t_f32AppearFrame;
     static u8 t_au8ModelTypeTable[14];
 
-    f32 m_sBaseMtx[4][4];            // offset 0xD0, size 0x40
-    f32 m_sBaseInvMtx[4][4];         // offset 0x110, size 0x40
+    NNS_MATRIX m_sBaseMtx;           // offset 0xD0, size 0x40
+    NNS_MATRIX m_sBaseInvMtx;        // offset 0x110, size 0x40
     NNS_VECTOR m_sFallRotSpeed;      // offset 0x150, size 0xC
     enmRotFallMode m_eMode;          // offset 0x15C, size 0x4
     enmModelType m_eModelType;       // offset 0x160, size 0x4

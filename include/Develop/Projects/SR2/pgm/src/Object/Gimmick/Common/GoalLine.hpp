@@ -10,7 +10,7 @@
 class clsGoalLine_Obj : public clsGimmickObj {
 public:
     clsGoalLine_Obj();
-    virtual ~clsGoalLine_Obj();
+    virtual ~clsGoalLine_Obj() {}
 
     nspPackId::enm getPackId() const { return nspPackId::GOAL_LINE_2060; }
 };

@@ -5,6 +5,7 @@
 #include "usr/local/sega/nn/src/Matrix/nnvector.h"
 #include "Develop/Projects/SR2/pgm/src/Data/Path.hpp"
 #include "Develop/Projects/SR2/pgm/src/Object/SlerpQuat.hpp"
+#include "usr/local/sega/nn/src/System/nnsystem.h"
 
 class clsPlayerTask;
 
@@ -36,7 +37,7 @@ public:
         TYPE_BACK = 1,
     };
 
-    f32 m_sMtx[4][4];            // offset 0x0, size 0x40
+    NNS_MATRIX m_sMtx;           // offset 0x0, size 0x40
     NNS_VECTORFAST m_sVecFast;   // offset 0x40, size 0x10
     NNS_VECTORFAST m_sUpVecFast; // offset 0x50, size 0x10
     clsPlayerTask* m_pcPlayer;   // offset 0x60, size 0x4

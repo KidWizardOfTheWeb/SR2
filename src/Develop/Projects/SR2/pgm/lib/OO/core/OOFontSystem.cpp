@@ -19,6 +19,7 @@ void clsOOFontObj::SetFontData(clsOOTexture* psTex, void* pvFontStatus)
 
 void clsOOFontObj::SetFontStrTbl(clsOOFontStrTbl* pcStrTbl)
 {
+    m_psStrTbl = pcStrTbl;
 }
 
 clsOOFontDataSet::clsOOFontDataSet(clsOOFontObj* pcObj,

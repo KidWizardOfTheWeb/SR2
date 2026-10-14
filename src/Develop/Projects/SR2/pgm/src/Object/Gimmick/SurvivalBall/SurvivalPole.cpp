@@ -1,5 +1,9 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/SurvivalBall/SurvivalPole.hpp"
 
+clsSurvivalBallPole_Obj::clsSurvivalBallPole_Obj() : clsRigidBodyGimmickObj()
+{
+}
+
 void clsSurvivalBallPole_Obj::createData()
 {
 }

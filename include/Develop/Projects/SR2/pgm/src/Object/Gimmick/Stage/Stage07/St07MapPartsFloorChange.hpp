@@ -15,7 +15,7 @@ class clsSe3DControl;
 class clsMapPartsFloorChange_Object : public clsMapPartsObject {
 public:
     inline clsMapPartsFloorChange_Object() : clsMapPartsObject() {}
-    virtual ~clsMapPartsFloorChange_Object() {}
+    virtual ~clsMapPartsFloorChange_Object() { destroyData(); }
 
     enum enmMode {
         MODE_NONE = 0,

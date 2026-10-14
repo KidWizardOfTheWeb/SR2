@@ -39,6 +39,7 @@ void clsPlayLoopSe_Task::draw()
 
 clsPlayLoopSe_Obj::~clsPlayLoopSe_Obj()
 {
+    destroyData();
 }
 
 clsPlayLoopSe_Obj::clsPlayLoopSe_Obj()

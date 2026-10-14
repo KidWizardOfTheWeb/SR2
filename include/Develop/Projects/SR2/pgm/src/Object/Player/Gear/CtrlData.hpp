@@ -132,6 +132,7 @@ enum enmGearPrfm {
     PRFM_MAX = 96,
 };
 
+namespace nspGear {
 enum enmGear {
     GEAR_NON = -1,
     GEAR_USE_MODEL_START = 0,
@@ -212,6 +213,7 @@ enum enmGear {
     GEAR_EMPTY_END = 53,
     GEAR_USE_MODEL_END = 29,
 };
+} // namespace nspGear
 
 // total size: 0x50
 struct stcCtrlData {
@@ -222,7 +224,7 @@ struct stcCtrlData {
     enmSelectType eSelectType;       // offset 0x20, size 0x4
     enmRingTableType eRingTableType; // offset 0x24, size 0x4
     u16 u16GearPrice;                // offset 0x28, size 0x2
-    enmGear aeGear[4];               // offset 0x2C, size 0x10
+    nspGear::enmGear aeGear[4];      // offset 0x2C, size 0x10
     enmGearPrfm aePrfmNo[4];         // offset 0x3C, size 0x10
     u8 aIsLockedBit[4];              // offset 0x4C, size 0x4
 };

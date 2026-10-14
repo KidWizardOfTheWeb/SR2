@@ -38,8 +38,9 @@ void clsSurvivalBallPointRing_Collision::execute()
 {
 }
 
-clsSurvivalBallPointRing_Obj::clsSurvivalBallPointRing_Obj()
+clsSurvivalBallPointRing_Obj::clsSurvivalBallPointRing_Obj() : m_pcPlayGoalSe2D(0)
 {
+    init();
 }
 
 void clsSurvivalBallPointRing_Obj::createData()

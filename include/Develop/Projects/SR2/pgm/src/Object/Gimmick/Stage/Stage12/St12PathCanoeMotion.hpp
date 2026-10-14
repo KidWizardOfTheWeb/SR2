@@ -41,7 +41,7 @@ public:
     clsSe3DControl* m_pcSe3DControl;    // offset 0x24C, size 0x4
 
     clsPathCanoeMotion_Obj() {}
-    virtual ~clsPathCanoeMotion_Obj() {}
+    virtual ~clsPathCanoeMotion_Obj() { destroyData(); }
     virtual nspPackId::enm getPackId() const { return nspPackId::ST04_PATH_CANOE_14040; }
 
     virtual void contactTriggerEvent(hkContactPoint* p, clsObject* o);

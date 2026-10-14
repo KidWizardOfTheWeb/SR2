@@ -11,6 +11,7 @@ clsRacePauseTimeAttack_Task::clsRacePauseTimeAttack_Task(s32 s32PushPausePadNoI,
 
 void clsRacePauseTimeAttack_Task::execute()
 {
+    clsBaseRacePause_Task::execute();
 }
 
 void clsRacePauseTimeAttack_Task::draw()

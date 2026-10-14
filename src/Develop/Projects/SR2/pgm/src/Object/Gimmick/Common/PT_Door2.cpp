@@ -1,6 +1,6 @@
 #include "Develop/Projects/SR2/pgm/src/Object/Gimmick/Common/PT_Door2.hpp"
 
-clsPT_Door2_Obj::clsPT_Door2_Obj()
+clsPT_Door2_Obj::clsPT_Door2_Obj() : m_ePtDoorMode(MODE_INIT)
 {
 }
 

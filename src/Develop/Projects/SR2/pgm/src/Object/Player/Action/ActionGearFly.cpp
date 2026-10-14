@@ -1,3 +1,5 @@
+#include "Develop/Projects/SR2/pgm/src/Object/Player/Action/ActionGearFly.hpp"
+
 #include "types.h"
 
 static s32 toaA32PitchGravityTable[3] = {0, 0, 0};
@@ -12,3 +14,19 @@ static f32 FLYACTION_UP_DOWN_ROT = 127.0f;
 namespace nspAgp {
 f32 toaf32BonusFly[3] = {0.07f, 0.15f, 0.25f};
 } // namespace nspAgp
+
+void clsPlayerTask::cancelGearFly()
+{
+}
+
+void clsPlayerTask::endGearFly()
+{
+}
+
+void clsPlayerTask::initGearFly()
+{
+}
+
+void clsPlayerTask::actionGearFly()
+{
+}

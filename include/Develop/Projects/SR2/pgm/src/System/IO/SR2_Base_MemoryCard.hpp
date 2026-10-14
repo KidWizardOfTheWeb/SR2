@@ -6,6 +6,7 @@
 #include "Develop/Projects/SR2/pgm/src/Task/TaskManager.hpp"
 #include "Develop/Projects/SR2/pgm/src/2D/MsgWnd2D.hpp"
 #include "Develop/Projects/SR2/pgm/src/System/IO/SR2_MemoryCardFile.hpp"
+#include "Develop/Projects/SR2/pgm/lib/OO/core/OOLibChecker.hpp"
 
 class clsBaseMemoryCardFile;
 
@@ -77,7 +78,7 @@ public:
         DRAW_SEL___ON = 1,
     };
 
-    virtual ~clsBaseMemoryCard_Task() {}
+    virtual ~clsBaseMemoryCard_Task() { nspOOLibChecker::ClassD("clsBaseMemoryCard_Task"); }
     virtual void execute();
     virtual void draw();
     virtual void setMode(u32 param_1) {}

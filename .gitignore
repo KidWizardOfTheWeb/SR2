@@ -52,3 +52,6 @@ prodg*
 
 ## WSL
 *:Zone.Identifier
+
+# tools/get_native_mwcc.py
+/tools/mwccps2-native/

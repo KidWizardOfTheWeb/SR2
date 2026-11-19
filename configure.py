@@ -116,6 +116,18 @@ parser.add_argument(
     help="disable progress calculation",
 )
 parser.add_argument(
+    "--native-mwcc",
+    action="store_true",
+    help="compile with a native mwccps2 b198 (tools/get_native_mwcc.py; also SR2_MWCC_NATIVE=1)",
+)
+parser.add_argument(
+    "--native-mwcc-path",
+    metavar="BINARY",
+    type=Path,
+    default=Path("tools/mwccps2-native/mwccps2"),
+    help="the native compiler for --native-mwcc (default: %(default)s)",
+)
+parser.add_argument(
     "--no-short-loop-workaround",
     dest="short_loop_workaround",
     action="store_false",
@@ -173,6 +185,20 @@ config.non_matching = args.non_matching
 config.ninja_path = args.ninja
 config.progress = args.progress
 config.short_loop_workaround = args.short_loop_workaround
+if args.native_mwcc or os.environ.get("SR2_MWCC_NATIVE", "0") not in ("", "0"):
+    if not args.native_mwcc_path.is_file():
+        sys.exit(f"configure.py: {args.native_mwcc_path} not found (python3 tools/get_native_mwcc.py)")
+    config.native_mwcc = args.native_mwcc_path
+# Units built with wibo + the original even with --native-mwcc: their original output
+# depends on uninitialised memory. tools/native_ub_check.py keeps this list current.
+config.native_mwcc_exclude = [
+    # resetBaseControl, reset
+    "src/Develop/Projects/SR2/pgm/src/Object/Gimmick/RigidBodyGimmickObj.cpp",
+    # std::__vector_imp<clsOOSubMenu>::do_assign
+    "src/Develop/Projects/SR2/pgm/lib/OO/core/OODebugMenu.cpp",
+    # PXFlipPB
+    "src/usr/local/sega/px/src/pxpushbuffer.c",
+]
 if not is_windows():
     config.wrapper = args.wrapper
 

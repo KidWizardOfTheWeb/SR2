@@ -184,6 +184,10 @@ class ProjectConfig:
             None  # Custom build steps, types are ["pre-compile", "post-compile", "post-link", "post-build"]
         )
         self.short_loop_workaround: bool = True
+        # Native mwccps2 b198 (tools/get_native_mwcc.py) in place of wibo + the original
+        self.native_mwcc: Optional[Path] = None
+        # Source path suffixes still built with the original (see configure.py)
+        self.native_mwcc_exclude: List[str] = []
         self.shift_jis = True
         self.generate_compile_commands: bool = True
         self.extra_clang_flags: List[str] = []
@@ -295,12 +299,12 @@ def make_flags_str(flags: Optional[List[str]]) -> str:
     return " ".join(flags)
 
 
-def get_pch_out_name(config: ProjectConfig, pch: PrecompiledHeader) -> str:
+def get_pch_out_name(config: ProjectConfig, pch: PrecompiledHeader, orig: bool = False) -> str:
     pch_rel_path = Path(pch["source"])
     pch_out_name = pch_rel_path.with_suffix(".mch")
     # Keep the Ninja output absolute so MWCC-generated depfiles refer to the
-    # same path as the PCH build edge.
-    return os.path.abspath(config.out_path() / "include" / pch_out_name)
+    # same path as the PCH build edge. The original's own PCH goes in include-orig.
+    return os.path.abspath(config.out_path() / ("include-orig" if orig else "include") / pch_out_name)
 
 
 # Short loop workaround for MWCCPS2
@@ -615,6 +619,30 @@ def generate_build_ninja(
     )
     mwcc_pch_sjis_implicit: List[Optional[Path]] = [*mwcc_implicit, sjiswrap]
 
+    # The original's commands, for native_mwcc_exclude
+    orig_cmds = {
+        "mwcc": (mwcc_cmd, mwcc_implicit),
+        "mwcc_sjis": (mwcc_sjis_cmd, mwcc_sjis_implicit),
+        "mwcc_pch": (mwcc_pch_cmd, mwcc_pch_implicit),
+        "mwcc_pch_sjis": (mwcc_pch_sjis_cmd, mwcc_pch_sjis_implicit),
+    }
+    orig_cmds = {k: (c, list(i)) for k, (c, i) in orig_cmds.items()}
+
+    if config.native_mwcc is not None:
+        # MWCC_SJIS=1: sjiswrap's conversion; MWCC_DRIVE=Z: wibo's paths in objects
+        native = f"env MWCC_DRIVE=Z {config.native_mwcc}"
+        native_sjis = f"env MWCC_DRIVE=Z MWCC_SJIS=1 {config.native_mwcc}"
+        mwcc_cmd = f"{native} $cflags -gccdep -MMD -c $in -o $out"
+        mwcc_sjis_cmd = f"{native_sjis} $cflags -gccdep -MMD -c $in -o $out"
+        mwcc_pch_cmd = f"{native} $cflags -gccdep -MMD -c $in -o $basedir -precompile $basefilestem.mch"
+        mwcc_pch_sjis_cmd = (
+            f"{native_sjis} $cflags -gccdep -MMD -c $in -o $basedir -precompile $basefilestem.mch"
+        )
+        mwcc_implicit = [config.native_mwcc]
+        mwcc_sjis_implicit = [config.native_mwcc]
+        mwcc_pch_implicit = [config.native_mwcc]
+        mwcc_pch_sjis_implicit = [config.native_mwcc]
+
     # Patch MWCCPS2 compiler DLLs (done after download)
     n.comment("Patch MWCCPS2 compiler DLLs")
 
@@ -637,10 +665,13 @@ def generate_build_ninja(
         },
     )
     # Ensure all MWCC rules wait for compiler patching.
-    mwcc_implicit.append(patch_marker)
-    mwcc_sjis_implicit.append(patch_marker)
-    mwcc_pch_implicit.append(patch_marker)
-    mwcc_pch_sjis_implicit.append(patch_marker)
+    if config.native_mwcc is None:
+        mwcc_implicit.append(patch_marker)
+        mwcc_sjis_implicit.append(patch_marker)
+        mwcc_pch_implicit.append(patch_marker)
+        mwcc_pch_sjis_implicit.append(patch_marker)
+    for _, implicit in orig_cmds.values():
+        implicit.append(patch_marker)
     n.newline()
 
     # MWLD (linker)
@@ -660,14 +691,31 @@ def generate_build_ninja(
     # Transform dependency files on non-Windows
     if os.name != "nt":
         transform_dep = config.tools_dir / "transform_dep.py"
-        mwcc_cmd += f" && $python {transform_dep} $basefile.d $basefile.d"
-        mwcc_sjis_cmd += f" && $python {transform_dep} $basefile.d $basefile.d"
-        mwcc_pch_cmd += f" && $python {transform_dep} $basefile.d $basefile.d"
-        mwcc_pch_sjis_cmd += f" && $python {transform_dep} $basefile.d $basefile.d"
-        mwcc_implicit.append(transform_dep)
-        mwcc_sjis_implicit.append(transform_dep)
-        mwcc_pch_implicit.append(transform_dep)
-        mwcc_pch_sjis_implicit.append(transform_dep)
+        if config.native_mwcc is not None:
+            # transform_dep.py's job without a Python start per unit: the native writes "/" already,
+            # so only CRLF, MWCC_DRIVE's "Z:" and trailing spaces go
+            dep_cmd = (
+                " && tr -d '\\r' < $basefile.d | sed -e 's|Z:/|/|g' -e 's/ *$$//' > $basefile.d.tmp"
+                " && mv $basefile.d.tmp $basefile.d"
+            )
+            dep_implicit = []
+        else:
+            dep_cmd = f" && $python {transform_dep} $basefile.d $basefile.d"
+            dep_implicit = [transform_dep]
+        mwcc_cmd += dep_cmd
+        mwcc_sjis_cmd += dep_cmd
+        mwcc_pch_cmd += dep_cmd
+        mwcc_pch_sjis_cmd += dep_cmd
+        mwcc_implicit += dep_implicit
+        mwcc_sjis_implicit += dep_implicit
+        mwcc_pch_implicit += dep_implicit
+        mwcc_pch_sjis_implicit += dep_implicit
+        orig_cmds = {
+            k: (c + f" && $python {transform_dep} $basefile.d $basefile.d", i + [transform_dep])
+            for k, (c, i) in orig_cmds.items()
+        }
+
+    native_exclude = list(config.native_mwcc_exclude) if config.native_mwcc is not None else []
 
     n.comment("Link ELF file")
     n.rule(
@@ -716,6 +764,18 @@ def generate_build_ninja(
         deps="gcc",
     )
     n.newline()
+
+    if native_exclude:
+        for name, (command, _) in orig_cmds.items():
+            n.comment(f"{name} with the original (units the native leaves to it)")
+            n.rule(
+                name=f"{name}_orig",
+                command=command,
+                description=("PCH" if "pch" in name else "MWCC") + " $out (original)",
+                depfile="$basefile.d",
+                deps="gcc",
+            )
+            n.newline()
 
     n.comment("Assemble asm")
     n.rule(
@@ -823,6 +883,23 @@ def generate_build_ninja(
                 implicit=mwcc_pch_sjis_implicit if shift_jis else mwcc_pch_implicit,
             )
             n.newline()
+            if native_exclude:
+                orig_pch = Path(get_pch_out_name(config, pch, orig=True))
+                rule = "mwcc_pch_sjis" if shift_jis else "mwcc_pch"
+                n.build(
+                    outputs=orig_pch,
+                    rule=f"{rule}_orig",
+                    inputs=Path("include") / src_path_rel,
+                    variables={
+                        "mw_version": Path(pch["mw_version"]),
+                        "cflags": make_flags_str(cflags),
+                        "basedir": os.path.dirname(orig_pch),
+                        "basefile": orig_pch.with_suffix(""),
+                        "basefilestem": orig_pch.stem,
+                    },
+                    implicit=orig_cmds[rule][1],
+                )
+                n.newline()
 
     def c_build(obj: Object, src_path: Path) -> Optional[Path]:
         if obj.src_obj_path is None or obj.src_obj_path in source_added:
@@ -837,6 +914,19 @@ def generate_build_ninja(
         lib_name = obj.options["lib"]
         build_rule = "mwcc_sjis" if obj.options["shift_jis"] else "mwcc"
         build_implicit = mwcc_sjis_implicit if obj.options["shift_jis"] else mwcc_implicit
+        if any(src_path.as_posix().endswith(x) for x in native_exclude):
+            build_implicit = orig_cmds[build_rule][1]
+            build_rule = f"{build_rule}_orig"
+            for pch in config.precompiled_headers or []:
+                native_pch = Path(get_pch_out_name(config, pch))
+                orig_pch = Path(get_pch_out_name(config, pch, orig=True))
+                mch = Path(pch["source"]).with_suffix(".mch")
+                rel = config.out_path() / "include" / mch
+                # relative: the original under wibo can't open the absolute path
+                rel_orig = config.out_path() / "include-orig" / mch
+                for old in (native_pch.as_posix(), rel.as_posix()):
+                    cflags_str = cflags_str.replace(f"-prefix {old}", f"-prefix {rel_orig.as_posix()}")
+                build_implicit = build_implicit + [orig_pch]
         n.comment(f"{obj.name}: {lib_name} (linked {obj.completed})")
         n.build(
             outputs=obj.src_obj_path,
